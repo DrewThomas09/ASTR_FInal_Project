@@ -84,7 +84,7 @@ def bls_peak(times, flux, bounds=PERIOD_SEARCH, frequency_factor=5.):
     k=int(np.nanargmax(r.power))
     return {"period_days":float(r.period[k]),"score":float(r.power[k]),
             "depth_ppm":float(r.depth[k])*1e6,
-            "duration_days":float(r.duration[k]),"sigma_estimate":sigma}
+            "duration_days":float(r.duration[k]),"transit_time_days":float(r.transit_time[k]),"sigma_estimate":sigma}
 
 
 def threshold_from_controls(scores, target_fpr=FALSE_ALARM_TARGET):
