@@ -52,6 +52,23 @@ The downloaded CSV and outputs are excluded from Git by `.gitignore` to avoid ac
 
 **Verified offline** on November 6, 2026: a prior full local development package passed nine offline tests and produced simulated transit and classification outputs. GitHub Actions contains a separate test suite for this repository. **Pending:** run the actual DR25 download and ML training in an internet-connected Colab session, examine the metrics, and independently check the scientific interpretation. The optional Kepler-69b light-curve example is in the downloadable development package, **not currently part of this GitHub repository**.
 
+
+## November 6: research-driven experiments added
+
+The repository now includes **two new experimental modules** and their Colab cells:
+
+- [`blind_transit_benchmark.py`](blind_transit_benchmark.py): randomized period, epoch, and duration injections; missing measurements; white/red noise, a single isolated dip, and a binary-like control. The BLS search range is **predeclared as 1.5–12 days**, while injected orbital periods are independently sampled from 2.1–9.8 days. A threshold chosen from separate control simulations is evaluated on a held-out synthetic sample. It outputs a full trial CSV, summary CSV and figure. This is a *synthetic stress test*, not a mission-calibrated false-alarm probability.
+- [`ml_uncertainty_triage.py`](ml_uncertainty_triage.py): four independently seeded random forests, same historical DR25 labels and same held-out stars, comparing **ordinary classifier-margin review** against **margin plus ensemble-disagreement review**. It saves auto-error counts, fraction sent to human review, period/SNR subgroup table and paired star-bootstrap intervals. A review case is not counted as an automatic success.
+- [`tests/test_new_experiments.py`](tests/test_new_experiments.py): new unit and synthetic-pipeline checks; an additional BLS smoke test runs in environments with Astropy installed.
+- [Full 2024–2026 research audit](RECENT_METHODS_AND_FAILURE_AUDIT_2024_2026.md), with methodological failure modes and the papers inspiring these additions.
+
+**Quickstart:** Open [the Colab notebook](Kepler_AI_Project_Colab.ipynb), choose Runtime → Run all. The new blind simulation uses just four simulations per group for a quick preliminary run; increase `per_condition` to 8 or 12 for a less noisy illustration. These small samples are **not sufficient for a precise scientific false-positive rate**.
+
+**Current verification:** New simulator, metrics, and triage logic passed nine local offline tests. A full Astropy BLS run and the real NASA DR25 comparison have **not** been verified in this local environment because Astropy and direct NASA downloads were unavailable. Colab with internet access is the next verification step. Do not report synthetic-test metrics as findings on real stars.
+
+**Important:** The original `exoplanet_detector.py` remains unchanged as the **historical, biased-range baseline**, so old results can be replicated. Do not use its narrow-period success as proof of blind detection.
+
+
 ## Scientific sources
 
 - Kovacs, Zucker & Mazeh (2002): [Box-fitting algorithm](https://doi.org/10.1051/0004-6361:20020802)
