@@ -10,6 +10,10 @@
 4. If NASA is unavailable, the notebook prints the exact CSV download URL and allows manual upload. **Do not report real-data performance numbers unless the CSV step succeeds.**
 5. Download the resulting figures and numerical results. Keep `AI_USE_LOG.md` updated, and write your own analysis.
 
+## Research status (November 6, 2026)
+
+The main scientific reference is [Deep 2024–2026 methods and failure audit](RECENT_METHODS_AND_FAILURE_AUDIT_2024_2026.md). It documents published methods and **verified limitations** of our code separately from risks requiring testing. Priority GitHub issues #3–#5 specify the required corrections before presenting real-data results. No claim of a new exoplanet or measured improvement has been made.
+
 ## What has been implemented?
 
 - `exoplanet_detector.py`: simulate brightness observations, detect periodic dips with the published **Box Least Squares** (BLS) algorithm using Astropy, plot injected-planet and noise-only control. This is a traditional astronomy algorithm, **not machine learning**.
