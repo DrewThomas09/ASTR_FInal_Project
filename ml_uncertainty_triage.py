@@ -198,9 +198,23 @@ def experiment(df,output="results/ml_triage",seed=12600,review_target=.30):
     decision=base.cutoff(avg_val,y[valid],.90)
     margin_val=np.abs(avg_val-decision)
     margin_test=np.abs(avg_test-decision)
-    # Same four forests and predictions for both conditions; only review rank differs.
-    stability_val=margin_val/(.04+std_val)
-    stability_test=margin_test/(.04+std_test)
+    # Select uncertainty weighting ONLY on validation stars.
+    # Final test-star labels are never used to choose this parameter.
+    val_decisions=avg_val>=decision
+    weighting_grid=(.01,.02,.04,.08,.16)
+    validation_trials=[]
+    for weight in weighting_grid:
+        uncertainty=-(margin_val/(weight+std_val))
+        validation_review=fixed_budget_mask(uncertainty,.30)
+        val_metrics=per_100_input_metrics(y[valid],val_decisions,validation_review)
+        validation_trials.append({"weight":weight,
+            "wrong_auto":val_metrics["wrong_auto"],
+            "false_dismissals_auto":val_metrics["candidate_false_dismissals_auto"]})
+    # Prefer the conventional margin rule on exact ties.
+    chosen_weight=min(validation_trials,key=lambda x:(
+        x["wrong_auto"],x["false_dismissals_auto"],-x["weight"]))["weight"]
+    stability_val=margin_val/(chosen_weight+std_val)
+    stability_test=margin_test/(chosen_weight+std_test)
     margin_cut=select_review_cutoff(margin_val,review_target)
     stability_cut=select_review_cutoff(stability_val,review_target)
     original_review=margin_test<margin_cut
@@ -215,14 +229,25 @@ def experiment(df,output="results/ml_triage",seed=12600,review_target=.30):
             "validation_recall_goal":.90,
             "validation_review_goal":review_target,
             "decision_threshold":float(decision),
+            "validation_weight_trials":validation_trials,
+            "chosen_disagreement_weight":chosen_weight,
             "paired_star_bootstrap":star_bootstrap_difference(
                 stars[test],y[test],pred,original_review,new_review,seed),
             "caveat":"Not real-planet probabilities; no true NASA results until data loaded"}
     # Equal-budget comparison: holds binary predictions fixed across policies.
-    # Fixed disagreement stabilizer .04 is declared before seeing test labels.
+    # Disagreement stabilizer chosen using validation stars only.
     equal_budget, paired_budget, review_masks = fair_review_budget_comparison(
         y[test],pred,stars[test],margin_test,stability_test,seed=seed)
     equal_budget.to_csv(out/"equal_budget_comparison.csv",index=False)
+    # Save every held-out score and review assignment for reproducibility.
+    holdout=df.iloc[test][["kepid","kepoi_name","koi_period",
+                           "koi_model_snr","label"]].copy()
+    holdout["model_score"] = avg_test
+    holdout["ensemble_disagreement"] = std_test
+    holdout["predicted_candidate"] = pred.astype(int)
+    holdout["review_margin_30pct"] = review_masks["margin_only"]
+    holdout["review_disagreement_30pct"] = review_masks["margin_plus_disagreement"]
+    holdout.to_csv(out/"holdout_predictions.csv",index=False)
     report["equal_budget"]={
         "budgets":[.10,.20,.30,.40],
         "strategies":["random_review","margin_only","margin_plus_disagreement"],
@@ -251,8 +276,11 @@ def experiment(df,output="results/ml_triage",seed=12600,review_target=.30):
             mask=(bins==label).to_numpy(dtype=bool)
             if not mask.any():
                 continue
-            old=triage_evaluation(y[test][mask],pred[mask],original_review[mask])
-            new=triage_evaluation(y[test][mask],pred[mask],new_review[mask])
+            # Fair subgroup comparison at exactly 30% whole-sample review budget.
+            old=triage_evaluation(y[test][mask],pred[mask],
+                                  review_masks["margin_only"][mask])
+            new=triage_evaluation(y[test][mask],pred[mask],
+                                  review_masks["margin_plus_disagreement"][mask])
             groups.append({"variable":feature,"range":label,"n":int(mask.sum()),
                            "margin_review_fraction":old["review_fraction"],
                            "ensemble_review_fraction":new["review_fraction"],
