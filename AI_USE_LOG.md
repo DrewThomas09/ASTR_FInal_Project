@@ -45,3 +45,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - Quantities: number of adequately sampled events, fraction showing a dip, share of positive-depth evidence contributed by the strongest event, and descriptive odd/even transit-depth difference.
 - Heuristic rules are not calibrated probabilities of a planet or NASA-grade vetting thresholds. True transit timing variations, gaps, low SNR, and inaccurate fitted periods could cause warnings on genuine planets.
 - Twelve offline tests across the new simulated data, ML triage and event diagnostics passed locally. No full Astropy transit-search performance claim has been verified; independent Colab testing is required.
+
+## November 6, 2026 — Consolidation and adjacent literature
+
+- GPT-6 reviewed primary methods and recent papers through November 6, 2026, and produced `CONSOLIDATED_RESEARCH_STRATEGY_NOV2026.md`.
+- Research spans Kepler/TESS BLS detection, DR25 Robovetter, transit diagnostics, exoVetter (2026), ExoMiner++ (2025), RAVEN (2026), false-alarm null templates (2025), individual-transit vetting (2026), and statistical literature on selective prediction, calibrated uncertainty, distribution shift and evaluation leakage.
+- Original deductions **proposed by AI** include prioritizing physical measurement integrity over model complexity, allocating a fixed human follow-up budget, and distinguishing signal, instrumental noise, astrophysical scenarios and catalog label mimicry. These are hypotheses and recommendations, not independently established findings.
+- AI generated the research document, summary comparisons and GitHub Issues #6 and #7; no new astronomy measurements or real NASA model performance was produced in this research-only step.
+- Student verification tasks: read the primary references and evaluate whether paper results generalize to our selected stars/labels; run the actual Colab experiments and interpret the quantitative comparisons. Cite and disclose AI research assistance as appropriate.
