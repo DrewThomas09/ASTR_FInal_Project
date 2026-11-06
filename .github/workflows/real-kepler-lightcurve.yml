@@ -1,0 +1,47 @@
+name: Real Kepler Light Curve Validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/real-kepler-lightcurve.yml'
+      - 'real_kepler_lightcurve.py'
+      - 'blind_transit_benchmark.py'
+      - 'transit_consistency.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-kepler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public astronomy and plotting libraries
+        run: |
+          python -m pip install "lightkurve>=2.4,<3" "astropy>=6,<9" "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" scipy
+      - name: Search Kepler public archive and run independent tests
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+        run: |
+          set -e
+          mkdir -p results/real_kepler
+          python real_kepler_lightcurve.py --out results/real_kepler --trials 3 > results/real_kepler/run.log 2>&1 || {
+            echo 'MAST/lightkurve experiment failed; preserving diagnostic logs.'
+            cat results/real_kepler/run.log
+            exit 1
+          }
+          cat results/real_kepler/run.log
+      - name: Publish figures and experiment logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-kepler-astronomy-validation
+          if-no-files-found: warn
+          retention-days: 30
+          path: results/real_kepler/
