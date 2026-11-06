@@ -73,7 +73,7 @@ def metrics(y, pred):
     return dict(accuracy=float(accuracy_score(y, pred)),
                 recall=float(recall_score(y, pred, zero_division=0)),
                 precision=float(precision_score(y, pred, zero_division=0)),
-                false_positive_rate=float(fp / (fp + tn)),
+                false_positive_rate=float(fp / (fp + tn)) if (fp + tn) else None,
                 fraction_flagged=float(np.mean(pred)),
                 true_positive=int(tp), false_positive=int(fp),
                 true_negative=int(tn), false_negative=int(fn))
