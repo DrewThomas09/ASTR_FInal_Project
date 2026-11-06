@@ -6,6 +6,7 @@ on:
       - 'ml_screening.py'
       - 'ml_uncertainty_triage.py'
       - 'dataset_manifest.py'
+      - 'calibration_audit.py'
   workflow_dispatch:
 
 permissions:
@@ -44,6 +45,16 @@ jobs:
             exit 1
           }
           cat results/ml_triage/study_log.txt
+      - name: Audit calibration of held-out model scores
+        shell: bash
+        run: |
+          set -e
+          mkdir -p results/ml_calibration
+          python calibration_audit.py --predictions results/ml_triage/holdout_predictions.csv --out results/ml_calibration > results/ml_calibration/audit_log.txt 2>&1 || {
+            cat results/ml_calibration/audit_log.txt
+            exit 1
+          }
+          cat results/ml_calibration/audit_log.txt
       - name: Upload results and failure logs, not the input catalog
         if: always()
         uses: actions/upload-artifact@v4
@@ -54,3 +65,4 @@ jobs:
           path: |
             results/ml/
             results/ml_triage/
+            results/ml_calibration/
