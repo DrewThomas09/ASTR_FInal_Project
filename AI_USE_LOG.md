@@ -61,3 +61,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - The ML disagreement weighting is selected by a small preregistered grid using the validation sample, not unseen test labels. All methods are evaluated at identical held-out human-review budgets, and per-row scores/review choices are saved for audit. Overfitting to validation remains a limitation.
 - The calibration diagnostic is **read-only on held-out predictions** and evaluates consistency with historical NASA vetting decisions; it does NOT calibrate the probability of a physically real planet. No fitted probability transform is trained on test labels.
 - Local six-test smoke suite of an earlier standalone fixed-budget experiment passed; new GitHub-only regression tests and full NASA workflow have not been independently verified in this session. Do not report real-data performance.
+
+## November 6, 2026 — Verified catalog results and live-light-curve experiment
+
+- AI retrieved and analyzed actual GitHub Actions logs and the `dr25-scientific-analysis` ZIP artifact. The run processed 8,054 historical Kepler DR25 KOIs and completed training/evaluation. Report: `REAL_NASA_DR25_RESULTS_2026_11_06.md`.
+- AI initially coded the feature pipelines and selective-review ranking. Validation observed no convincing advantage of disagreement-enhanced review over the simpler uncertainty-margin approach; this negative result must be reported as such.
+- AI fixed an automated test that assumed at least 50 stars in a 20% split of 210 simulated stars; the correct test validates exact host membership. It also guarded against division by zero when a subgroup contains no false-positive examples. GitHub Actions then reported a successful test run.
+- AI authored `real_kepler_lightcurve.py`, new physics sanity tests, and `.github/workflows/real-kepler-lightcurve.yml` for an independent public-data Kepler quarter, and for injecting known artificial transits into real Kepler stellar variability. This new experiment was not yet verified at the time of the source-code commit.
+- The student's role remains to interpret astrophysical meaning, distinguish exact-period versus alias recovery, and assess whether raw measurement diagnostics are genuinely informative versus the existing catalog labels. Published periods are used only as after-the-fact reference comparisons.
