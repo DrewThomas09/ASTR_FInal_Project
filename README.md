@@ -56,7 +56,7 @@ The downloaded CSV and outputs are excluded from Git by `.gitignore` to avoid ac
 
 ## Tested versus pending
 
-**Verified offline** on November 6, 2026: a prior full local development package passed nine offline tests and produced simulated transit and classification outputs. GitHub Actions contains a separate test suite for this repository. **Pending:** run the actual DR25 download and ML training in an internet-connected Colab session, examine the metrics, and independently check the scientific interpretation. The optional Kepler-69b light-curve example is in the downloadable development package, **not currently part of this GitHub repository**.
+**Verified as of November 6, 2026:** GitHub's offline test suite passed after correcting a fixed-star-count test assumption, and the NASA DR25 Actions workflow successfully downloaded and modeled 8,054 real catalog signals. Full results: [REAL_NASA_DR25_RESULTS_2026_11_06.md](REAL_NASA_DR25_RESULTS_2026_11_06.md). The new Kepler-69b light-curve workflow is a separate validation step; check its latest Action status before using any numbers.
 
 
 ## November 6: research-driven experiments added
@@ -71,7 +71,7 @@ The repository now includes **two new experimental modules** and their Colab cel
 
 **Quickstart:** Open [the Colab notebook](Kepler_AI_Project_Colab.ipynb), choose Runtime → Run all. The new blind simulation uses just four simulations per group for a quick preliminary run; increase `per_condition` to 8 or 12 for a less noisy illustration. These small samples are **not sufficient for a precise scientific false-positive rate**.
 
-**Current verification:** Simulator, triage, and individual-event diagnostic logic passed twelve local offline tests. A full Astropy BLS run and the real NASA DR25 comparison have **not** been verified in this local environment because Astropy and direct NASA downloads were unavailable. Colab with internet access is the next verification step. Do not report synthetic-test metrics as findings on real stars.
+**Current verification:** Simulator, triage, and individual-event diagnostic logic passed twelve local offline tests. Astropy and external NASA access were unavailable in the local development container, but the full DR25 analysis subsequently **succeeded on GitHub Actions**. A separate MAST real-light-curve experiment is now included and must be checked independently. Do not report synthetic-test metrics as findings on real stars.
 
 **Important:** The original `exoplanet_detector.py` remains unchanged as the **historical, biased-range baseline**, so old results can be replicated. Do not use its narrow-period success as proof of blind detection.
 
@@ -86,7 +86,7 @@ The [NASA DR25 workflow](.github/workflows/nasa-dr25-study.yml) now also:
 4. Runs a **read-only** [calibration audit](calibration_audit.py). Its Brier score and calibration curve measure consistency with DR25's **historical Robovetter labels**, *not* the probability a planet exists.
 5. Exports the metrics, figures and logs as a temporary GitHub Actions artifact. See [Actions](../../actions).
 
-**Scientific status:** These additions are committed and have synthetic regression tests; the exact latest GitHub Actions workflow status and the real NASA outputs have not yet been independently verified. Do not copy synthetic results into the actual report. Run the Colab notebook or inspect the workflow's `dr25-scientific-analysis` artifact after a successful workflow run.
+**Scientific status:** These additions are committed and have synthetic regression tests; the **NASA DR25 workflow has now been verified using its stored metrics and ZIP artifact**. Do not copy synthetic results into the actual report. Run the Colab notebook or inspect the workflow's `dr25-scientific-analysis` artifact after a successful workflow run.
 
 
 ## First verified NASA DR25 findings and the next independent check
