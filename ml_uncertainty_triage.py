@@ -233,7 +233,7 @@ def experiment(df,output="results/ml_triage",seed=12600,review_target=.30):
             "chosen_disagreement_weight":chosen_weight,
             "paired_star_bootstrap":star_bootstrap_difference(
                 stars[test],y[test],pred,original_review,new_review,seed),
-            "caveat":"Not real-planet probabilities; no true NASA results until data loaded"}
+            "caveat":"These scores reproduce historical DR25 Robovetter labels, not independently confirmed planets"}
     # Equal-budget comparison: holds binary predictions fixed across policies.
     # Disagreement stabilizer chosen using validation stars only.
     equal_budget, paired_budget, review_masks = fair_review_budget_comparison(
