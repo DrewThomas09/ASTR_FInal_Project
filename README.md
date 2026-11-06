@@ -89,6 +89,12 @@ The [NASA DR25 workflow](.github/workflows/nasa-dr25-study.yml) now also:
 **Scientific status:** These additions are committed and have synthetic regression tests; the exact latest GitHub Actions workflow status and the real NASA outputs have not yet been independently verified. Do not copy synthetic results into the actual report. Run the Colab notebook or inspect the workflow's `dr25-scientific-analysis` artifact after a successful workflow run.
 
 
+## First verified NASA DR25 findings and the next independent check
+
+- **Real catalog experiment:** [November 6 DR25 results](REAL_NASA_DR25_RESULTS_2026_11_06.md) and [successful workflow with downloadable figures](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42282355449). A four-feature forest achieved **81.6% historical-label accuracy** on 1,619 held-out KOIs, versus **52.3%** for the one-feature SNR screen; however, candidate recall differed, so these are not matched-recall comparisons. Adding model disagreement to ordinary margin-based review changed **123 to 122** wrong automatic decisions at a 30% review budget. The host-star bootstrap interval includes zero; **no reliable incremental gain is demonstrated**.
+- **Scientific pivot:** [`real_kepler_lightcurve.py`](real_kepler_lightcurve.py) now checks one actual public Kepler-69 light curve against the previously published orbital period (used **only after** BLS fitting) and injects known synthetic transits into a second star's real measured brightness variations. Outputs come from the [real Kepler light-curve workflow](.github/workflows/real-kepler-lightcurve.yml). This is a narrow observational sanity check, **not an estimate of planet-discovery completeness or false-alarm rate**.
+- **Verification:** Tests and real catalog run passed after a fixed-star-count test assumption was corrected. The new Lightkurve/MAST workflow requires its own successful external run before any of its numerical results may be cited.
+
 ## Scientific sources
 
 - Kovacs, Zucker & Mazeh (2002): [Box-fitting algorithm](https://doi.org/10.1051/0004-6361:20020802)
