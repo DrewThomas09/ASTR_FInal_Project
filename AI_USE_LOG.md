@@ -37,3 +37,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - Tests: New modules and triage evaluation passed **nine offline software tests** on simulated or constructed data locally. The actual Astropy BLS run and NASA DR25 performance remain unverified here; do not present simulations as real observational results.
 - Human-scientific responsibilities: validate the NASA CSV source and its historical labels; independently run the Colab notebook; inspect failure cases and confusion matrices; check that no target-leaking variables were included; interpret the tradeoff between missed candidates and review workload; write independent conclusions and acknowledge all AI assistance under the instructor's rules.
 - Known limitations: Small synthetic controls do not represent the full noise distribution of Kepler observations; BLS is not a proof of a planet; historical KOI dispositions are not independently confirmed planets; ensemble disagreement is not a calibrated physical probability.
+
+## November 6, 2026 — Transit-consistency extension
+
+- GPT-6 generated `transit_consistency.py` and its tests and added the diagnostic to the Colab notebook.
+- The method inspects repeated dimming events *after* an independently fitted BLS period and transit epoch, rather than using the injected truth to choose the event times.
+- Quantities: number of adequately sampled events, fraction showing a dip, share of positive-depth evidence contributed by the strongest event, and descriptive odd/even transit-depth difference.
+- Heuristic rules are not calibrated probabilities of a planet or NASA-grade vetting thresholds. True transit timing variations, gaps, low SNR, and inaccurate fitted periods could cause warnings on genuine planets.
+- Twelve offline tests across the new simulated data, ML triage and event diagnostics passed locally. No full Astropy transit-search performance claim has been verified; independent Colab testing is required.
