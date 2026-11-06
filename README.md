@@ -76,6 +76,19 @@ The repository now includes **two new experimental modules** and their Colab cel
 **Important:** The original `exoplanet_detector.py` remains unchanged as the **historical, biased-range baseline**, so old results can be replicated. Do not use its narrow-period success as proof of blind detection.
 
 
+## Verification and data provenance enhancements (November 6, 2026)
+
+The [NASA DR25 workflow](.github/workflows/nasa-dr25-study.yml) now also:
+
+1. Generates an immutable-input [data manifest](dataset_manifest.py) containing SHA-256, labeled row counts, distinct host stars and missing-measurement counts. Raw downloaded data are not uploaded as an artifact.
+2. Runs a **fixed human-review budget** comparison (10%, 20%, 30%, 40%) using [`ml_uncertainty_triage.py`](ml_uncertainty_triage.py): random review, ordinary score-margin review, and model-disagreement-enhanced review, always on identical held-out stars. The disagreement stabilizer is selected **using validation only**. A model's reviewed cases are not counted as successes.
+3. Saves [per-observation held-out predictions](ml_uncertainty_triage.py) with raw model score, predicted historical label, star ID and 30%-budget review assignments so the reported comparisons are auditable.
+4. Runs a **read-only** [calibration audit](calibration_audit.py). Its Brier score and calibration curve measure consistency with DR25's **historical Robovetter labels**, *not* the probability a planet exists.
+5. Exports the metrics, figures and logs as a temporary GitHub Actions artifact. See [Actions](../../actions).
+
+**Scientific status:** These additions are committed and have synthetic regression tests; the exact latest GitHub Actions workflow status and the real NASA outputs have not yet been independently verified. Do not copy synthetic results into the actual report. Run the Colab notebook or inspect the workflow's `dr25-scientific-analysis` artifact after a successful workflow run.
+
+
 ## Scientific sources
 
 - Kovacs, Zucker & Mazeh (2002): [Box-fitting algorithm](https://doi.org/10.1051/0004-6361:20020802)
