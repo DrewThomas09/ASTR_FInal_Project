@@ -71,6 +71,112 @@ def star_bootstrap_difference(stars,y,pred,baseline_review,enhanced_review,
             "bootstrap_draws":len(diffs)}
 
 
+
+
+def fixed_budget_mask(uncertainty, fraction):
+    """Rank examples by uncertainty WITHOUT labels and review exactly round(n*b)."""
+    scores=np.asarray(uncertainty,dtype=float)
+    if scores.ndim!=1 or not np.isfinite(scores).all():
+        raise ValueError("Expected one finite uncertainty score per example")
+    if not 0<=fraction<=1:
+        raise ValueError("Budget outside [0,1]")
+    n=int(np.floor(len(scores)*fraction+.5))
+    selection=np.argsort(-scores,kind="stable")[:n]
+    mask=np.zeros(len(scores),dtype=bool)
+    mask[selection]=True
+    return mask
+
+
+def per_100_input_metrics(y, pred, review):
+    """Review outcomes are unknown, NOT counted as correct classifications."""
+    y=np.asarray(y,dtype=int)
+    pred=np.asarray(pred,dtype=bool)
+    review=np.asarray(review,dtype=bool)
+    if not(len(y)==len(pred)==len(review)) or not len(y):
+        raise ValueError("Expected equally sized nonempty arrays")
+    auto=~review
+    wrong=(pred!=y)&auto
+    dismissed=(y==1)&(~pred)&auto
+    false_accept=(y==0)&pred&auto
+    return {
+        "review_n":int(review.sum()),
+        "review_fraction":float(review.mean()),
+        "wrong_auto":int(wrong.sum()),
+        "wrong_auto_per_100_input":float(100*wrong.mean()),
+        "candidate_false_dismissals_auto":int(dismissed.sum()),
+        "candidate_false_dismissals_per_100_candidates":(
+            float(100*dismissed.sum()/(y==1).sum()) if np.any(y==1) else None),
+        "false_positive_auto_per_100_input":float(100*false_accept.mean()),
+        "auto_error_fraction":float(np.mean((pred!=y)[auto])) if auto.any() else None,
+    }
+
+
+def paired_budget_ci(stars,y,pred,a_review,b_review,seed=12600,reps=400):
+    """Paired host-star bootstrap difference B minus A in errors per 100 inputs.
+
+    The CI is conditional on fitted models and the realized held-out sample.
+    """
+    stars=np.asarray(stars)
+    unique,inverse=np.unique(stars,return_inverse=True)
+    y=np.asarray(y)
+    wrong=(np.asarray(pred,dtype=bool)!=y)
+    a=np.asarray(a_review,dtype=bool)
+    b=np.asarray(b_review,dtype=bool)
+    deltas=((wrong&(~b)).astype(float)-(wrong&(~a)).astype(float))
+    rng=np.random.default_rng(seed)
+    values=[]
+    for _ in range(reps):
+        ids=rng.integers(0,len(unique),len(unique))
+        weights=np.bincount(ids,minlength=len(unique))[inverse]
+        values.append(float(100*np.average(deltas,weights=weights)))
+    return {"difference_B_minus_A_per_100":float(100*deltas.mean()),
+            "ci95":[float(v) for v in np.quantile(values,[.025,.975])],
+            "reps":reps,"resampling_unit":"Kepler host star"}
+
+
+def fair_review_budget_comparison(y,pred,stars,margin,ensemble_stability,
+                                  budgets=(.10,.20,.30,.40),seed=12600):
+    """Identical binary predictions & exactly equal review counts per budget.
+
+    Random-review baseline averages 100 label-blind random allocations.
+    """
+    y=np.asarray(y,dtype=int)
+    pred=np.asarray(pred,dtype=bool)
+    strategies={"margin_only":-np.asarray(margin,dtype=float),
+                "margin_plus_disagreement":-np.asarray(ensemble_stability,dtype=float)}
+    rows=[]
+    reviews_at_30={}
+    for budget in budgets:
+        for name,uncertainty in strategies.items():
+            mask=fixed_budget_mask(uncertainty,budget)
+            metrics=per_100_input_metrics(y,pred,mask)
+            rows.append({"budget":float(budget),"method":name,**metrics})
+            if abs(budget-.30)<1e-8:
+                reviews_at_30[name]=mask
+        rng=np.random.default_rng(seed+int(budget*10000))
+        random_rows=[]
+        for _ in range(100):
+            mask=fixed_budget_mask(rng.random(len(y)),budget)
+            random_rows.append(per_100_input_metrics(y,pred,mask))
+        # All methods review identical number of cases, even when budget*n rounds.
+        average={}
+        for key in ("wrong_auto","wrong_auto_per_100_input",
+                    "candidate_false_dismissals_auto",
+                    "candidate_false_dismissals_per_100_candidates",
+                    "false_positive_auto_per_100_input","auto_error_fraction"):
+            values=[item[key] for item in random_rows if item[key] is not None]
+            average[key]=float(np.mean(values)) if values else None
+        rows.append({"budget":float(budget),"method":"random_review",
+                     "review_n":int(random_rows[0]["review_n"]),
+                     "review_fraction":float(random_rows[0]["review_fraction"]),
+                     **average,"random_replicates":100})
+    comparison=pd.DataFrame(rows)
+    paired=paired_budget_ci(stars,y,pred,reviews_at_30["margin_only"],
+                  reviews_at_30["margin_plus_disagreement"],seed=seed) if (
+                  "margin_only" in reviews_at_30) else None
+    return comparison,paired,reviews_at_30
+
+
 def experiment(df,output="results/ml_triage",seed=12600,review_target=.30):
     out=Path(output);out.mkdir(parents=True,exist_ok=True)
     train,valid,test=base.split_by_star(df,seed)
@@ -112,6 +218,30 @@ def experiment(df,output="results/ml_triage",seed=12600,review_target=.30):
             "paired_star_bootstrap":star_bootstrap_difference(
                 stars[test],y[test],pred,original_review,new_review,seed),
             "caveat":"Not real-planet probabilities; no true NASA results until data loaded"}
+    # Equal-budget comparison: holds binary predictions fixed across policies.
+    # Fixed disagreement stabilizer .04 is declared before seeing test labels.
+    equal_budget, paired_budget, review_masks = fair_review_budget_comparison(
+        y[test],pred,stars[test],margin_test,stability_test,seed=seed)
+    equal_budget.to_csv(out/"equal_budget_comparison.csv",index=False)
+    report["equal_budget"]={
+        "budgets":[.10,.20,.30,.40],
+        "strategies":["random_review","margin_only","margin_plus_disagreement"],
+        "same_classification_predictions":True,
+        "reviewed_cases_count_equal_by_budget":True,
+        "paired_error_difference_at_30pct":paired_budget,
+        "random_control_repetitions":100,
+        "interpretation":"Reallocation of review, not improvement to underlying classifier"}
+    fig2,ax2=plt.subplots(figsize=(7.2,4.2))
+    for name,part in equal_budget.groupby("method"):
+        ax2.plot(part.budget*100,part.wrong_auto_per_100_input,
+                 marker="o",label=name.replace("_"," "))
+    ax2.set(xlabel="Review budget (% of all signals)",
+            ylabel="Incorrect automatic decisions per 100 original signals",
+            title="Equal review budgets: same held-out stars")
+    ax2.legend(fontsize=8)
+    fig2.tight_layout()
+    fig2.savefig(out/"equal_budget_tradeoff.png",dpi=170)
+    plt.close(fig2)
     groups=[]
     for feature,edges,labels in [
         ("koi_period",[-np.inf,10,100,np.inf],["<10 d","10-100 d",">=100 d"]),
