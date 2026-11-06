@@ -53,3 +53,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - Original deductions **proposed by AI** include prioritizing physical measurement integrity over model complexity, allocating a fixed human follow-up budget, and distinguishing signal, instrumental noise, astrophysical scenarios and catalog label mimicry. These are hypotheses and recommendations, not independently established findings.
 - AI generated the research document, summary comparisons and GitHub Issues #6 and #7; no new astronomy measurements or real NASA model performance was produced in this research-only step.
 - Student verification tasks: read the primary references and evaluate whether paper results generalize to our selected stars/labels; run the actual Colab experiments and interpret the quantitative comparisons. Cite and disclose AI research assistance as appropriate.
+
+## November 6, 2026 — Reproducibility, selective-review tuning and calibration
+
+- AI authored `dataset_manifest.py`, `calibration_audit.py`, additional tests and notebook integration, and revised `ml_uncertainty_triage.py`.
+- The catalog manifest records the SHA-256 hash of the exact data file and observations/stars/labels/missingness so that data provenance can be checked.
+- The ML disagreement weighting is selected by a small preregistered grid using the validation sample, not unseen test labels. All methods are evaluated at identical held-out human-review budgets, and per-row scores/review choices are saved for audit. Overfitting to validation remains a limitation.
+- The calibration diagnostic is **read-only on held-out predictions** and evaluates consistency with historical NASA vetting decisions; it does NOT calibrate the probability of a physically real planet. No fitted probability transform is trained on test labels.
+- Local six-test smoke suite of an earlier standalone fixed-budget experiment passed; new GitHub-only regression tests and full NASA workflow have not been independently verified in this session. Do not report real-data performance.
