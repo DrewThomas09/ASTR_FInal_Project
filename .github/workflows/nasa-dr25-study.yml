@@ -1,0 +1,53 @@
+name: NASA DR25 reproducibility experiment
+on:
+  push:
+    paths:
+      - '.github/workflows/nasa-dr25-study.yml'
+      - 'ml_screening.py'
+      - 'ml_uncertainty_triage.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tabular experiment dependencies
+        run: python -m pip install numpy pandas matplotlib scikit-learn requests pytest
+      - name: Download NASA catalog and run basic screening
+        shell: bash
+        run: |
+          set -e
+          mkdir -p results/ml
+          python ml_screening.py --download --output results/ml > results/ml/baseline_log.txt 2>&1 || {
+            cat results/ml/baseline_log.txt
+            exit 1
+          }
+          cat results/ml/baseline_log.txt
+      - name: Run equal-review-budget ML screening
+        shell: bash
+        run: |
+          set -e
+          mkdir -p results/ml_triage
+          python ml_uncertainty_triage.py --csv data/kepler_dr25.csv --output results/ml_triage > results/ml_triage/study_log.txt 2>&1 || {
+            cat results/ml_triage/study_log.txt
+            exit 1
+          }
+          cat results/ml_triage/study_log.txt
+      - name: Upload results and failure logs, not the input catalog
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dr25-scientific-analysis
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            results/ml/
+            results/ml_triage/
