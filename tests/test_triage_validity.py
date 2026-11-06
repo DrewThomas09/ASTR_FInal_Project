@@ -26,7 +26,8 @@ def constructed_catalog(nstars=210):
 
 
 def test_validation_only_model_selection_and_saved_holdout(tmp_path):
-    result=experiment(constructed_catalog(),str(tmp_path),seed=13)
+    synthetic=constructed_catalog()
+    result=experiment(synthetic,str(tmp_path),seed=13)
     assert result["chosen_disagreement_weight"] in (.01,.02,.04,.08,.16)
     assert len(result["validation_weight_trials"])==5
     assert (tmp_path/"holdout_predictions.csv").exists()
@@ -35,7 +36,10 @@ def test_validation_only_model_selection_and_saved_holdout(tmp_path):
     predictions=pd.read_csv(tmp_path/"holdout_predictions.csv")
     comparison=pd.read_csv(tmp_path/"equal_budget_comparison.csv")
     assert len(predictions)==result["test_n"]
-    assert predictions["kepid"].nunique()>=50
+    from ml_screening import split_by_star
+    _,_,test_idx=split_by_star(synthetic,seed=13)
+    assert set(predictions["kepid"])==set(synthetic.iloc[test_idx]["kepid"])
+    assert predictions["kepoi_name"].tolist()==synthetic.iloc[test_idx]["kepoi_name"].tolist()
     assert "review_margin_30pct" in predictions
     assert "review_disagreement_30pct" in predictions
     assert predictions["review_margin_30pct"].sum()==predictions["review_disagreement_30pct"].sum()
