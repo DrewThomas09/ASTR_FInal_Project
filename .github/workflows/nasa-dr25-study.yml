@@ -5,6 +5,7 @@ on:
       - '.github/workflows/nasa-dr25-study.yml'
       - 'ml_screening.py'
       - 'ml_uncertainty_triage.py'
+      - 'dataset_manifest.py'
   workflow_dispatch:
 
 permissions:
@@ -31,6 +32,8 @@ jobs:
             exit 1
           }
           cat results/ml/baseline_log.txt
+      - name: Freeze NASA dataset provenance
+        run: python dataset_manifest.py --csv data/kepler_dr25.csv --out results/ml/data_manifest.json
       - name: Run equal-review-budget ML screening
         shell: bash
         run: |
