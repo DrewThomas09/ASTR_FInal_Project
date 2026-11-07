@@ -3,6 +3,20 @@ Updated: November 7, 2026
 
 **Access check:** All seven papers below have an openly accessible publisher or author-hosted full text or arXiv copy. No university login is essential to begin. Do not request institutional credentials or redistribute publisher-licensed copies.
 
+## Access using your University of Chicago account (verified November 7, 2026)
+
+**The first seven papers listed below have free full-text copies**, so a CNetID sign-in is **not required** for those links. If you prefer the publisher version or encounter a paywall, University of Chicago Library's current off-campus system is **OpenAthens**. The University explicitly advises:
+
+1. Begin at [UChicago Library](https://www.lib.uchicago.edu/) and find the title/DOI through the library catalog or Articles Plus. **Click the library-provided full-text link**; if access is licensed and you are off campus, it prompts you to sign in with your **CNetID**.
+2. On a publisher site that supports institutional sign-in, use **Sign in / Access through your institution → University of Chicago**, then follow the university OpenAthens login.
+3. Alternatively, install **LibKey Nomad**, which UChicago recommends to find subscribed articles directly while browsing publisher pages; it can direct you to interlibrary loan if needed.
+4. Do **not** purchase a paper merely because a direct publisher DOI link shows a price. Try the free arXiv/PMC link or the Library's licensed route first.
+5. Never send passwords or authentication codes to the research project or GitHub.
+
+Official University instructions: [Proxy & Off-Campus Access](https://www.lib.uchicago.edu/borrow/access-privileges/offcampus/); [Off-Campus Guide (OpenAthens, LibKey Nomad)](https://guides.lib.uchicago.edu/off-campus/Home).
+
+**Access limitation:** This confirms the university's authentication route, not whether a particular publisher's *licensed* version is included in the current account. For these papers the freely accessible copies already solve that issue. GitHub repository access is separate from university library access.
+
 ## Priority 1: read these three in full first
 
 ### 1. Robnik, Seljak, Jenkins & Bryson (2026) — PRIMARY PHYSICAL-METHOD BENCHMARK
