@@ -1,0 +1,124 @@
+{
+  "manifest_version": "1.0-frozen-before-observation",
+  "date": "2026-11-06",
+  "selection": "Six independently cataloged confirmed Kepler transiting planets and seven independently documented eclipsing-binary targets selected by published identity and period (0.9–15 days), not inspection of our recovered warning outcomes. Nonrandom demonstration cohort. Prior demonstration stars KIC 8692861 and 10661783 EXCLUDED. Attempt every listed Quarter 8 file; preserve failures instead of substitution.",
+  "all_targets_still_in_denominator": true,
+  "bounds": [
+    0.9,
+    15
+  ],
+  "quality": "Kepler Q8 PDCSAP long cadence, SAP_QUALITY ==0, 301-point median detrend",
+  "warning_thresholds": "Unchanged binary_eclipse_diagnostics.py at commit before this cohort; no in-run tuning",
+  "period_tolerance_fraction": 0.02,
+  "alias_factors": [
+    0.5,
+    1,
+    2
+  ],
+  "targets": [
+    {
+      "kind": "planet",
+      "name": "Kepler-18 b",
+      "kic": 8644288,
+      "period_days": 3.504725,
+      "quarter": 8,
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-18"
+    },
+    {
+      "kind": "planet",
+      "name": "Kepler-19 b",
+      "kic": 2571238,
+      "period_days": 9.286964466,
+      "quarter": 8,
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-19"
+    },
+    {
+      "kind": "planet",
+      "name": "Kepler-20 b",
+      "kic": 6850504,
+      "period_days": 3.696115,
+      "quarter": 8,
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-20"
+    },
+    {
+      "kind": "planet",
+      "name": "Kepler-21 b",
+      "kic": 3632418,
+      "period_days": 2.785821236,
+      "quarter": 8,
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-21"
+    },
+    {
+      "kind": "planet",
+      "name": "Kepler-68 b",
+      "kic": 11295426,
+      "period_days": 5.398752862,
+      "quarter": 8,
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-68"
+    },
+    {
+      "kind": "planet",
+      "name": "Kepler-93 b",
+      "kic": 3544595,
+      "period_days": 4.72674037,
+      "quarter": 8,
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-93"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 1026032",
+      "kic": 1026032,
+      "period_days": 8.460438,
+      "quarter": 8,
+      "source": "https://archive.stsci.edu/kepler/eclipsing_binaries.html"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 2305543",
+      "kic": 2305543,
+      "period_days": 1.3622735,
+      "quarter": 8,
+      "source": "https://academic.oup.com/view-large/357094419"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 2306740",
+      "kic": 2306740,
+      "period_days": 10.306987,
+      "quarter": 8,
+      "source": "https://academic.oup.com/view-large/357094419"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 3248019",
+      "kic": 3248019,
+      "period_days": 2.6682217,
+      "quarter": 8,
+      "source": "https://academic.oup.com/view-large/357094419"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 3654950",
+      "kic": 3654950,
+      "period_days": 8.1347246,
+      "quarter": 8,
+      "source": "https://academic.oup.com/view-large/357094419"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 4544587",
+      "kic": 4544587,
+      "period_days": 2.189094,
+      "quarter": 8,
+      "source": "https://academic.oup.com/mnras/article/434/2/925/1076715"
+    },
+    {
+      "kind": "binary",
+      "name": "KIC 9851944",
+      "kic": 9851944,
+      "period_days": 2.16390177,
+      "quarter": 8,
+      "source": "https://doi.org/10.3847/0004-637X/826/1/69"
+    }
+  ]
+}
