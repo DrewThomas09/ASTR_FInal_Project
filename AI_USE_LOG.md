@@ -154,3 +154,8 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - The archive marks a dropout at BKJD 547.8892493463 in **SAP_FLUX**, and our fixed heuristic—not given the label—found a step at 547.9096836451, one 29.4-minute long cadence later. It did NOT warn on the PDC-corrected PDCSAP brightness. The quality-labeled cadence was intentionally retained for this figure, unlike the usual planet-detection quality filter.
 - GPT-6 rendered/inspected the SAP-vs-PDC figure, committed `REAL_KEPLER_SPSD_CASE_RESULTS_2026_11_07.md`, and disclosed that the target was selected because of its previously documented signal. This is a physical teaching example and not a claim of mission-wide detection rate, physical planet validation, or algorithm superiority.
 - This source-backed case and previous six-star ablation should be interpreted together: NASA PDC itself handles some major instrumental defects before our code sees the preprocessed data. The student should independently verify all work and acknowledge AI assistance.
+
+## November 7, 2026 — November 20 instructor status-update draft
+
+- GPT-6 drafted `NOV_20_PROJECT_STATUS_REPORT_DRAFT.md` (~950 words) from source-verified prior actual results and the instructor's three-part project structure. It preserves every negative result and distinguishes previously known exoplanets from simulated injections and instrument quality flags.
+- This draft was AI-authored, not independently written by the student; independent review and adherence to the course's AI policy are required before submission.
