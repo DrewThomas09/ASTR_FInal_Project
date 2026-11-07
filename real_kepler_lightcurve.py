@@ -19,8 +19,8 @@ import pandas as pd
 from blind_transit_benchmark import bls_peak
 from transit_consistency import individual_transit_checks
 
-KNOWN_REFERENCE_PERIOD_DAYS = 13.721772
-KNOWN_SYSTEM = "Kepler-69"
+KNOWN_REFERENCE_PERIOD_DAYS = 13.7223682
+KNOWN_SYSTEM = "KIC 8692861"
 KNOWN_QUARTER = 8
 CONTROL_SYSTEM = "KIC 2436365"
 CONTROL_QUARTER = 2
@@ -28,32 +28,82 @@ INJECTION_PERIOD_RANGE_DAYS = (2.1, 9.8)
 
 
 def fetch_kepler_quarter(target, quarter):
-    """Public MAST archive; downloads one default-quality-masked Kepler quarter."""
-    import lightkurve as lk
-    found = lk.search_lightcurve(target, author="Kepler",
-                                 cadence="long", quarter=quarter)
-    if len(found) < 1:
-        raise RuntimeError("MAST returned no Kepler light curves for target/quarter")
-    curve = found.download(quality_bitmask="default")
-    if curve is None:
-        raise RuntimeError("MAST download returned no light curve")
-    clean = curve.remove_nans().normalize()
-    # 301 long-cadence samples ~= six days; suppress slow trends.
-    # This processing is fixed for both the target example and injection test.
-    flat = clean.flatten(window_length=301, break_tolerance=5)
-    t = np.asarray(flat.time.value, dtype=float)
-    f = np.asarray(flat.flux.value, dtype=float)
-    valid = np.isfinite(t) & np.isfinite(f)
-    t, f = t[valid], f[valid]
+    """Download the known, archived quarterly FITS directly, without a MAST search.
+
+    MAST archive files follow https://archive.stsci.edu/pub/kepler/lightcurves/.
+    Files can also be supplied manually in data/kepler_fits to avoid network requests.
+    """
+    import hashlib
+    import time
+    import requests
+    from astropy.io import fits
+    from scipy.ndimage import median_filter
+
+    numbers = "".join(ch for ch in str(target) if ch.isdigit())
+    if not numbers:
+        raise ValueError("Kepler target must contain a numeric KIC ID")
+    starid = f"{int(numbers):09d}"
+    qstamp = {2: "2009259160929", 8: "2011073133259"}.get(quarter)
+    if qstamp is None:
+        raise ValueError("Quarter not in deliberately small predeclared sample")
+    filename = f"kplr{starid}-{qstamp}_llc.fits"
+    url = (
+        f"https://archive.stsci.edu/pub/kepler/lightcurves/"
+        f"{starid[:4]}/{starid}/{filename}"
+    )
+    cache = Path("data/kepler_fits") / filename
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    if not cache.is_file():
+        part = cache.with_suffix(".part")
+        start_time = time.monotonic()
+        try:
+            with requests.get(url, stream=True, timeout=(12, 20),
+                              headers={"User-Agent": "ASTR12600-kepler-study/1.0"}) as response:
+                response.raise_for_status()
+                size = 0
+                with part.open("wb") as handle:
+                    for chunk in response.iter_content(chunk_size=262144):
+                        if not chunk:
+                            continue
+                        size += len(chunk)
+                        if size > 30_000_000 or time.monotonic()-start_time > 75:
+                            raise TimeoutError("Archived FITS exceeds 30MB or 75s cap")
+                        handle.write(chunk)
+            part.replace(cache)
+        finally:
+            if part.exists():
+                part.unlink()
+    raw = cache.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    with fits.open(cache, memmap=False) as hdus:
+        quarter_in_file = hdus[0].header.get("QUARTER")
+        if quarter_in_file is not None and int(quarter_in_file) != int(quarter):
+            raise ValueError(f"Archived file is quarter {quarter_in_file}, expected {quarter}")
+        table = hdus[1].data
+        t = np.asarray(table["TIME"], dtype=float)
+        f = np.asarray(table["PDCSAP_FLUX"], dtype=float)
+        quality = np.asarray(table["SAP_QUALITY"], dtype=np.int64)
+    good = np.isfinite(t) & np.isfinite(f) & (f > 0) & (quality == 0)
+    t, f = t[good], f[good]
     if len(t) < 500:
-        raise RuntimeError("Insufficient valid time series after masking and flattening")
+        raise RuntimeError("Too few quality-filtered Kepler observations")
+    # A fixed 301-cadence running median suppresses slow variability; it can
+    # weaken long or unusual genuine transits, which we must acknowledge.
+    trend = median_filter(f, size=301, mode="nearest")
+    trend = np.maximum(trend, 1e-12)
+    f = (f / trend)
+    f = f / np.median(f)
     return t, f, {
-        "target": str(target), "requested_quarter": int(quarter),
+        "target": str(target),
+        "kic_id": starid,
+        "requested_quarter": int(quarter),
         "cadences_after_quality_mask": int(len(t)),
         "time_start_bkjd": float(t.min()),
         "time_end_bkjd": float(t.max()),
-        "source": "public NASA MAST Kepler PDC-SAP, default quality masking",
-        "processing": "remove_nans, normalize, flatten(301 samples)",
+        "source": "MAST Kepler PDC-SAP long-cadence FITS (direct public archive)",
+        "file": filename, "url": url, "sha256": digest,
+        "processing": "SAP_QUALITY==0; PDC_SAP flux; 301-cadence median normalization",
+        "processing_caveat": "Trend removal can modify transit depth; injection occurs after detrending",
     }
 
 
@@ -74,16 +124,17 @@ def insert_known_transit(t, f, period, epoch, depth_ppm, duration_days):
 def known_planet_example(output):
     t, f, source = fetch_kepler_quarter(KNOWN_SYSTEM, KNOWN_QUARTER)
     # The search does NOT receive the published 13.72-day reference period.
-    found = bls_peak(t, f, bounds=(5., 18.))
+    found = bls_peak(t, f, bounds=(1.5, 20.))
     diagnostics, event_table = individual_transit_checks(
         t, f, found["period_days"],
         found["transit_time_days"], found["duration_days"])
     difference = abs(found["period_days"] - KNOWN_REFERENCE_PERIOD_DAYS)
     result = {
         "dataset": source,
-        "method": "Astropy BLS with 5–18 day period grid",
-        "period_range_predeclared_days": [5., 18.],
+        "method": "Astropy BLS with 1.5–20 day period grid",
+        "period_range_predeclared_days": [1.5, 20.],
         "published_period_days": KNOWN_REFERENCE_PERIOD_DAYS,
+        "period_reference": "NASA Exoplanet Archive DR25 Q1–Q17 KOI: Kepler-69 b",
         "period_absolute_error_days": float(difference),
         "period_relative_error_pct": float(100 * difference / KNOWN_REFERENCE_PERIOD_DAYS),
         "fitted_bls": found,
