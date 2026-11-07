@@ -4,7 +4,7 @@
 
 This is the first code experiment directly motivated by the expanded source review of Hatzes (2020), the Springer chapters by Barros and Faria/Oshagh/Huber (2018), and the matched false-alarm evaluation logic of Robnik et al. (2026). The previous experiments are preserved, including the real 13-star negative result and multi-planet post-hoc demonstration. **No success should be claimed until a complete real-data run and logs have been inspected.**
 
-The executable experiment is [`preprocessing_ablation.py`](preprocessing_ablation.py), its reusable logic is [`kepler_preprocessing.py`](kepler_preprocessing.py), and its design was frozen before the first run in [`PREPROCESSING_ABLATION_FROZEN.json`](PREPROCESSING_ABLATION_FROZEN.json). The latest run and downloadable CSV/figures can be found in [the dedicated GitHub Actions workflow](.github/workflows/preprocessing-ablation.yml).
+The executable experiment is [`preprocessing_ablation.py`](preprocessing_ablation.py), its reusable logic is [`kepler_preprocessing.py`](kepler_preprocessing.py), and its design was frozen before the first run in [`PREPROCESSING_ABLATION_FROZEN.json`](PREPROCESSING_ABLATION_FROZEN.json). The latest run and downloadable CSV/figures can be found in [the dedicated GitHub Actions workflow](.github/workflows/kepler-gap-study.yml).
 
 ## Scientific question
 
@@ -45,7 +45,7 @@ Hatzes emphasizes that sampling gaps, aliases and poor noise treatment can gener
 
 ## How to reproduce
 
-Run `python -m pytest -q tests` for offline invariants. For a local machine or Colab with internet access and suitable Python packages, run `python preprocessing_ablation.py --out results/preprocessing_ablation`. Alternatively, open the workflow's **Run workflow** control on GitHub. It downloads official FITS files, keeps an exact frozen manifest snapshot, and saves generated results/plots under the workflow's artifact. Results should be inspected before inclusion in the final paper.
+Run `python -m pytest -q tests` for offline invariants. For a local machine or Colab with internet access and suitable Python packages, run `python preprocessing_ablation.py --out results/preprocessing_ablation`. Alternatively, open the [current executable workflow](.github/workflows/kepler-gap-study.yml) and use its **Run workflow** control on GitHub. You may also run the [Google Colab notebook](Kepler_Preprocessing_Colab.ipynb) directly. It downloads official FITS files, keeps an exact frozen manifest snapshot, and saves generated results/plots under the workflow's artifact. Results should be inspected before inclusion in the final paper.
 
 ## Relationship to the final paper
 
