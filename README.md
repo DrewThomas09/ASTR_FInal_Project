@@ -2,6 +2,18 @@
 
 **Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
+## New verified experimental result — localized instrumental defects, November 7, 2026
+
+**[Read the complete six-star observational and synthetic stress-test report](VERIFIED_LOCALIZED_STEP_RESULTS_2026_11_07.md).** This study was predeclared in [the frozen manifest](LOCALIZED_STEP_STUDY_FROZEN_2026_11_07.json), independently run in [GitHub Actions](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42402819710), and all **74 regression tests passed**. The full [10-file original results artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42402819710/artifacts/13585948128) includes all case predictions, original FITS checksums, diagnostic plots, thresholds, and errors.
+
+- **New externally preselected sample:** 2 Kepler calibration stars and **6 usable independent held-out stars**, with **36 matched synthetic planet injections on unmodified real PDCSAP flux** plus **36 with a known artificial downward step**. Three methods applied to the same cases: original BLS, previous near-gap masking, and new persistent step masking.
+- **Without an added defect:** Standard BLS **21/36** recoveries; new localized-step method **22/36**. But the step method masked **nothing** in all 36 natural-flux injections; the extra flag arose **entirely from a lower method-specific calibration threshold**, NOT a physical improvement.
+- **With a known artificial step:** Standard BLS **18/36**, local-step BLS **19/36**. The local detector identified **21/36** constructed step onsets, rescued **one** genuinely wrong BLS period, and erased **eight** true injected-transit cadences across the sample.
+- **Held-out proxy-null flags:** no defect: both methods **4/24**. Added artificial step: standard BLS **13/24**, local-step method **10/24**. Proxy controls are deliberately inverted/rolled observed flux, **not true Kepler survey false-alarm controls**. These held-out rates differ dramatically from the calibration design's nominal 10% target.
+- **Interpretation:** a limited conditional benefit on a tailored toy defect model, **no demonstrated real-photometry preprocessing advantage**, and no numerical evidence of superiority to published ARC2, NASA PDC, or Robnik et al. 2026. The negative findings and calibration failure are central to the final project's reflection.
+
+[Scientific methods and source justification](PART_II_LOCALIZED_DEFECT_EXPERIMENT.md) · [New reproducible Colab notebook](Kepler_Localized_Step_Study_Colab.ipynb) · [Full executable code](localized_step_ablation.py).
+
 ## Latest actual observational result — preprocessing comparison (November 7)
 
 [Complete negative-results report](REAL_KEPLER_PREPROCESSING_RESULTS_2026_11_07.md) · [successful code and experimental workflow](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42400548553) · [download original artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42400548553/artifacts/13584998475).
