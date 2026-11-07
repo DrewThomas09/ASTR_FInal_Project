@@ -1,0 +1,38 @@
+name: Exploratory iterative BLS on real Kepler planets
+on:
+  push:
+    paths:
+      - '.github/workflows/iterative-bls-multiplanet.yml'
+      - 'iterative_bls.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  multi-planet-follow-up:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific tools
+        run: python -m pip install "astropy>=6,<9" "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" scipy requests
+      - name: Analyze multi-planet search residuals
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+        run: |
+          set -e
+          mkdir -p results/iterative_planet_search
+          timeout -k 5s 180s python -u iterative_bls.py --out results/iterative_planet_search 2>&1 | tee results/iterative_planet_search/run.log
+      - name: Preserve every iteration and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler-iterative-bls-exploratory
+          if-no-files-found: warn
+          retention-days: 30
+          path: results/iterative_planet_search/
