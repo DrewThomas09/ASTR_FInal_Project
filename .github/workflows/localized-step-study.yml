@@ -3,6 +3,10 @@ on:
   push:
     paths:
       - '.github/workflows/localized-step-study.yml'
+      - 'localized_discontinuity.py'
+      - 'localized_step_ablation.py'
+      - 'tests/test_localized_discontinuity.py'
+      - 'tests/test_localized_step_ablation.py'
   workflow_dispatch:
 
 permissions:
