@@ -2,6 +2,8 @@
 
 **Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
+**[November 20 project status report draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md)** is ready for student review, citation verification, and submission-format editing. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
+
 ## Real, NASA-labeled instrument defect: physical case study
 
 [Verified Kepler KIC 7461601 Q6 SAP-versus-PDCSAP study](REAL_KEPLER_SPSD_CASE_RESULTS_2026_11_07.md) · [successful original-data workflow](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42403352082) · [90-day source figure and JSON artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42403352082/artifacts/13586631074).
