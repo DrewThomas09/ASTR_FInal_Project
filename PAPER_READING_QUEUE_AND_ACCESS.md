@@ -17,6 +17,10 @@ Official University instructions: [Proxy & Off-Campus Access](https://www.lib.uc
 
 **Access limitation:** This confirms the university's authentication route, not whether a particular publisher's *licensed* version is included in the current account. For these papers the freely accessible copies already solve that issue. GitHub repository access is separate from university library access.
 
+## First four source papers reviewed
+
+**Reviewed against student-provided complete PDFs, with exact figure/page references:** Kovács (2002), McCauliff (2015), Thompson (2018), and Robnik (2026). Read the [critical synthesis](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md) before adding more papers. The next action is not another catalog of summaries but a test matching false-alarm rates.
+
 ## Priority 1: read these three in full first
 
 ### 1. Robnik, Seljak, Jenkins & Bryson (2026) — PRIMARY PHYSICAL-METHOD BENCHMARK
