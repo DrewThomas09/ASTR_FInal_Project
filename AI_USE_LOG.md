@@ -119,3 +119,12 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - Authored and committed `ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md` with detailed source-page pointers, important caveats, proposed experiments and journal-style report conventions. Did not copy publisher PDF text/images into the public repo.
 - Gilbert's Chapter 2–6 full technical methods were **not present**: later results referenced only at abstract/contents/figure-caption level.
 - No model changes, new tests, new NASA data or numerical advances were made in this reading task. Scientific conclusions, independent verification and final student contribution remain the student's responsibility.
+
+## November 7, 2026 — Research-motivated BLS preprocessing experiment
+
+- User asked to update the connected GitHub exoplanet research project based on the three newly supplied scientific references and our previous four-paper review.
+- AI committed a **prospectively frozen** two-calibration/two-held-out Kepler star manifest, `PREPROCESSING_ABLATION_FROZEN.json`, before any new observational evaluation. It prescribes the BLS period range, injected depths/durations, fixed near-gap mask, proxy-null calibration method and honest scoring.
+- AI authored `kepler_preprocessing.py`, `preprocessing_ablation.py`, `PREPROCESSING_ABLATION_METHODS.md`, deterministic tests and a dedicated GitHub Actions workflow. Artificial transits are multiplicatively injected into genuine Kepler PDCSAP photometry **before** the common 301-cadence detrend, and both methods receive the same injected events. The code measures omitted transit samples as a loss, not just false triggers.
+- Calibration uses **constructed inverted/rolled flux proxy nulls** and does not establish actual Kepler false-alarm probabilities. Held-out test stars can contain genuine planets; this is an exploratory four-star comparison, not the 5,000-star long-period Robnik (2026) replication.
+- AI fixed two testing-fixture assumptions that left fewer than the standard 500 retained data points, without changing the frozen scientific analysis settings. The corrected offline tests passed in GitHub Actions. New Kepler results must not be claimed until the workflow itself completes and its outcomes are examined.
+- Work was drafted with AI assistance. The student must independently verify the paper-based motivation, astrophysical assumptions, code, statistics, and course academic-integrity rules.
