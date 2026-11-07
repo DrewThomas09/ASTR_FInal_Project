@@ -48,7 +48,7 @@ def test_one_cadence_drop_does_not_persist():
     assert mask.all()
 
 
-def test_stylized_step_is_multiplicative_and_non-mutating():
+def test_stylized_step_is_multiplicative_and_non_mutating():
     t,raw=fixture()
     before=raw.copy()
     updated,onward=synthetic_spsd_like_step(t,raw,20.,.01,1.,.45)
