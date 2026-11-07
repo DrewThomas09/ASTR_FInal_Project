@@ -6,7 +6,7 @@
 
 **Starting point:** [source-grounded adjacent methods and writing review](ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md) and [four core papers](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md).
 
-**New experimental files:** [frozen experimental manifest](PREPROCESSING_ABLATION_FROZEN.json), [methods/protocol](PREPROCESSING_ABLATION_METHODS.md), [raw FITS preprocessing and injection module](kepler_preprocessing.py), [paired BLS ablation](preprocessing_ablation.py), [unit tests](tests/test_kepler_preprocessing.py), and [GitHub Actions observational experiment](.github/workflows/preprocessing-ablation.yml).
+**New experimental files:** [frozen experimental manifest](PREPROCESSING_ABLATION_FROZEN.json), [methods/protocol](PREPROCESSING_ABLATION_METHODS.md), [raw FITS preprocessing and injection module](kepler_preprocessing.py), [paired BLS ablation](preprocessing_ablation.py), [unit tests](tests/test_kepler_preprocessing.py), and [GitHub Actions observational experiment](.github/workflows/kepler-gap-study.yml) and [Google Colab notebook](Kepler_Preprocessing_Colab.ipynb).
 
 We compare ordinary **Astropy BLS** with the *same BLS search* after one fixed and conservative **0.2-day near-gap mask around gaps >0.5 days**. Both are evaluated on the same synthetic transit events injected into genuine NASA Kepler PDCSAP flux **before** common detrending. Calibration and held-out stars are disjoint. Detection thresholds are determined only by separate, constructed inverted/rolled-flux **proxy** calibration nulls. We also measure how many real injected transit measurements the mask discards.
 
