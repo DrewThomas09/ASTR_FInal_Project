@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-07",
+  "status": "Preselected illustrative known instrument event; NOT independent accuracy test",
+  "target": {
+    "kic": 7461601,
+    "quarter": 6,
+    "expected_flag_bits": 1024,
+    "expected_combined_quality": 1152,
+    "reason": "Official MAST instructional notebook documents a sudden sensitivity dropout near BKJD 547 in Kepler Q6 SAP photometry of KIC 7461601",
+    "reference": "https://spacetelescope.github.io/mast_notebooks/notebooks/Kepler/instrumental_noise_4_electronic_noise/instrumental_noise_4_electronic_noise.html"
+  },
+  "expected_source": "kplr007461601-2010265121752_llc.fits",
+  "method": "Compare original SAP_FLUX versus PDC-corrected PDCSAP_FLUX on the same flagged Q6 event; apply localized step heuristic unchanged, including flagged rows for diagnostic plot only. Separate from science experiments which quality-mask rows.",
+  "expected_claims": "Only an illustrative case study showing documented flux correction and whether the same fixed heuristic detects the flagged native change. The known quality flag is used ONLY as after-the-fact reference and display; not to decide where the detector searches.",
+  "visualization": "two panels raw SAP vs PDCSAP normalized brightness around reported flag, with marked quality flag time. Preserve exact FITS fingerprint.",
+  "limits": "One documented example, selected because it already has a known defect. Cannot estimate sensitivity, specificity, planet recovery or comparison to full ARC2/Robnik pipelines."
+}
