@@ -6,3 +6,4 @@ requests>=2.31,<3
 astropy>=6.0,<9
 lightkurve>=2.4,<3
 pytest>=8,<10
+scipy>=1.11,<2
