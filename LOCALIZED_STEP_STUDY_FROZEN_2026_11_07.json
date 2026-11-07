@@ -1,0 +1,163 @@
+{
+  "schema_version": "2026-11-07-localized-discontinuity-v1",
+  "status": "locked before first run; exploratory study with independent calibration stars and fresh fixed heldout stars",
+  "literature": [
+    "Robnik et al. 2026 doi:10.1093/mnras/stag419",
+    "Aigrain et al. 2017 Robust open-source removal of systematics in Kepler data https://academic.oup.com/mnras/article/471/1/759/3865959",
+    "Kepler Data Processing Handbook STScI",
+    "Hatzes 2020 Doppler Method ch 7 & 11"
+  ],
+  "selection": "KIC source IDs selected from named Kepler systems and published survey catalogs before analyzing these Q8 time series. Previously used targets in this repo excluded. All planned stars including absent Q8 files remain in denominator.",
+  "calibration_stars": [
+    {
+      "kic": 6541920,
+      "quarter": 8,
+      "source": "Kepler-11, https://simbad.u-strasbg.fr/simbad/sim-id?Ident=Kepler-11"
+    },
+    {
+      "kic": 10593626,
+      "quarter": 8,
+      "source": "Kepler-22, https://simbad.harvard.edu/simbad/sim-id?Ident=Kepler-22"
+    }
+  ],
+  "heldout_stars": [
+    {
+      "kic": 11401755,
+      "quarter": 8,
+      "source": "Kepler-36, source catalog https://academic.oup.com/mnras/article/471/1/759/3865959 (survey methods) / https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-36"
+    },
+    {
+      "kic": 8478994,
+      "quarter": 8,
+      "source": "Kepler-37, https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-37"
+    },
+    {
+      "kic": 9002278,
+      "quarter": 8,
+      "source": "Kepler-62, https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-62"
+    },
+    {
+      "kic": 8435766,
+      "quarter": 8,
+      "source": "Kepler-78, https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-78"
+    },
+    {
+      "kic": 6521045,
+      "quarter": 8,
+      "source": "Kepler-100, https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-100"
+    },
+    {
+      "kic": 8494142,
+      "quarter": 8,
+      "source": "Kepler-145, https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-145"
+    }
+  ],
+  "common_processing": "Kepler DR25 PDCSAP Q8 FITS quality==0, positive finite, multiplicative transit and defect injection BEFORE the same 301-point median normalization, identical Astropy BLS duration/period grid for all methods",
+  "methods": [
+    "standard_bls",
+    "previous_gap_edge_mask",
+    "localized_step_mask"
+  ],
+  "preprocessing": {
+    "gap_threshold_days": 0.5,
+    "gap_edge_days": 0.2,
+    "step_min_negative_jump_fraction": 0.003,
+    "step_robust_noise_multiplier": 4,
+    "step_local_pre_window_days": [
+      0.35,
+      0.1
+    ],
+    "step_local_post_window_days": [
+      0.1,
+      0.33
+    ],
+    "step_late_post_window_days": [
+      0.33,
+      0.65
+    ],
+    "step_min_local_points": 5,
+    "step_persistent_min_fraction": 0.28,
+    "step_mask_half_width_days": 0.22,
+    "step_candidate_separation_days": 0.45,
+    "step_min_retained": 500
+  },
+  "bls": {
+    "period_days": [
+      1.5,
+      12
+    ],
+    "durations_days": [
+      0.09,
+      0.15,
+      0.24
+    ],
+    "frequency_factor": 5,
+    "max_period_error_fraction": 0.02
+  },
+  "planet_injections": {
+    "depths_ppm": [
+      400,
+      1000,
+      2200
+    ],
+    "duration_range_days": [
+      0.11,
+      0.19
+    ],
+    "period_range_days": [
+      2.1,
+      9.8
+    ],
+    "trials_per_depth_condition_star": 2,
+    "seed": 2026110701
+  },
+  "artifact_injections": {
+    "conditions": [
+      "no_added_defect",
+      "synthetic_spsd_like_step"
+    ],
+    "defect_count_per_star_injection": 1,
+    "fractional_step_depth_range": [
+      0.006,
+      0.012
+    ],
+    "decay_timescale_days": [
+      0.5,
+      1.2
+    ],
+    "persistent_fraction_range": [
+      0.3,
+      0.55
+    ],
+    "start_time_margin_days": 5,
+    "seed": 2026110702,
+    "caveat": "Simple synthetic abrupt step with slow recovery/plateau. Not a physically validated pixel-level SPSD and not representative of all real Kepler instrument defects."
+  },
+  "calibration": {
+    "proxy_nulls_per_star_per_condition": 8,
+    "seed": 2026110703,
+    "nominal_proxy_null_tail_fraction": 0.1,
+    "proxy_construct": "invert and roll normalized observed PDCSAP flux, optionally inject a synthetic step before preprocessing; source stars can contain physical signals, no actual survey FAP calibration",
+    "comparison": "Separate thresholds for all three methods using the same calibration star pool, equal proxy quantile rule. Holdout stars excluded from threshold choice."
+  },
+  "heldout_nulls": {
+    "per_star_per_condition": 4,
+    "seed": 2026110704
+  },
+  "metrics": {
+    "recovery": "correct period within 2 percent AND method-specific threshold passed",
+    "signal_retention": "fraction of additional known transit deficit surviving method's point mask, relative to baseline same normalized injection",
+    "artifact_hit": "fraction of synthetic step onsets within one mask-halfwidth of a detected step; diagnostic, not astrophysical success rate",
+    "null_metric": "fraction of proxy-null stars/realizations flagged; not mission FAP",
+    "paired": "same injection, star and synthetic artifact for all three methods; retain all success/failure cases"
+  },
+  "preregistration_limitations": [
+    "PDCSAP is already preconditioned; native SPSDs partly corrected.",
+    "Many artificial injections on one star are correlated; descriptive intervals do not generalize to stars.",
+    "Designed synthetic steps may make step detector appear better than on naturally occurring artifacts.",
+    "Source-availability failures retain their planned denominators and are never silently replaced.",
+    "Fixed processing settings chosen before the first observational run; any changes after seeing outputs are development and need a new untouched cohort.",
+    "Important true-transit loss near selected steps must be counted.",
+    "No new planet detection or physical proof of planet status."
+  ]
+}
