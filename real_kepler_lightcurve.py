@@ -54,25 +54,45 @@ def fetch_kepler_quarter(target, quarter):
     cache = Path("data/kepler_fits") / filename
     cache.parent.mkdir(parents=True, exist_ok=True)
     if not cache.is_file():
-        part = cache.with_suffix(".part")
-        start_time = time.monotonic()
-        try:
-            with requests.get(url, stream=True, timeout=(12, 20),
-                              headers={"User-Agent": "ASTR12600-kepler-study/1.0"}) as response:
-                response.raise_for_status()
-                size = 0
-                with part.open("wb") as handle:
-                    for chunk in response.iter_content(chunk_size=262144):
-                        if not chunk:
-                            continue
-                        size += len(chunk)
-                        if size > 30_000_000 or time.monotonic()-start_time > 75:
-                            raise TimeoutError("Archived FITS exceeds 30MB or 75s cap")
-                        handle.write(chunk)
-            part.replace(cache)
-        finally:
-            if part.exists():
-                part.unlink()
+        # Official MAST product API (documented by STScI) may succeed when
+        # static archive directory access is forbidden for the runner IP.
+        from urllib.parse import urlencode
+        uri = f"mast:KEPLER/url/missions/kepler/lightcurves/{starid[:4]}/{starid}/{filename}"
+        mast_url = "https://mast.stsci.edu/api/v0.1/Download/file?" + urlencode({"uri": uri})
+        endpoints = [mast_url, url]
+        failures = []
+        for endpoint in endpoints:
+            part = cache.with_suffix(".part")
+            start_time = time.monotonic()
+            try:
+                print("Trying public FITS host:", endpoint.split("/")[2], flush=True)
+                with requests.get(endpoint, stream=True, timeout=(12, 20),
+                                  headers={"User-Agent": "ASTR12600-kepler-study/1.0"}) as response:
+                    response.raise_for_status()
+                    size = 0
+                    with part.open("wb") as handle:
+                        for chunk in response.iter_content(chunk_size=262144):
+                            if not chunk:
+                                continue
+                            size += len(chunk)
+                            if size > 30_000_000 or time.monotonic()-start_time > 55:
+                                raise TimeoutError("FITS exceeded 30MB or 55s cap")
+                            handle.write(chunk)
+                if size < 50000:
+                    raise RuntimeError("FITS response unexpectedly short")
+                part.replace(cache)
+                break
+            except (requests.RequestException, TimeoutError, RuntimeError) as error:
+                failures.append(f"{endpoint.split('/')[2]}: {type(error).__name__}: {str(error)[:150]}")
+            finally:
+                if part.exists():
+                    part.unlink()
+        if not cache.is_file():
+            raise RuntimeError(
+                "Both official MAST FITS routes failed. "
+                + " | ".join(failures)
+                + ". Supply the official FITS file under " + str(cache)
+            )
     raw = cache.read_bytes()
     digest = hashlib.sha256(raw).hexdigest()
     with fits.open(cache, memmap=False) as hdus:
