@@ -1,5 +1,7 @@
 # Study design and milestones
 
+> **Historical planning document, retained for research transparency (November 7, 2026):** The two-part random-forest proposal below describes the original baseline and is **not** the current final project design. The original NASA DR25 experiment, real Kepler light curves and multiple independent validation tests have now been completed. See the [three-part final project plan](FINAL_PROJECT_THREE_PART_MASTER_PLAN.md), [four-paper review](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md), [additional book/thesis methods](ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md), and [frozen preprocessing experiment](PREPROCESSING_ABLATION_METHODS.md). The final project now has: **(1) literature and hypothesis, (2) implementation and controlled comparisons, (3) scientific reflection and comparison to Robnik et al. (2026)**. Earlier results include a **negative** independent binary-vetting experiment; do not suppress it.
+
 ## One research question, two parts
 
 Can AI-assisted programming replicate a standard transit search, and does a lightweight random-forest screening step reduce false positives relative to screening on signal-to-noise alone?
