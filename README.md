@@ -2,6 +2,12 @@
 
 **Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
+## Real, NASA-labeled instrument defect: physical case study
+
+[Verified Kepler KIC 7461601 Q6 SAP-versus-PDCSAP study](REAL_KEPLER_SPSD_CASE_RESULTS_2026_11_07.md) · [successful original-data workflow](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42403352082) · [90-day source figure and JSON artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42403352082/artifacts/13586631074).
+
+An official NASA quality flag identifies an actual **sudden pixel sensitivity dropout at BKJD 547.889249**. The identical fixed rule from our newer six-star experiment found a **persistent negative step in original SAP aperture flux at BKJD 547.909684**, **one long cadence (~29.4 minutes)** after the archived event. In **NASA's PDC-corrected PDCSAP flux**, it reported no corresponding step warning. This is **one previously documented illustrative positive case**—not a representative detector validation or planet discovery. It explains why additional simple masking on already corrected PDCSAP photometry often changes nothing, while properly distinguishing measurement preprocessing from astrophysical classification.
+
 ## New verified experimental result — localized instrumental defects, November 7, 2026
 
 **[Read the complete six-star observational and synthetic stress-test report](VERIFIED_LOCALIZED_STEP_RESULTS_2026_11_07.md).** This study was predeclared in [the frozen manifest](LOCALIZED_STEP_STUDY_FROZEN_2026_11_07.json), independently run in [GitHub Actions](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42402819710), and all **74 regression tests passed**. The full [10-file original results artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42402819710/artifacts/13585948128) includes all case predictions, original FITS checksums, diagnostic plots, thresholds, and errors.
