@@ -1,0 +1,43 @@
+name: Kepler preprocessing matched-proxy-null ablation
+on:
+  push:
+    paths:
+      - '.github/workflows/preprocessing-ablation.yml'
+      - 'PREPROCESSING_ABLATION_FROZEN.json'
+      - 'kepler_preprocessing.py'
+      - 'preprocessing_ablation.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerical and astronomy dependencies
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" "astropy>=6,<9" "scipy>=1.11,<2" "requests>=2.31,<3" pytest
+      - name: Verify computational tests before real astronomy analysis
+        run: python -m pytest -q tests/test_kepler_preprocessing.py tests/test_preprocessing_ablation.py
+      - name: Execute frozen paired calibration and heldout study
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p results/preprocessing_ablation
+          timeout -k 5s 960s python -u preprocessing_ablation.py --manifest PREPROCESSING_ABLATION_FROZEN.json --out results/preprocessing_ablation 2>&1 | tee results/preprocessing_ablation/run.log
+      - name: Preserve full results, failed stars, frozen thresholds and diagnostic plots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler-real-noise-preprocessing-ablation
+          retention-days: 30
+          if-no-files-found: warn
+          path: results/preprocessing_ablation/
