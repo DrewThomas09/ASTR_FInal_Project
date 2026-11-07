@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "frozen_before_run": "2026-11-07",
+  "study": "conservative near-gap mask vs unmodified BLS; motivated by uploaded Hatzes/ Springer and Robnik 2026",
+  "git_condition": "All hyperparameters in this file and the code must stay unchanged throughout the first evaluation; changes after observing outcomes are development-only and need a new test",
+  "data_policy": "Official NASA MAST Q2 or Q8 PDCSAP long-cadence FITS, quality == 0, finite positive flux; injection before 301-cadence running-median detrend.",
+  "calibration_stars": [
+    {
+      "kic": 2436365,
+      "quarter": 2,
+      "selection": "Previously used as measured Kepler variability control; calibration only"
+    },
+    {
+      "kic": 8462852,
+      "quarter": 8,
+      "selection": "Preselected variable star for proxy-null calibration; actual planet-free status not assumed"
+    }
+  ],
+  "heldout_stars": [
+    {
+      "kic": 11904151,
+      "quarter": 8,
+      "selection": "Kepler-10 host selected for independent held-out stress testing; original transits possible"
+    },
+    {
+      "kic": 11026764,
+      "quarter": 8,
+      "selection": "Published seismic Kepler star; held out from preprocessing selection"
+    }
+  ],
+  "bls": {
+    "period_days": [
+      1.5,
+      12
+    ],
+    "frequency_factor": 5,
+    "durations_days": [
+      0.09,
+      0.15,
+      0.24
+    ],
+    "orbital_period_tolerance_fraction": 0.02
+  },
+  "preprocessing": {
+    "name": "gap_edge_mask",
+    "gap_threshold_days": 0.5,
+    "edge_mask_days": 0.2,
+    "minimum_remaining_cadences": 500
+  },
+  "injections": {
+    "depths_ppm": [
+      400,
+      1000,
+      2200
+    ],
+    "per_depth_per_star": 4,
+    "period_uniform_days": [
+      2.1,
+      9.8
+    ],
+    "duration_uniform_days": [
+      0.11,
+      0.19
+    ],
+    "seed": 20261107
+  },
+  "null_proxy": {
+    "name": "inverted_flux_with_random_index_roll",
+    "per_star": 10,
+    "calibration_seed": 161107,
+    "holdout_seed": 171107,
+    "warning": "Proxy nulls are NOT guaranteed planet-free Kepler stars nor realistic DR25 instrumental false alarms. Rolling inverted flux may alter gap alignment, so measured flag fractions only describe this constructed control distribution."
+  },
+  "decision": {
+    "target_calibration_proxy_flag_fraction": 0.1,
+    "inequality": "BLS score strictly greater than chosen method-specific threshold",
+    "threshold_method": "higher empirical quantile on calibration-star proxy nulls",
+    "metric": "correct period within 2 percent AND above method-specific proxy threshold",
+    "type": "Exploratory first external run. This does not replicate Robnik 2026 pixel-level injections or true Kepler survey FAP."
+  },
+  "generalization": "Preselect source cohort; preserve all failed files and test cases, report small sample/Wilson intervals. Not an independent guarantee of planet discovery."
+}
