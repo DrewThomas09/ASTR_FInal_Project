@@ -59,5 +59,5 @@ Run the same newly coded diagnostic on two **real** Kepler stellar light curves:
 - `eclipse_vetting_followup.py`, `binary_eclipse_diagnostics.py`, `event_vetting_ablation.py`, `real_kepler_lightcurve.py`
 - Kepler BLS algorithm: Kovacs, Zucker & Mazeh (2002), doi:10.1051/0004-6361:20020802
 - NASA DR25 vetting: Thompson et al. (2018), doi:10.3847/1538-4365/aab4f9
-- Independent binary reference: study of KIC 10661783, doi:10.1093/mnras/stab1410 (check its published ephemeris before quoting a precision).
+- Independent binary reference: study of KIC 10661783, doi:10.1093/mnras/stab1597 (published orbital period 1.23136326 days).
 - AI authored these scripts and experimental summaries; student must independently review and acknowledge AI assistance.
