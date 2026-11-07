@@ -10,6 +10,10 @@
 
 Scientific interpretation: Generative AI can help write working astrophysical code, but **an easily demonstrated success is not equivalent to a reliable astronomical classification method**. All caveats and known failures remain part of the final report.
 
+## Part I literature review — first four complete papers
+
+The student supplied complete PDFs of **Kovács et al. (2002)**, **McCauliff et al. (2015)**, **Thompson et al. (2018)**, and **Robnik et al. (2026)**. See the [annotated 4-paper critical review](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md), which records each paper's original methods, reported quantitative results, figure/page pointers, limitations, relevant parallels with our actual experiments, and a proposed same-false-alarm-budget ablation. **Primary lesson:** detection, historical-label classification, survey completeness and physical planet confirmation are different scientific tasks. Our present headline percentages must not be compared across them without compatible experiments.
+
 ## Final project narrative (three parts)
 
 **Read [FINAL_PROJECT_THREE_PART_MASTER_PLAN.md](FINAL_PROJECT_THREE_PART_MASTER_PLAN.md) first.** The final submission will be organized as **Part I — Preliminary research and limitations of existing methods; Part II — implementation, baseline replication and measured improvements; Part III — critical reflection and comparison with published papers**. The primary methods benchmark is **Robnik et al. (2026)** for event vetting/multiple transit extraction; **McCauliff et al. (2015)** is the ML comparison, and Thompson et al. (2018) documents the DR25 labels. The master plan explains why our raw performance numbers cannot be compared directly with published numbers from different datasets and evaluation protocols.
