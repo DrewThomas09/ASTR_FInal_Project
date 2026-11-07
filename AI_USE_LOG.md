@@ -111,3 +111,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - The literature review identifies data/information lost in phase-folding, missing diagnostic features, misleading historic catalog-label metrics and shifts in evaluation population; it outlines a future same-FAP controlled preprocessing experiment inspired by Robnik (2026), not yet executed.
 - The paper's published factor-70 injection result and our small prior simulations have fundamentally different sample/period/noise definitions and are not directly comparable.
 - No new model outputs or new exoplanet discoveries were generated during this paper-reading step; this is AI-assisted literature research and writing. Student should verify scientific reasoning and comply with academic contribution policies.
+
+## November 7, 2026 — Adjacent-books and Gilbert dissertation-preview study
+
+- User supplied three new PDFs: Hatzes (2020) 330-page RV-method textbook, Campante/Santos/Monteiro (eds., 2018) 288-page asteroseismology/exoplanets collected chapters, and Emily Gilbert (2022) **24-page dissertation preview only**.
+- GPT-6 used text and selected rendered pages to identify the relevant literature on spectral windows, aliasing, heteroskedasticity, false-alarm thresholding, physical transit fits, stellar noise, activity modeling, stellar density and combined photometry/RV inference.
+- Authored and committed `ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md` with detailed source-page pointers, important caveats, proposed experiments and journal-style report conventions. Did not copy publisher PDF text/images into the public repo.
+- Gilbert's Chapter 2–6 full technical methods were **not present**: later results referenced only at abstract/contents/figure-caption level.
+- No model changes, new tests, new NASA data or numerical advances were made in this reading task. Scientific conclusions, independent verification and final student contribution remain the student's responsibility.
