@@ -2,6 +2,16 @@
 
 **Research question:** Can generative AI help reproduce established exoplanet transit-search techniques, and can a lightweight ML filter improve screening of candidate signals compared with a basic signal-strength rule?
 
+## Recent verified research results (November 6, 2026)
+
+- **Real NASA DR25 catalog:** [verified 8,054-KOI experiment](REAL_NASA_DR25_RESULTS_2026_11_06.md), with 1,619 held-out signals. Four-feature forest greatly outperformed SNR alone on catalog-label accuracy/FPR, but had lower candidate recall; ensemble disagreement barely changed equal-budget review errors (123 vs 122; paired CI includes zero).
+- **Real Kepler light curves:** [Kepler-69b and real-noise injection](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md). BLS recovered Kepler-69b's known 13.72237-day period at 13.71334 days (0.066% difference); 500ppm, 1500ppm and 4000ppm synthetic transits inserted into genuine KIC 2436365 Quarter 2 flux had exact-period recovery 1/3, 3/3 and 3/3. This small injection test has **no calibrated flag threshold**.
+- **Early synthetic event checks:** [35-signal ablation](FIRST_EVENT_VETTING_ABLATION_2026_11_06.md) found simple per-event checks removed only one of five binary-like false positives, not the overall weak-signal detection problem.
+- **Binary-specific physical checks:** [56-signal follow-up](BINARY_ECLIPSE_SYNTHETIC_FOLLOWUP_2026_11_06.md) found that an odd/even-depth/secondary-eclipse review layer rejected all eight deliberately binary-like signals in the fresh synthetic holdout, without rejecting any of the BLS-detected injected planets. This is **exploratory**, tiny, and not yet proof of robust performance on genuine astrophysical binaries.
+- **Next external control:** [real known planet versus published eclipsing binary experiment](.github/workflows/real-binary-controls.yml), comparing Kepler-69b with KIC 10661783. See the Action's own result and full case-study provenance before claiming success.
+
+These are **three separate evidence types**: historical NASA label classification, genuine Kepler observations, and synthetic injections/controls. Do not combine their percentages as though they represent one end-to-end astronomical detector.
+
 ## Start here (no software download)
 
 1. Open [Google Colab](https://colab.research.google.com/).
