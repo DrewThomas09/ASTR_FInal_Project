@@ -39,6 +39,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: new-kepler-localized-defect-ablation
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: warn
           path: results/localized_step_study/
