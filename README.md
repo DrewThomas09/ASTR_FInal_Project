@@ -1,6 +1,16 @@
 # AI-assisted exoplanet detection | ASTR 12600
 
-**Research question:** Can generative AI help reproduce established exoplanet transit-search techniques, and can a lightweight ML filter improve screening of candidate signals compared with a basic signal-strength rule?
+**Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
+
+## Current experimental implementation: source-inspired preprocessing ablation
+
+**Starting point:** [source-grounded adjacent methods and writing review](ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md) and [four core papers](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md).
+
+**New experimental files:** [frozen experimental manifest](PREPROCESSING_ABLATION_FROZEN.json), [methods/protocol](PREPROCESSING_ABLATION_METHODS.md), [raw FITS preprocessing and injection module](kepler_preprocessing.py), [paired BLS ablation](preprocessing_ablation.py), [unit tests](tests/test_kepler_preprocessing.py), and [GitHub Actions observational experiment](.github/workflows/preprocessing-ablation.yml).
+
+We compare ordinary **Astropy BLS** with the *same BLS search* after one fixed and conservative **0.2-day near-gap mask around gaps >0.5 days**. Both are evaluated on the same synthetic transit events injected into genuine NASA Kepler PDCSAP flux **before** common detrending. Calibration and held-out stars are disjoint. Detection thresholds are determined only by separate, constructed inverted/rolled-flux **proxy** calibration nulls. We also measure how many real injected transit measurements the mask discards.
+
+**Scientific caution:** Until the real-data workflow successfully completes and its CSV/JSON output is inspected, **no change in recovery, detection rate or false alarms is established**. Even a successful run measures a small *proxy-null* exercise, not the Kepler mission false-alarm probability or a full reproduction of Robnik et al. (2026). Earlier 13-star real binary-vetting failures remain an important counterexample to apparent success on demonstration stars.
 
 ## Latest independently verified findings: external failure and multi-planet follow-up
 
