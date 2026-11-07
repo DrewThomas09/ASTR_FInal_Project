@@ -128,3 +128,12 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - Calibration uses **constructed inverted/rolled flux proxy nulls** and does not establish actual Kepler false-alarm probabilities. Held-out test stars can contain genuine planets; this is an exploratory four-star comparison, not the 5,000-star long-period Robnik (2026) replication.
 - AI fixed two testing-fixture assumptions that left fewer than the standard 500 retained data points, without changing the frozen scientific analysis settings. The corrected offline tests passed in GitHub Actions. New Kepler results must not be claimed until the workflow itself completes and its outcomes are examined.
 - Work was drafted with AI assistance. The student must independently verify the paper-based motivation, astrophysical assumptions, code, statistics, and course academic-integrity rules.
+
+## November 7, 2026 — Verified negative Kepler preprocessing experiment
+
+- GPT-6 inspected GitHub Actions run `42400548553` with **64 passing offline tests** followed by real NASA FITS downloads and the frozen BLS-versus-gap-mask experiment. Saved original CSV/JSON data artifact ID `13584998475`.
+- Both calibration stars were processed, while one of the two preselected held-out stars (KIC 11904151 Q8) failed the official public FITS download with HTTP 404. KIC 11026764 Q8 was the **only** successful held-out light curve; no post-hoc replacement was made.
+- Baseline and masked methods each recovered **2 of 12** artificial injected periods at the chosen proxy-calibrated thresholds. Both flagged **0 of 10** held-out proxy nulls. Masking removed 15/2,535 cadences and two injected shallow-planet measurements. Calibration thresholds were 278.047626 (baseline) and 280.734694 (masked), each based on 20 calibration proxies.
+- GPT-6 wrote `REAL_KEPLER_PREPROCESSING_RESULTS_2026_11_07.md` with full source SHA-256 provenance, sample denominators, wide descriptive uncertainty, failures, comparison with the **non-equivalent** Robnik paper, and next independent research requirements.
+- This is a verified **negative pilot result**, not a verified claim that preprocessing never helps. Only one held-out star was available. Constructed proxy nulls do not measure true Kepler survey FAP; repeated injections on one star do not constitute many independent astrophysical stars.
+- No thresholds/period/depths/selection criteria were tuned to rescue the outcome. The AI-generated software, results and text must be independently checked and disclosed according to the course policy.
