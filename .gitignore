@@ -8,3 +8,8 @@ data/*.csv
 results/
 outputs/
 .DS_Store
+
+# Raw public Kepler FITS files and local MAST cache
+data/kepler_fits/
+*.fits
+*.fits.gz
