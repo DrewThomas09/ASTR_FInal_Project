@@ -103,3 +103,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 - GPT-6 reviewed `FinalProject.pdf`, the final checklist and course lectures, verified methodological claims from Kovacs et al. (2002), Thompson et al. (2018), McCauliff et al. (2015) and Robnik et al. (2026), then drafted `FINAL_PROJECT_THREE_PART_MASTER_PLAN.md`.
 - The master plan identifies Robnik et al. (2026) as the primary physical-vetting methods comparison and McCauliff et al. (2015) as the secondary random-forest reference, and explicitly bars invalid quantitative comparisons across unmatched labels, periods and populations.
 - Existing verified successes and negative outcomes are preserved. No new experimental results were generated when preparing this organizational plan. AI assisted with synthesis, drafting, and citations; final interpretation and academic accountability are the student's responsibility.
+
+## November 7, 2026 — Source-grounded first-four-paper critical review
+
+- User uploaded full PDFs of Kovács et al. (2002) BLS, McCauliff et al. (2015) 3-class random forest, Thompson et al. (2018) DR25 Robovetter and Robnik et al. (2026) complete false-alarm-vetting pipeline.
+- GPT-6 extracted their complete textual contents and visually checked key figures, including Robnik Fig. 6 and McCauliff Table 1/Fig. 7. It authored `PART_I_FOUR_PAPER_CRITICAL_REVIEW.md` with source/page-specific methods, quantitative results, stated author limitations and explicitly distinguished interpretation.
+- The literature review identifies data/information lost in phase-folding, missing diagnostic features, misleading historic catalog-label metrics and shifts in evaluation population; it outlines a future same-FAP controlled preprocessing experiment inspired by Robnik (2026), not yet executed.
+- The paper's published factor-70 injection result and our small prior simulations have fundamentally different sample/period/noise definitions and are not directly comparable.
+- No new model outputs or new exoplanet discoveries were generated during this paper-reading step; this is AI-assisted literature research and writing. Student should verify scientific reasoning and comply with academic contribution policies.
