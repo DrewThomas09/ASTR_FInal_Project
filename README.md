@@ -10,6 +10,10 @@
 
 Scientific interpretation: Generative AI can help write working astrophysical code, but **an easily demonstrated success is not equivalent to a reliable astronomical classification method**. All caveats and known failures remain part of the final report.
 
+## Adjacent exoplanet-methods references and scientific writing
+
+New student-provided readings: A. P. Hatzes (2020) *The Doppler Method for the Detection of Exoplanets* (full textbook), Campante/Santos/Monteiro (eds., 2018) *Asteroseismology and Exoplanets* (full volume), and Emily Gilbert (2022) *The Detection and Characterization of Exoplanets Around M Dwarf Stars Using TESS* (**24-page excerpt only**). See [source-grounded method and writing notes](ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md). Highlights: sampling/window aliases, heteroskedastic uncertainties, stellar activity and dangerous over-filtering, BLS-to-physical-transit-fit workflow, density/eccentricity assumptions, joint RV/transit posterior, and a reproducible manuscript template. **No new measured performance accompanies these reading notes.**
+
 ## Part I literature review — first four complete papers
 
 The student supplied complete PDFs of **Kovács et al. (2002)**, **McCauliff et al. (2015)**, **Thompson et al. (2018)**, and **Robnik et al. (2026)**. See the [annotated 4-paper critical review](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md), which records each paper's original methods, reported quantitative results, figure/page pointers, limitations, relevant parallels with our actual experiments, and a proposed same-false-alarm-budget ablation. **Primary lesson:** detection, historical-label classification, survey completeness and physical planet confirmation are different scientific tasks. Our present headline percentages must not be compared across them without compatible experiments.
