@@ -2,6 +2,14 @@
 
 **Research question:** Can generative AI help reproduce established exoplanet transit-search techniques, and can a lightweight ML filter improve screening of candidate signals compared with a basic signal-strength rule?
 
+## Latest independently verified findings: external failure and multi-planet follow-up
+
+- **Frozen 13-star external test:** [full negative-results report](FROZEN_REAL_13STAR_VALIDATION_RESULTS.md) with [frozen selections](real_external_cohort_frozen.json) and [official run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42321227884). Of 7 published binaries, 6 Q8 files were analyzed; **none** triggered our binary-specific warning, including 4 half-period aliases and 2 exact orbital periods. For 6 listed confirmed planets, BLS recovered 3 selected orbital periods; two other signals corresponded to different previously confirmed planets in the *same* systems. **This contradicts any broad claim of validation from the earlier two-star success.**
+- **Exploratory multi-planet development:** [real Kepler iterative-BLS report](ITERATIVE_BLS_REAL_MULTIPLANET_RESULTS.md) and [successful run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42321423938). Modeling/subtracting the first BLS candidate in Kepler-20 allowed a second pass to recover the known **Kepler-20b 3.6963-day** period after Kepler-20c. For Kepler-18, passes found Kepler-18c and Kepler-18d but not selected Kepler-18b; one later period repeated the first. **This is post-hoc development, not a fresh statistical holdout.**
+- **Next independent tests:** [alias-aware binary hypotheses](../../issues/9) and [validated multi-pass BLS with false-alarm controls](../../issues/10). No thresholds should be adjusted and re-tested on the same frozen cases as if independent results.
+
+Scientific interpretation: Generative AI can help write working astrophysical code, but **an easily demonstrated success is not equivalent to a reliable astronomical classification method**. All caveats and known failures remain part of the final report.
+
 ## Recent verified research results (November 6, 2026)
 
 - **Real NASA DR25 catalog:** [verified 8,054-KOI experiment](REAL_NASA_DR25_RESULTS_2026_11_06.md), with 1,619 held-out signals. Four-feature forest greatly outperformed SNR alone on catalog-label accuracy/FPR, but had lower candidate recall; ensemble disagreement barely changed equal-budget review errors (123 vs 122; paired CI includes zero).
