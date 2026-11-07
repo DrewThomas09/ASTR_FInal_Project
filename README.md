@@ -2,15 +2,23 @@
 
 **Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
+## Latest actual observational result — preprocessing comparison (November 7)
+
+[Complete negative-results report](REAL_KEPLER_PREPROCESSING_RESULTS_2026_11_07.md) · [successful code and experimental workflow](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42400548553) · [download original artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42400548553/artifacts/13584998475).
+
+- **Result:** baseline BLS **2/12** and gap-edge-mask BLS **2/12** correct-period *threshold-passing* injections; 0/10 constructed proxy nulls flagged by either method. A one-star exploratory comparison, **not** evidence of robust equivalence or Kepler mission false-alarm performance.
+- **Data issue retained:** KIC 11904151 Q8 file unavailable through the fixed official source; no replacement was selected. Mask affected 15/2,535 test cadences, including two injected shallow-transit observations.
+- **Interpretation:** a simple near-gap mask did not improve weak-transit recovery here; Robnik's more sophisticated physical defect removal remains untested in this project. Study design, failure cases, false alarms and source hashes are preserved.
+
 ## Current experimental implementation: source-inspired preprocessing ablation
 
 **Starting point:** [source-grounded adjacent methods and writing review](ADJACENT_EXOPLANET_METHODS_AND_SCIENTIFIC_WRITING.md) and [four core papers](PART_I_FOUR_PAPER_CRITICAL_REVIEW.md).
 
-**New experimental files:** [frozen experimental manifest](PREPROCESSING_ABLATION_FROZEN.json), [methods/protocol](PREPROCESSING_ABLATION_METHODS.md), [raw FITS preprocessing and injection module](kepler_preprocessing.py), [paired BLS ablation](preprocessing_ablation.py), [unit tests](tests/test_kepler_preprocessing.py), and [GitHub Actions observational experiment](.github/workflows/kepler-gap-study.yml) and [Google Colab notebook](Kepler_Preprocessing_Colab.ipynb).
+**New experimental files:** [frozen experimental manifest](PREPROCESSING_ABLATION_FROZEN.json), [methods/protocol](PREPROCESSING_ABLATION_METHODS.md), [raw FITS preprocessing and injection module](kepler_preprocessing.py), [paired BLS ablation](preprocessing_ablation.py), [unit tests](tests/test_kepler_preprocessing.py), and [successful real-data GitHub Actions experiment](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42400548553) and [Google Colab notebook](Kepler_Preprocessing_Colab.ipynb).
 
 We compare ordinary **Astropy BLS** with the *same BLS search* after one fixed and conservative **0.2-day near-gap mask around gaps >0.5 days**. Both are evaluated on the same synthetic transit events injected into genuine NASA Kepler PDCSAP flux **before** common detrending. Calibration and held-out stars are disjoint. Detection thresholds are determined only by separate, constructed inverted/rolled-flux **proxy** calibration nulls. We also measure how many real injected transit measurements the mask discards.
 
-**Scientific caution:** Until the real-data workflow successfully completes and its CSV/JSON output is inspected, **no change in recovery, detection rate or false alarms is established**. Even a successful run measures a small *proxy-null* exercise, not the Kepler mission false-alarm probability or a full reproduction of Robnik et al. (2026). Earlier 13-star real binary-vetting failures remain an important counterexample to apparent success on demonstration stars.
+**Verified negative finding (November 7):** [complete results and caveats](REAL_KEPLER_PREPROCESSING_RESULTS_2026_11_07.md). **64 offline tests passed** and real Kepler inputs were analyzed. Only **one of two preselected held-out stars** was available; across that star's 12 injections, both ordinary and gap-masked BLS recovered **2/12**. Both flagged 0/10 held-out *proxy* nulls. The mask discarded 15/2,535 real-quality cadences and two shallow injected transit samples. **No improvement is demonstrated.** This is *not* survey FAP or a replication of Robnik et al. (2026). Earlier failed external binary vetting remains equally important.
 
 ## Latest independently verified findings: external failure and multi-planet follow-up
 
