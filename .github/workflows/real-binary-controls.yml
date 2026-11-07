@@ -1,0 +1,39 @@
+name: Real Kepler Planet vs Eclipsing Binary
+on:
+  push:
+    paths:
+      - '.github/workflows/real-binary-controls.yml'
+      - 'real_known_planet_vs_binary.py'
+      - 'binary_eclipse_diagnostics.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  control-systems:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install AstroPy and scientific analysis packages
+        run: python -m pip install "astropy>=6,<9" "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" scipy requests
+      - name: Examine two published real Kepler targets
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+        run: |
+          set -e
+          mkdir -p results/real_binary_comparison
+          timeout -k 5s 180s python -u real_known_planet_vs_binary.py --out results/real_binary_comparison 2>&1 | tee results/real_binary_comparison/run.log
+      - name: Preserve complete case studies and error diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-kepler-planet-versus-binary
+          retention-days: 30
+          if-no-files-found: warn
+          path: results/real_binary_comparison/
