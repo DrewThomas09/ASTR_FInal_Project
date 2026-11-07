@@ -1,0 +1,40 @@
+name: Synthetic event-vetting ablation
+on:
+  push:
+    paths:
+      - '.github/workflows/event-vetting-ablation.yml'
+      - 'event_vetting_ablation.py'
+      - 'blind_transit_benchmark.py'
+      - 'transit_consistency.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install reproducible statistics and BLS packages
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" "astropy>=6,<9"
+      - name: Run independent-control ablation
+        env:
+          MPLBACKEND: Agg
+        shell: bash
+        run: |
+          set -e
+          mkdir -p results/event_ablation
+          timeout -k 5s 360s python -u event_vetting_ablation.py --output results/event_ablation --per-condition 5 --calibration-per-kind 8 2>&1 | tee results/event_ablation/run.log
+      - name: Preserve reports, plots and any failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: event-vetting-synthetic-ablation
+          if-no-files-found: warn
+          retention-days: 30
+          path: results/event_ablation/
