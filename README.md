@@ -10,6 +10,12 @@
 
 Scientific interpretation: Generative AI can help write working astrophysical code, but **an easily demonstrated success is not equivalent to a reliable astronomical classification method**. All caveats and known failures remain part of the final report.
 
+## Final project narrative (three parts)
+
+**Read [FINAL_PROJECT_THREE_PART_MASTER_PLAN.md](FINAL_PROJECT_THREE_PART_MASTER_PLAN.md) first.** The final submission will be organized as **Part I — Preliminary research and limitations of existing methods; Part II — implementation, baseline replication and measured improvements; Part III — critical reflection and comparison with published papers**. The primary methods benchmark is **Robnik et al. (2026)** for event vetting/multiple transit extraction; **McCauliff et al. (2015)** is the ML comparison, and Thompson et al. (2018) documents the DR25 labels. The master plan explains why our raw performance numbers cannot be compared directly with published numbers from different datasets and evaluation protocols.
+
+**Instructor requirements:** quantitative component, synthesis of at least two lessons, references, AI-contribution acknowledgement, and completed project-elements checklist appended to the explanatory write-up. Project status update due **November 20, 2026**, and final due **December 11, 2026**, both 11:59pm CST.
+
 ## Recent verified research results (November 6, 2026)
 
 - **Real NASA DR25 catalog:** [verified 8,054-KOI experiment](REAL_NASA_DR25_RESULTS_2026_11_06.md), with 1,619 held-out signals. Four-feature forest greatly outperformed SNR alone on catalog-label accuracy/FPR, but had lower candidate recall; ensemble disagreement barely changed equal-budget review errors (123 vs 122; paired CI includes zero).
