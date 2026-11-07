@@ -1,0 +1,38 @@
+# ASTR 12600 — November 20 Project Status Update (DRAFT)
+**Working title:** Can AI Improve Exoplanet Detection? Replication, Experimental Improvements, and the Limits of Automated Scientific Research
+
+**Student review required:** This is an AI-assisted factual draft of the current repository status, not a representation that its author personally wrote every research script. Verify citations, numbers, methods and course-specific word/page requirements before submission.
+
+## Project question and scientific motivation
+
+The project asks whether generative AI can help researchers reproduce established exoplanet transit-search algorithms and implement physically motivated improvements that survive testing on independently selected observations. A planet crossing its star produces a periodic reduction in the measured brightness. The established Box Least Squares (BLS) algorithm searches for that pattern, but periodic dips may also result from binaries, stellar variability, cosmic-ray damage, and other instrumental effects. A mathematically strong periodogram peak alone does not establish that a planet exists.
+
+The preliminary literature review is built around Kovács et al. (2002) on BLS, McCauliff et al. (2015) on classification of Kepler signals using random forests, Thompson et al. (2018) on NASA's DR25 Robovetter and survey selection biases, and Robnik et al. (2026) on noise-aware preprocessing, individual-transit vetting and false-alarm calibration. Additional references include Aigrain et al. (2017) on correcting Kepler discontinuities, Hatzes (2020) on period-search and correlated-noise challenges, and the Springer asteroseismology/transit-methods collection. Each suggests a specific limitation to evaluate, rather than assuming a more elaborate AI classifier must be better.
+
+## Implemented work and measured outcomes
+
+The repository now contains reproducible astronomy scripts, documented sources, GitHub Actions experiments, a Colab notebook and an AI-use log. In genuine Kepler Quarter 8 measurements, BLS recovered the known Kepler-69b orbital period to within approximately **0.066%** of its published value. A separate model using four NASA DR25 KOI features achieved **81.6% agreement with historical candidate/false-positive labels** on 1,619 held-out catalog rows. Those labels are earlier NASA vetter decisions, **not independently confirmed planet identities**. A more complex ensemble-disagreement scheme did not convincingly improve same-budget review decisions.
+
+An early synthetic test suggested that checking alternating eclipse depths and secondary eclipses could reject binary impostors. However, a **preselected external sample of 13 real Kepler objects** revealed that the diagnostic missed all six successfully observed published binaries, many because BLS recovered a half-period alias. This failure is part of the scientific result. A subsequent exploratory iterative BLS experiment recovered the already confirmed Kepler-20b on a second search after fitting Kepler-20c, but did not recover every planet in the Kepler-18 system.
+
+The new focal experiment evaluates physical preprocessing. A first fixed near-gap mask offered **no benefit**, with standard and masked BLS each recovering **2/12** artificial transits on the only available held-out star. We then predeclared a new eight-star study using two calibration stars and six untouched held-out stars, comparing standard BLS, near-gap masking, and a fixed local persistent-step detector. All six held-out FITS files were available; **74 regression tests passed**. On **36 artificial planet injections into real PDC-corrected Kepler observations without added defects**, standard BLS recovered **21/36** and the new method **22/36**. Crucially, the new detector removed **no actual observations** in that group; the extra recovery came solely from its different calibration threshold. It therefore does not show a preprocessing advantage.
+
+On another **36 artificial planets with deliberately injected instrumental-looking brightness steps**, standard BLS recovered **18/36** and the new method **19/36**. The step method identified **21/36** constructed discontinuities, corrected one genuinely wrong orbital-period fit, but removed **eight actual injected planet-measurement cadences**. It also lowered proxy-null flags from **13/24 to 10/24** in this artificial-step condition. These controls were constructed by rolling and inverting stellar brightness, so they **do not estimate real Kepler survey false-alarm rates**. The modest benefit is conditional on a simplified defect model and insufficient for a general-performance claim.
+
+Finally, to connect the algorithm to actual telescope behavior, we analyzed the official Kepler **KIC 7461601 Quarter 6** example of a documented sudden pixel sensitivity dropout. The fixed detector found the **actual flagged step in original SAP photometry within one approximately 29.4-minute cadence**, while it did not flag a corresponding step in the pipeline-corrected PDCSAP brightness. This is one deliberately selected illustrative control, not an unbiased external accuracy test.
+
+## What has changed and what remains
+
+The original proposal emphasized reproducing BLS and testing a simple machine-learning classifier. The project has evolved toward a more rigorous question: **how do physical measurement imperfections and preprocessing choices affect reproducible transit recovery?** The largest lesson so far is that AI can rapidly implement useful analyses while also creating misleading apparent improvements through weak controls, improper threshold comparisons or overly simple simulated defects. Independent observations and explicit negative-result reporting have repeatedly corrected those assumptions.
+
+For the final report, the next priorities are to consolidate the full literature, choose carefully comparable metrics, produce a small number of explanatory figures, and discuss why our results do **not** replicate Robnik et al.'s much larger long-period/controlled-FAP experiment. If a further experiment is attempted, its data and decision rules must be frozen and distinct from the stars already used to develop these methods. The final submission will follow three parts: **literature and motivation; reproducible implementation and quantitative findings; critical reflection, comparison to published research and future work**. The analysis connects Kepler's laws, Newtonian orbital dynamics, and astronomical timing/measurement uncertainty.
+
+## Primary references
+
+- Kovács, Zucker & Mazeh (2002), DOI 10.1051/0004-6361:20020802.
+- McCauliff et al. (2015), DOI 10.1088/0004-637X/806/1/6.
+- Thompson et al. (2018), DOI 10.3847/1538-4365/aab4f9.
+- Aigrain et al. (2017), DOI 10.1093/mnras/stx1422.
+- Robnik, Seljak, Jenkins & Bryson (2026), DOI 10.1093/mnras/stag419.
+
+**AI contribution:** Literature synthesis, source cross-checks, code, tests, workflow execution and this draft were assisted substantially by generative AI. The student should independently examine the actual plots, methods and numbers, choose and justify conclusions, and disclose the assistance according to course guidelines.
