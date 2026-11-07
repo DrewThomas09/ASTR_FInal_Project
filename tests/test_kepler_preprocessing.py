@@ -38,8 +38,8 @@ def test_invalid_unsorted_times_rejected():
 
 def test_gap_mask_does_not_use_planet_truth():
     t = np.r_[np.arange(0, 5, .02),np.arange(6, 11, .02)]
-    original, _ = gap_edge_mask(t)
-    copy, _ = gap_edge_mask(t.copy())
+    original, _ = gap_edge_mask(t, minimum_remaining=400)
+    copy, _ = gap_edge_mask(t.copy(), minimum_remaining=400)
     assert np.array_equal(original,copy)
 
 
@@ -63,7 +63,7 @@ def test_injected_signal_removed_near_gap_is_accounted_for():
     injected,inside = inject_before_detrending(
         t,base,period_days=2.,epoch_days=4.95,
         depth_ppm=1200.,duration_days=.18)
-    keep, _ = gap_edge_mask(t)
+    keep, _ = gap_edge_mask(t, minimum_remaining=400)
     loss = injected_signal_retention(normalize_flux(base),
                                      normalize_flux(injected),inside,keep)
     assert 0 <= loss < 1
