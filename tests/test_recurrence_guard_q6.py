@@ -119,3 +119,17 @@ def test_results_summary_includes_failed_targets_and_preserves_roles():
     assert r["n_analyzed_stars"]==1
     assert r["n_missing_stars"]==1
     assert r["missing_kics"]==[2]
+
+
+def test_keep_mask_superset_for_actual_detected_artificial_step():
+    t,f=fake_star()
+    raw=40000*f
+    changed,_=synthetic_spsd_like_step(t,raw,23.4,.011,.75,.45)
+    prepared=normalize_flux(changed)
+    original, guarded, warnings=run_original_and_guarded(t,prepared,OLD,GUARD)
+    assert len(warnings)>=1
+    assert np.any(~original)
+    # Recurrence guard can restore previously masked cadences but can never
+    # mask additional cadences that the old detector kept.
+    assert np.all(guarded[original])
+    assert np.all(guarded.astype(int)>=original.astype(int))
