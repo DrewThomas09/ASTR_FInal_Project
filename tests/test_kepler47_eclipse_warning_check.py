@@ -3,7 +3,8 @@ import pytest
 
 from kepler47_eclipse_warning_check import (
     BKJD_REFERENCE_BJD, EPHEMERIDES, KEPLER47,
-    nearest_published_eclipse, analyze_original_warnings, report
+    nearest_published_eclipse, analyze_original_warnings, report,
+    circular_phase_shift_sensitivity
 )
 
 
@@ -60,3 +61,25 @@ def test_ephemeris_uses_kepler_bkjd_not_raw_bjd():
     near=nearest_published_eclipse(550.9336158230508)
     assert near["eclipse_type"]=="secondary"
     assert abs(near["residual_days"]) < .1
+
+
+def test_phase_shift_keeps_warning_structure_and_is_deterministic():
+    from kepler47_eclipse_warning_check import analyze_original_warnings
+    t=[550.9336158230508,558.3920544248394,588.1846313945789,
+       595.4385715831377,612.6026676026813,614.3803690897039,
+       621.8180872265584]
+    rows=[{"kic":str(KEPLER47),"product":"PDCSAP",
+           "warning_time_bkjd":str(x)} for x in t]
+    table=analyze_original_warnings(rows)
+    result=circular_phase_shift_sensitivity(table)
+    assert result["n_warning_epochs"]==7
+    assert result["phase_shift_grid_size"]==20000
+    assert result["fractions_ge_observed"]["0.1_days"]["observed_close_warnings"]==5
+    assert result["fractions_ge_observed"]["0.3_days"]["observed_close_warnings"]==6
+    assert .01<result["fractions_ge_observed"]["0.1_days"]["fraction_of_joint_shifts_at_least_as_aligned"]<.04
+    assert .05<result["fractions_ge_observed"]["0.3_days"]["fraction_of_joint_shifts_at_least_as_aligned"]<.12
+
+
+def test_phase_sensitivity_refuses_changed_exploratory_grid():
+    with pytest.raises(ValueError):
+        circular_phase_shift_sensitivity([],n_offsets=200)
