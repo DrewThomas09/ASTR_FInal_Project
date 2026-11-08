@@ -1,0 +1,76 @@
+{
+  "schema_version": "2026-11-08-dr25-paired-inference-v1",
+  "frozen_date_utc": "2026-11-08",
+  "purpose": "Statistically test agreement with historical NASA DR25 KOI CANDIDATE/FALSE POSITIVE Robovetter labels, comparing existing four-feature random forest against SNR-only and a new conventional logistic baseline. This is NOT planet confirmation, survey sensitivity, or an independent mission vetting comparison.",
+  "source": {
+    "table": "NASA Exoplanet Archive q1_q17_dr25_koi",
+    "original_query": "ml_screening.nasa_url() selecting kepid,kepoi_name,koi_pdisposition,koi_period,koi_duration,koi_depth,koi_model_snr",
+    "expected_original_csv_sha256": "c907e064c7369d4b073ba422283ddfbbf7499d472ec3cc0787254f3407e5e045",
+    "require_exact_source_hash": true,
+    "cohort_expected_rows_after_filter": 8054,
+    "known_information": "Prior 11/06 report included 8,054 labeled KOIs on 6,923 stars. This dataset has been previously inspected; new multi-split analysis is a robustness exercise, not a newly untouched independent trial."
+  },
+  "features": [
+    "koi_period",
+    "koi_duration",
+    "koi_depth",
+    "koi_model_snr"
+  ],
+  "truth": "koi_pdisposition mapped CANDIDATE=1, FALSE POSITIVE=0: NASA historical labels, not physical verified planet state.",
+  "heldout": {
+    "selection": "ml_screening.split_by_star GroupShuffleSplit: 20% distinct-star test, then validation 25% of remaining; train/val/test hosts disjoint in each split.",
+    "primary_split_seed": 12600,
+    "additional_split_seeds": [
+      12601,
+      12602,
+      12603,
+      12604,
+      12605,
+      12606,
+      12607,
+      12608,
+      12609
+    ],
+    "never_pool_overlapping_test_sets_across_seeds": true,
+    "caveat": "Repeated splits reuse data previously explored by the project, and are sensitivity to star composition not independent confirmations."
+  },
+  "methods": {
+    "snr": "Existing log1p(SNR) score with training-median imputation, validation-set threshold only.",
+    "random_forest": "Existing sklearn pipeline: median imputer, RandomForestClassifier 120 trees, max_depth=9, min_samples_leaf=3, random_state=split_seed, n_jobs=-1.",
+    "logistic": "Median-impute log1p all four features, StandardScaler, LogisticRegression(max_iter=2000, solver=lbfgs, C=1, class_weight=None, random_state=split_seed). No grid search."
+  },
+  "decision": {
+    "validation_recall_target": 0.9,
+    "threshold": "Fixed original ml_screening.cutoff(scores, validation_labels, desired=0.9). No test label tuning and no forced threshold change to equalize achieved test recall.",
+    "threshold_caution": "Equal validation recall target does NOT ensure equal heldout test recall. Report achieved recall differences and false-positive-rate tradeoff."
+  },
+  "primary_endpoint": "Difference in balanced accuracy on primary held-out split: RandomForest minus SNR (label agreement, not planet detection). Balanced accuracy = (historical candidate recall + historical false-positive specificity)/2.",
+  "secondary_endpoints": [
+    "Primary split random forest versus logistic balanced accuracy.",
+    "Primary split paired overall accuracy and host-clustered error differences.",
+    "Primary split achieved recall and FPR of all methods.",
+    "ROC AUC of continuous scores (threshold-independent), cluster bootstrap CI for random forest minus SNR and logistic.",
+    "Differences in false-negative candidate dismissals and false-positive acceptance; do not suppress worse recall.",
+    "Across nine other grouped-by-star splits: median, min, max and percentage points for differences; repeated splits are dependent and cannot be pooled for p-value."
+  ],
+  "statistical_tests": {
+    "primary": "Two-sided host-level method-swap permutation for difference in balanced accuracy at primary split. Under null of exchangeable paired classifier correctness by host, random sign-flip each entire host's weighted BA contribution; seed and iteration counts fixed.",
+    "primary_permutations": 20000,
+    "primary_permutation_seed": 2026110801,
+    "paired_host_bootstrap_reps": 2000,
+    "paired_host_bootstrap_seed": 2026110802,
+    "alpha": 0.05,
+    "multiple_comparisons": "Only RandomForest minus SNR on primary split in balanced accuracy is confirmatory within this re-analysis, conditional on source and predeclared model/training split. All other tests descriptive/exploratory. Since source data and primary split have been inspected previously, this is not an untouched confirmatory discovery study.",
+    "ci": "Star-level paired bootstrap percentile 95% CI, preserving multiple KOIs per star.",
+    "mcnemar": "Exact discordant-pair McNemar p on KOIs is reported as a naive supplemental check but not preferred over host-aware inference, since signals can share hosts.",
+    "bootstrap_p_warning": "Do not convert percentile bootstrap sign frequencies into nominal p-values."
+  },
+  "reproducibility": {
+    "raw_data_hash_must_match": true,
+    "refuse_missing_or_altered_input": true,
+    "store_each_test_score_prediction_and_star_id_for_primary_split": true,
+    "store_each_split_metric_and_star_counts": true,
+    "save_no_fit_on_test_assertions": true,
+    "no_selective_reporting": true
+  }
+}
