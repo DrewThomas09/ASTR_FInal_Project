@@ -159,3 +159,11 @@ AI is permitted to assist with: code scaffolding, explanation, debugging suggest
 
 - GPT-6 drafted `NOV_20_PROJECT_STATUS_REPORT_DRAFT.md` (~950 words) from source-verified prior actual results and the instructor's three-part project structure. It preserves every negative result and distinguishes previously known exoplanets from simulated injections and instrument quality flags.
 - This draft was AI-authored, not independently written by the student; independent review and adherence to the course's AI policy are required before submission.
+
+## November 8, 2026 — Frozen-outcome paired statistics and reproducibility (AI-assisted)
+
+- AI retrieved the **original November 7 GitHub Actions artifact** (run 42402819710), including 216 method-level injection rows and 144 constructed proxy-null method rows, before computing any new result. No additional Kepler data were downloaded and no original model, star selection, thresholds, or injection truth were modified.
+- GPT-6 authored `paired_validity_audit.py`, eight synthetic regression tests in `tests/test_paired_validity_audit.py`, the new interpretation report, and `.github/workflows/paired-validity-audit.yml` to rerun statistics on SHA-256-checked original inputs. The eight new offline tests passed in local execution.
+- Observed matched comparisons: 21 vs 22 of 36 natural-flux recoveries; 18 vs 19 of 36 synthetic-step recoveries, with 0 baseline-only and 1 local-only recovery in either group. Exact two-sided paired-discordance p = 1.00 in each. Constructed step-proxy flag comparisons were 13 vs 10 of 24 (3 baseline-only, 0 step-only), p = 0.25. These are descriptive because the data comprise repeated trials on only six stellar hosts; **not survey-level inference or independent scientific validation**.
+- The new audit isolated that all eight lost injected transit cadences arose from one KIC 9002278 artificial-step injection. A common numeric-score-threshold crosscheck is presented solely as a mechanistic sensitivity analysis, not matched real false-alarm-rate calibration.
+- **Student responsibilities:** inspect the archived raw results, explain why one discordance does not establish improved performance, and decide what interpretation belongs in the final submission. Full credit and disclosure of AI-derived statistical code and draft writing are required by the course.
