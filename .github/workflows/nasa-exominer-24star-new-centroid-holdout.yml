@@ -1,0 +1,128 @@
+name: Test Precommitted TESS Centroid Review Rule on 24 NEW Source Stars (score-blind)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/nasa-exominer-24star-new-centroid-holdout.yml'
+      - 'TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json'
+      - 'tess_new_24star_centroid_rule_holdout_tics.csv'
+      - 'tess_centroid_24star_locked_holdout.py'
+      - 'tests/test_tess_centroid_24star_locked_holdout.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  same-frozen-rule-new-24-star-tess-cohort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source verifiers, astronomy and physical centroid dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scikit-learn>=1.3,<2' 'matplotlib>=3.7,<4' 'pytest>=8,<10' 'scipy>=1.11,<2' 'astropy>=6,<9' 'requests>=2.31,<3'
+      - name: Verify ALL regression tests plus no overlap or tuning of the centroid rule
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests
+          python - <<'PY'
+          import pandas as pd
+          from tess_centroid_24star_locked_holdout import fixed_24_manifest
+          m,rule=fixed_24_manifest('TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json',
+                                   'TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json')
+          source=pd.read_csv('tess_new_24star_centroid_rule_holdout_tics.csv',dtype=str)
+          provided={(str(s.tic_id),str(s.sector_run)) for s in source.itertuples(index=False)}
+          fixed={(str(s['tic_id']),s['sector_run']) for s in m['source_records']}
+          assert len(source)==24 and len(fixed)==24 and provided==fixed
+          assert rule['fixed_experimental_flag_NOT_VALIDATED_FOR_SCIENCE']['median_2d_shift_at_least_pixels']==.05
+          print('Verified 24 NEW-to-project different TICs and old fixed .05-pixel centroid rule, no retuning.')
+          PY
+      - name: Download EXACT original published 2025 TESS source catalogue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/original_2025 results/nasa_24_centroid_rule_holdout
+          gh run download 42516458999 --repo "${{ github.repository }}" -n official-exominer-2025-tess-labeled-unlabeled-catalogs-verified --dir data/original_2025
+          test -s data/original_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv
+          cp tess_new_24star_centroid_rule_holdout_tics.csv results/nasa_24_centroid_rule_holdout/tics_writable.csv
+          cp TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json results/nasa_24_centroid_rule_holdout/source_manifest_FROZEN_BEFORE_NEW_MEASUREMENT.json
+          cp TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json results/nasa_24_centroid_rule_holdout/UNCHANGED_previous_centroid_rule.json
+      - name: Pull the SAME verified untouched NASA ExoMiner++ v2.4.0 Docker model image
+        timeout-minutes: 17
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker pull "$image" 2>&1 | tee results/nasa_24_centroid_rule_holdout/original_nasa_pinned_image_pull.log
+          docker image inspect "$image" --format '{{json .RepoDigests}}' > results/nasa_24_centroid_rule_holdout/actual_unchanged_NASA_model_digest.json
+      - name: Actual original pretrained NASA inference on 24 new-to-project TESS stars
+        timeout-minutes: 25
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker run --rm --shm-size=2g \
+            -e OPENBLAS_NUM_THREADS=1 \
+            -e OMP_NUM_THREADS=1 \
+            -e MKL_NUM_THREADS=1 \
+            -e TF_NUM_INTRAOP_THREADS=1 \
+            -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/results/nasa_24_centroid_rule_holdout/tics_writable.csv:/tics_tbl.csv" \
+            -v "${PWD}/results/nasa_24_centroid_rule_holdout:/outputs" \
+            "$image" \
+            --tic_ids_fp=/tics_tbl.csv \
+            --output_dir=/outputs \
+            --data_collection_mode=2min \
+            --num_processes=1 \
+            --num_jobs=4 \
+            --get_mast_urls_dv_reports=false \
+            --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable \
+            --task=planet-validation \
+            --exominer_model=single \
+            --max_model_workers=1 2>&1 | tee results/nasa_24_centroid_rule_holdout/unchanged_NASA_original_inference_stdout.log
+          test -s results/nasa_24_centroid_rule_holdout/predictions_spoc-tces_set.csv
+      - name: Apply *unchanged* already-frozen original TESS centroid warning rule with source accounting
+        timeout-minutes: 8
+        shell: bash
+        env:
+          PYTHONUNBUFFERED: '1'
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p results/nasa_24_centroid_rule_holdout/24star_original_TESS_centroid_analysis
+          python -u tess_centroid_24star_locked_holdout.py \
+            --frozen TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json \
+            --previous-gate TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json \
+            --original-2025 data/original_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv \
+            --official-nasa-2026 results/nasa_24_centroid_rule_holdout/predictions_spoc-tces_set.csv \
+            --source-fits-root results/nasa_24_centroid_rule_holdout \
+            --out results/nasa_24_centroid_rule_holdout/24star_original_TESS_centroid_analysis \
+            2>&1 | tee results/nasa_24_centroid_rule_holdout/24star_original_TESS_centroid_analysis/new_source_centroid_rule_stdout.log
+      - name: Preserve every original NASA score, all 24 source identities, centroid events and independent-to-project test of unchanged warning
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-24-new-to-project-TESS-stars-untuned-centroid-rule-test-NOT-independent-NASA-training-holdout
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            results/nasa_24_centroid_rule_holdout/source_manifest_FROZEN_BEFORE_NEW_MEASUREMENT.json
+            results/nasa_24_centroid_rule_holdout/UNCHANGED_previous_centroid_rule.json
+            results/nasa_24_centroid_rule_holdout/original_nasa_pinned_image_pull.log
+            results/nasa_24_centroid_rule_holdout/actual_unchanged_NASA_model_digest.json
+            results/nasa_24_centroid_rule_holdout/unchanged_NASA_original_inference_stdout.log
+            results/nasa_24_centroid_rule_holdout/run_main.log
+            results/nasa_24_centroid_rule_holdout/master_tic_tracking_summary.csv
+            results/nasa_24_centroid_rule_holdout/master_tce_tracking_summary.csv
+            results/nasa_24_centroid_rule_holdout/predictions_spoc-tces_set.csv
+            results/nasa_24_centroid_rule_holdout/job_*/run_*.log
+            results/nasa_24_centroid_rule_holdout/24star_original_TESS_centroid_analysis/
