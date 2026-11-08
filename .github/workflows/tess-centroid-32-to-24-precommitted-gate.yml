@@ -36,7 +36,7 @@ jobs:
           gh run download 42516458999 --repo "${{ github.repository }}" \
             -n official-exominer-2025-tess-labeled-unlabeled-catalogs-verified \
             --dir data/verified_nasa_2025
-          python scripts/reproduce_frozen_24star_centroid_holdout.py \
+          python -m scripts.reproduce_frozen_24star_centroid_holdout \
             --catalog data/verified_nasa_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv \
             --manifest TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json
       - name: Retrieve separately completed, immutable original 32 and source-disjoint 24 real NASA centroid experiments
