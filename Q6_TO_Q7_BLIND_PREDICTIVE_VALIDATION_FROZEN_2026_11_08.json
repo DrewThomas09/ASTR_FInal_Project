@@ -1,0 +1,118 @@
+{
+  "version": "2026-11-08-out-of-quarter-blind-ephemeris",
+  "created_before_new_q7_photometry_run": true,
+  "science_question": "Does a BLS period/epoch fit solely on NASA Kepler Quarter 6 predict negative photometric dips in independent NASA Quarter 7 original PDCSAP flux, without reoptimizing any period/phase after opening Q7? Does the same check also pass known stellar eclipsing binaries?",
+  "design": "Exploratory source cohort chosen from previously published Kepler confirmed host lists, BEFORE accessing these Q6/Q7 fluxes. No claims of new planet discovery or independent random-field false-alarm rate.",
+  "training_quarter": 6,
+  "prospective_test_quarter": 7,
+  "quarter_7_official_archive_timestamp": "2010355172524",
+  "published_sources": [
+    {
+      "kic": 11804465,
+      "name": "Kepler-12",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 11359879,
+      "name": "Kepler-15",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 10619192,
+      "name": "Kepler-17",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 2571238,
+      "name": "Kepler-19",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 11904151,
+      "name": "Kepler-10",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 6541920,
+      "name": "Kepler-11",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 3832474,
+      "name": "Kepler-30",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 11512246,
+      "name": "Kepler-23",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 9757613,
+      "name": "Kepler-26",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 5792202,
+      "name": "Kepler-27",
+      "role": "previously_published_planet_host"
+    },
+    {
+      "kic": 9837578,
+      "name": "Kepler-35",
+      "role": "previously_analyzed_known_eclipsing_binary_control"
+    },
+    {
+      "kic": 10020423,
+      "name": "Kepler-47",
+      "role": "previously_analyzed_known_eclipsing_binary_control"
+    }
+  ],
+  "literature_sources": [
+    "https://exoplanetarchive.ipac.caltech.edu/docs/confirmed_planets.html",
+    "https://archive.stsci.edu/kepler/eclipsing_binaries.html",
+    "https://archive.stsci.edu/kepler/missing_lc.html"
+  ],
+  "method_frozen": {
+    "archive": "Official MAST original Q6 and Q7 long-cadence FITS, PDCSAP_FLUX, TIME, SAP_QUALITY; quality==0; same independently applied 301-cadence median normalization each quarter",
+    "source_hash": "sha256 of each actual downloaded original NASA FITS, output and failure preserved",
+    "bls_train_period_min_days": 1,
+    "bls_train_period_max_days": 20,
+    "bls_durations_days": [
+      0.09,
+      0.15,
+      0.24
+    ],
+    "bls_frequency_factor": 0.8,
+    "bls_objective": "snr",
+    "sample_window_in_transit_fraction_of_duration": 0.5,
+    "baseline_inner_window_duration_multipliers": 1.5,
+    "baseline_outer_window_duration_multipliers": 3.5,
+    "min_expected_transit_events_in_Q7": 2,
+    "min_in_transit_cadences_per_event": 3,
+    "min_baseline_cadences_per_event": 6,
+    "positive_event_depth_fraction_at_least": 0.6,
+    "phase_null_shift_count": 1000,
+    "phase_null_random_seed": 2026110817,
+    "single_test_score": "mean per-event locally normalized depth in test Q7, recorded independent of BLS peak significance; empirical one-sided phase-shift fraction with +1 correction",
+    "predictive_evidence_threshold": "Q7 phase-shift p<=0.01 AND at least 60% of test quarter event windows have positive local depths; this is only within-quarter phase contrast and not mission false-alarm rate.",
+    "no_test_reoptimization": true,
+    "period_and_epoch_from_train_only": true,
+    "missing_file_policy": "Keep every planned star including Q6 and/or Q7 unavailable status; never substitute a new target."
+  },
+  "statistical_reporting": {
+    "unit_of_inference": "Independent host STAR; stars and events can be correlated. Do not use phase-shift count as number of independent stars.",
+    "primary_endpoint": "Number of preselected ten published planet-host stars with available quarters and Q7 predictive evidence. Count unavailable and no-coherent-event stars separately.",
+    "binary_control": "Two previously inspected known stellar EBs. A positive result here shows predictive period coherence is NOT planet validation. Exclude from independent target denominator.",
+    "null_caveat": "Relative phase shifts preserve the original Q7 stellar time series and do not reproduce the mission pipeline false-alarm probability. A low phase-shift fraction is descriptive evidence only.",
+    "no_p_hacking": "No source replacement, duration, period range, event threshold, or Q7 period optimization after outcomes.",
+    "expected_limitations": [
+      "Known planet hosts may have Q6 strongest BLS peak at a binary contaminant, stellar variability or different known planet; no source role is given to BLS.",
+      "Quarter-by-quarter median detrending can distort long transits and periods >20d are outside searched range.",
+      "Real Kepler transit timing variations can drift relative to a strictly constant-period forecast.",
+      "Single-quarter BLS period errors accumulate across many cycles and may produce false Q7 negatives.",
+      "Repeatability alone cannot distinguish a planet from an eclipsing stellar binary.",
+      "No new planet search or NASA-grade survey completeness estimate."
+    ]
+  }
+}
