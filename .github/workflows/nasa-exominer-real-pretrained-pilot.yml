@@ -1,0 +1,93 @@
+name: Actual NASA Pretrained ExoMiner++ TESS Pilot
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/nasa-exominer-real-pretrained-pilot.yml'
+      - 'exominer_official_pilot_tic_sector.csv'
+permissions:
+  contents: read
+jobs:
+  official-nasa-pretrained-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 36
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect hardware and reproduce original input before run
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results/nasa_exominer_official_pilot
+          echo 'SOURCE: official NASA ghcr.io/nasa/exominer image' > results/nasa_exominer_official_pilot/experiment_metadata.txt
+          echo 'TASK: binary planet-validation of TESS SPOC 2-minute TCE observations' >> results/nasa_exominer_official_pilot/experiment_metadata.txt
+          echo 'COHORT: NASA public documentation example TIC 167526485 sector 6-6, not a preselected new planet' >> results/nasa_exominer_official_pilot/experiment_metadata.txt
+          echo 'MODEL: pretrained official single model; no retraining and no claims of physical validation' >> results/nasa_exominer_official_pilot/experiment_metadata.txt
+          cat exominer_official_pilot_tic_sector.csv
+          df -h .
+          free -h
+          docker version --format '{{.Server.Version}}'
+      - name: Download the real NASA pretrained OCI image, record immutable image digest
+        shell: bash
+        timeout-minutes: 18
+        run: |
+          set -euo pipefail
+          docker pull ghcr.io/nasa/exominer:latest 2>&1 | tee results/nasa_exominer_official_pilot/docker_pull.log
+          docker image inspect ghcr.io/nasa/exominer:latest --format '{{json .RepoDigests}}' > results/nasa_exominer_official_pilot/actual_nasa_image_digest.json
+          docker image inspect ghcr.io/nasa/exominer:latest --format '{{.Id}}' > results/nasa_exominer_official_pilot/actual_nasa_image_id.txt
+          docker images ghcr.io/nasa/exominer:latest
+          df -h .
+      - name: Real official NASA model inference on the public documented TESS TIC/sector
+        shell: bash
+        timeout-minutes: 17
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          docker run --rm --shm-size=2g \
+            -e OPENBLAS_NUM_THREADS=1 \
+            -e OMP_NUM_THREADS=1 \
+            -e MKL_NUM_THREADS=1 \
+            -e VECLIB_MAXIMUM_THREADS=1 \
+            -e NUMEXPR_NUM_THREADS=1 \
+            -e TF_NUM_INTRAOP_THREADS=1 \
+            -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/exominer_official_pilot_tic_sector.csv:/tics_tbl.csv:ro" \
+            -v "${PWD}/results/nasa_exominer_official_pilot:/outputs" \
+            ghcr.io/nasa/exominer:latest \
+            --tic_ids_fp=/tics_tbl.csv \
+            --output_dir=/outputs \
+            --data_collection_mode=2min \
+            --num_processes=1 \
+            --num_jobs=1 \
+            --get_mast_urls_dv_reports=false \
+            --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable \
+            --task=planet-validation \
+            --exominer_model=single \
+            --max_model_workers=1 2>&1 | tee results/nasa_exominer_official_pilot/original_nasa_model_stdout.log
+          if [[ ! -s results/nasa_exominer_official_pilot/predictions_spoc-tces_set.csv ]]; then
+            echo 'ERROR: official pretrained output missing or empty. Check run logs and TIC/TCE trackers.' >&2
+            exit 1
+          fi
+          echo 'NASA predictions file exists'
+          head -n 8 results/nasa_exominer_official_pilot/predictions_spoc-tces_set.csv
+      - name: Archive NASA source predictions, metadata and failure diagnostics (exclude bulky photometry FITS/tensors)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-nasa-pretrained-exominer-tess-pilot
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            results/nasa_exominer_official_pilot/experiment_metadata.txt
+            results/nasa_exominer_official_pilot/docker_pull.log
+            results/nasa_exominer_official_pilot/actual_nasa_image_digest.json
+            results/nasa_exominer_official_pilot/actual_nasa_image_id.txt
+            results/nasa_exominer_official_pilot/original_nasa_model_stdout.log
+            results/nasa_exominer_official_pilot/run_main.log
+            results/nasa_exominer_official_pilot/pipeline_run_config.yaml
+            results/nasa_exominer_official_pilot/master_tic_tracking_summary.csv
+            results/nasa_exominer_official_pilot/master_tce_tracking_summary.csv
+            results/nasa_exominer_official_pilot/predictions_spoc-tces_set.csv
+            results/nasa_exominer_official_pilot/job_0/run_0.log
