@@ -234,6 +234,21 @@ However, it does give us a much better way to develop the next version of our wo
 
 This has become an important part of the project's conclusion so far: **AI has made it possible to reproduce and investigate a complicated scientific model, but the most valuable improvements come from finding out where its physical reasoning may be incomplete, not from making the model more complicated for its own sake.**
 
+
+### A closer look at the difficult signals
+
+To investigate these disagreements, I used NASA's own ExoMiner pipeline to generate the **full diagnostic plots** for five of the most interesting cases. This was different from simply examining the final planet score. Each report contained several views of the measured light curve, odd and even transit events, possible secondary eclipses, the measured position of the light source, and images showing where the signal appeared on the telescope's detector.
+
+These images helped show why a good-looking light curve does not necessarily make a convincing planet. **TIC 165493409**, historically labeled as an eclipsing binary, showed a well-defined, repeating dip, with similar-looking alternating events. Yet the centroid-position plot also changed around the transit. We cannot tell from the figure alone whether this means the event originated on a different star, but it is the sort of physical evidence that a basic transit-search algorithm would miss.
+
+For **TIC 466840711**, which carried an earlier known-planet label but received a low score from the current model, NASA's diagnostic plots showed a deep dip accompanied by a much less stable overall light-curve trend. **TIC 158623531** showed an apparently clean dip, but the model had only two transit events available in that observing sector. In both cases, a simple test based only on the depth of the light curve would miss important complications.
+
+The most surprising problem appeared when I compared the actual measurements used in the **2025 and 2026 model versions**. We found that the older released catalog recorded transit duration in **days**, while the current pipeline reported it in **hours**. We also found that the fitted period for TIC 158623531 was roughly **7.87 days in the older table** but **15.75 days in the newer model**, almost exactly twice as long. For another star, TIC 178155732, the newer catalog appeared to have **swapped which numbered event corresponded to each of its two detected periods**.
+
+These findings changed how we interpret the earlier comparison. Just because two models produce a score for the same event identifier does not always mean they are evaluating the exact same proposed orbit. A period alias, revised ephemeris, or different event-number assignment can make an apparent change in classification misleading. Before claiming that the model has corrected a mistake, we need to verify that the underlying signal is really the same.
+
+This was another example of something AI was useful for: not merely generating a modification, but **helping identify a problem with the data and how the scientific experiment was being compared**. The next step is to build that source-identity check directly into our evaluation software, so that a changed period or incompatible set of measurements is flagged rather than silently treated as a model success or failure.
+
 ### References and course connections
 
 - ASTR/PHSC 12600: Lesson 2 (luminosity and flux); Lesson 3 (time and measurement); Lessons 5–6 (Kepler's laws and gravity); Lesson 7 (light).
