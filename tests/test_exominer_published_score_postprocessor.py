@@ -74,7 +74,7 @@ def test_extra_model_also_predicts_and_missing_values_are_imputed_train_only():
 
 def test_cannot_let_one_star_cross_original_published_folds():
     df=make_table()
-    df.loc[10,"target_id"]=df.loc[0,"target_id"]
+    df.loc[1,"target_id"]=df.loc[0,"target_id"]  # indices 0 and 1 belong to DIFFERENT original folds
     with pytest.raises(AssertionError,match="TIC collision"):
         fit_frozen_folds(df,settings(),enhanced=True)
 
