@@ -1,0 +1,105 @@
+{
+  "schema_version": "2026-11-08-external-kepler-spsd-v1",
+  "preregistered_at_utc_date": "2026-11-08",
+  "frozen_before_new_fits_evaluation": true,
+  "description": "Fixed 12-host Kepler Quarter 6 convenience cohort to compare the identical, unchanged localized-step heuristic on original SAP_FLUX vs NASA-corrected PDCSAP_FLUX. Source labels are archival SPSD quality bit 1024, not confirmed exhaustive ground truth.",
+  "primary_question": "At independently archived SAP_QUALITY bit-1024 events in an untouched star cohort, do detection warnings differ between original and NASA-corrected flux when the same fixed detector and timestamps are used?",
+  "selection": "Public NASA-listed Kepler hosts selected for Q6 before reading these target light curves. Target IDs are held fixed; files missing from the official quarter archive remain planned failures and are never substituted. No events/epochs or steps were examined to choose the cohort. The known positive KIC 7461601 is excluded.",
+  "design_status": "One exploratory independent observational cohort; targets are a purposive sample of known Kepler sources, not a random survey sample, and may contain real planets/stellar variability.",
+  "quarter": 6,
+  "targets": [
+    {
+      "kic": 7024511,
+      "identification": "KIC 7024511; STScI pixel contamination tutorial",
+      "source": "https://spacetelescope.github.io/mast_notebooks/notebooks/Kepler/verifying_the_location_of_a_signal/verifying_the_location_of_a_signal.html"
+    },
+    {
+      "kic": 3248033,
+      "identification": "KIC 3248033; STScI target pixel tutorial",
+      "source": "https://spacetelescope.github.io/mast_notebooks/notebooks/Kepler/lightkurve_interactively_inspecting_TPFs_and_LCs/lightkurve_interactively_inspecting_TPFs_and_LCs.html"
+    },
+    {
+      "kic": 7960363,
+      "identification": "KIC 7960363; Kepler data handbook earlier Q1 example, here tests a different preselected Q6 file",
+      "source": "https://archive.stsci.edu/kepler/manuals/Data_Characteristics_Handbook_20110201.pdf"
+    },
+    {
+      "kic": 3323887,
+      "identification": "Kepler-9 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-9"
+    },
+    {
+      "kic": 4852528,
+      "identification": "Kepler-80 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-80"
+    },
+    {
+      "kic": 5780885,
+      "identification": "Kepler-7 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-7"
+    },
+    {
+      "kic": 6278762,
+      "identification": "Kepler-444 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-444"
+    },
+    {
+      "kic": 6762829,
+      "identification": "Kepler-38 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-38"
+    },
+    {
+      "kic": 8120608,
+      "identification": "Kepler-186 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-186"
+    },
+    {
+      "kic": 8311864,
+      "identification": "Kepler-452 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-452"
+    },
+    {
+      "kic": 11442793,
+      "identification": "Kepler-90 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-90"
+    },
+    {
+      "kic": 10020423,
+      "identification": "Kepler-47 host",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-47"
+    }
+  ],
+  "explicit_exclusions": "Existing previous-study calibration, frozen 13-target binary/planet cohort, six Q8 localized-step held-out stars, and KIC 7461601 published Q6 case. No overlap planned.",
+  "data_source": "NASA MAST official Kepler Quarter 6 long-cadence DR25 FITS, using exactly corresponding SAP_FLUX, PDCSAP_FLUX, TIME, SAP_QUALITY rows.",
+  "source_fetch": "Existing bounded public MAST download implemented in real_kepler_lightcurve.fetch_kepler_quarter. Preserve original FITS SHA256.",
+  "processing": {
+    "pair_policy": "Retain exactly identical aligned rows where finite positive TIME, SAP_FLUX, and PDCSAP_FLUX; keep nonzero quality flags so the event is physically observable. This is distinct from planet-detection experiments that require quality==0.",
+    "detrend": "Same kepler_preprocessing.normalize_flux with unchanged 301-point median window, independently for SAP and PDCSAP.",
+    "algorithm": "Exact localized_discontinuity.localized_downward_step_mask and its settings loaded unchanged from LOCALIZED_STEP_STUDY_FROZEN_2026_11_07.json; no retraining, retuning or event-specific processing.",
+    "quality_spsd_bit": 1024,
+    "event_merge_width_days": 0.45,
+    "warning_to_event_match_tolerance_days": 0.22,
+    "minimum_joint_valid_cadences": 500
+  },
+  "analysis": {
+    "unit_of_evidence": "Independent flagged event clusters nested within preselected host; do not count every flagged cadence as an independent event.",
+    "matching_rule": "For each product separately, match predicted onsets to archival flagged event clusters without replacement, sorted by nearest absolute time offset, requiring abs difference <=0.22 days.",
+    "primary_metrics": "Number of planned/available stars; SPSD bit-flagged event clusters; matched flagged event clusters for SAP and PDCSAP, both/baseline-only/PDC-only/neither, per-star counts. Report missing or absent SPSD event labels separately.",
+    "secondary_metrics": "Unmatched step warnings per product (not false-positive rate); warnings per usable star; mask percentage; source hashes; median per-event matched time difference.",
+    "plot_policy": "Create a per-star paired comparison and an event-centered source figure for the lowest KIC with a flagged event, if any, selected by KIC order before inspecting detection outcomes.",
+    "interpretation_limits": [
+      "Kepler PDC is mission-grade and often corrects SPSDs; SAP and PDCSAP differences do not establish our detector beats it.",
+      "Mission quality bit 1024 is a fallible/incomplete event marker; unmatched warnings are not confirmed false alarms and bit-1024 flags do not equal planet labels.",
+      "Selected sources are known Kepler hosts, not representative random stars; a small number of quality flags may prevent useful sensitivity estimates.",
+      "The pipeline may use quality metadata, so archival flags are not statistically independent of correction activity.",
+      "One event cluster can produce multiple quality bits/cadences; cluster flagged epochs and use event-level matched pairs.",
+      "Retaining flagged rows is required to observe the defect but is not the science-quality policy used for planet injection studies.",
+      "Do not change thresholds or select new stars after seeing outcomes and then call the result an independent validation."
+    ]
+  },
+  "external_references": [
+    "https://spacetelescope.github.io/mast_notebooks/notebooks/Kepler/instrumental_noise_4_electronic_noise/instrumental_noise_4_electronic_noise.html",
+    "https://archive.stsci.edu/kepler/manuals/KDMC-10008-005-Archive_Manual.pdf",
+    "https://exoplanet.ipac.caltech.edu/docs/Kepler_Data_Products_Overview.html"
+  ]
+}
