@@ -43,7 +43,7 @@ def fetch_kepler_quarter(target, quarter):
     if not numbers:
         raise ValueError("Kepler target must contain a numeric KIC ID")
     starid = f"{int(numbers):09d}"
-    qstamp = {2: "2009259160929", 6: "2010265121752", 8: "2011073133259"}.get(quarter)
+    qstamp = {2: "2009259160929", 6: "2010265121752", 7: "2010355172524", 8: "2011073133259"}.get(quarter)
     if qstamp is None:
         raise ValueError("Quarter not in deliberately small predeclared sample")
     filename = f"kplr{starid}-{qstamp}_llc.fits"
