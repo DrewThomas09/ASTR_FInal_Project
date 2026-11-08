@@ -281,7 +281,7 @@ def run(cohort,original_2025_csv,official_predicted_2026_csv,nasa_fits_directory
     outcomes=[]
     for r in config["source_records"]:
         uid=r["uid"];tic=int(r["tic_id"]);sec=int(r["sector_run"].split("-")[0])
-        if uid not in old:
+        if uid not in old.index:
             raise ValueError("Missing original frozen public 2025 TCE UID")
         oldrow=old.loc[uid]
         if int(oldrow.target_id)!=tic or str(oldrow.label)!=str(r["published_2025_label"]):
