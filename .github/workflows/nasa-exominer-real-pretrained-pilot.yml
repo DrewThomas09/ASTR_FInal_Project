@@ -44,6 +44,8 @@ jobs:
           OMP_NUM_THREADS: '1'
         run: |
           set -euo pipefail
+          # NASA process_inputs() rewrites tic_ids_fp; make a writable scratch copy.
+          cp exominer_official_pilot_tic_sector.csv results/nasa_exominer_official_pilot/tics_tbl_writable.csv
           docker run --rm --shm-size=2g \
             -e OPENBLAS_NUM_THREADS=1 \
             -e OMP_NUM_THREADS=1 \
@@ -52,7 +54,7 @@ jobs:
             -e NUMEXPR_NUM_THREADS=1 \
             -e TF_NUM_INTRAOP_THREADS=1 \
             -e TF_NUM_INTEROP_THREADS=1 \
-            -v "${PWD}/exominer_official_pilot_tic_sector.csv:/tics_tbl.csv:ro" \
+            -v "${PWD}/results/nasa_exominer_official_pilot/tics_tbl_writable.csv:/tics_tbl.csv" \
             -v "${PWD}/results/nasa_exominer_official_pilot:/outputs" \
             ghcr.io/nasa/exominer:latest \
             --tic_ids_fp=/tics_tbl.csv \
