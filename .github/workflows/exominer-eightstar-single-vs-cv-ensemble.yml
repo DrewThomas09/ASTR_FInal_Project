@@ -1,0 +1,90 @@
+name: NASA ExoMiner v2.4.0 Actual SINGLE versus 10-model CV ENSEMBLE on Eight Fixed Stars
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exominer-eightstar-single-vs-cv-ensemble.yml'
+      - 'TESS_8SOURCE_SINGLE_VS_CV_ENSEMBLE_FROZEN_2026_11_08.json'
+      - 'tess_original_nasa_single_vs_10model_ensemble.py'
+permissions:
+  contents: read
+jobs:
+  original-nasa-eightstar-comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 53
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3'
+      - name: Verify original sample and prepare exactly identical input records
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results/nasa_single results/nasa_cv_ensemble results/paired_original
+          cp tess_8sources_original_nasa_single_cv_ensemble.csv results/nasa_single/tics.csv
+          cp tess_8sources_original_nasa_single_cv_ensemble.csv results/nasa_cv_ensemble/tics.csv
+          cmp results/nasa_single/tics.csv results/nasa_cv_ensemble/tics.csv
+      - name: Pull original official NASA ExoMiner v2.4.0 pinned container
+        timeout-minutes: 18
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker pull "$image"
+          docker image inspect "$image" --format '{{json .RepoDigests}}' > results/paired_original/nasa_model_digest.json
+      - name: Run original NASA SINGLE model on eight TIC sector pairs
+        timeout-minutes: 14
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker run --rm --shm-size=2g -e OPENBLAS_NUM_THREADS=1 -e OMP_NUM_THREADS=1 -e TF_NUM_INTRAOP_THREADS=1 -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/results/nasa_single/tics.csv:/tics_tbl.csv" \
+            -v "${PWD}/results/nasa_single:/outputs" "$image" \
+            --tic_ids_fp=/tics_tbl.csv --output_dir=/outputs \
+            --data_collection_mode=2min --num_processes=1 --num_jobs=3 \
+            --get_mast_urls_dv_reports=false --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable --task=planet-validation --exominer_model=single \
+            --max_model_workers=1 2>&1 | tee results/paired_original/single_stdout.log
+          test -s results/nasa_single/predictions_spoc-tces_set.csv
+      - name: Run actual NASA 10-model crossvalidation ENSEMBLE using exactly same data sources
+        timeout-minutes: 17
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker run --rm --shm-size=2g -e OPENBLAS_NUM_THREADS=1 -e OMP_NUM_THREADS=1 -e TF_NUM_INTRAOP_THREADS=1 -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/results/nasa_cv_ensemble/tics.csv:/tics_tbl.csv" \
+            -v "${PWD}/results/nasa_cv_ensemble:/outputs" "$image" \
+            --tic_ids_fp=/tics_tbl.csv --output_dir=/outputs \
+            --data_collection_mode=2min --num_processes=1 --num_jobs=3 \
+            --get_mast_urls_dv_reports=false --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable --task=planet-validation --exominer_model=cv_ensemble \
+            --max_model_workers=1 2>&1 | tee results/paired_original/cv_ensemble_stdout.log
+          test -s results/nasa_cv_ensemble/predictions_spoc-tces_set.csv
+      - name: Compare actual NASA original model scores by source ephemeris
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tess_original_nasa_single_vs_10model_ensemble.py \
+            --manifest TESS_8SOURCE_SINGLE_VS_CV_ENSEMBLE_FROZEN_2026_11_08.json \
+            --single results/nasa_single/predictions_spoc-tces_set.csv \
+            --ensemble results/nasa_cv_ensemble/predictions_spoc-tces_set.csv \
+            --out results/paired_original 2>&1 | tee results/paired_original/comparison.log
+      - name: Archive real NASA single and ensemble scores, source matching and all failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-NASA-v240-eightstar-SINGLE-vs-10model-CVensemble-no-independent-holdout
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            results/paired_original/
+            results/nasa_single/predictions_spoc-tces_set.csv
+            results/nasa_single/master_tic_tracking_summary.csv
+            results/nasa_single/master_tce_tracking_summary.csv
+            results/nasa_cv_ensemble/predictions_spoc-tces_set.csv
+            results/nasa_cv_ensemble/master_tic_tracking_summary.csv
+            results/nasa_cv_ensemble/master_tce_tracking_summary.csv
