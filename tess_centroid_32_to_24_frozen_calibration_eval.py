@@ -69,7 +69,7 @@ def axis_interval_nonzero(x,y):
     return bool(a[0]>0 or a[1]<0 or b[0]>0 or b[1]<0)
 
 
-def score_one(observation,threshold):
+def score_one(observation,threshold,inclusive=False):
     cnt=observation.corrected_centroid_source_event_count
     mag=observation.corrected_median_event_local_centroid_vector_pixels
     if pd.isna(cnt) or cnt<3 or pd.isna(mag):
@@ -81,7 +81,7 @@ def score_one(observation,threshold):
     if flag is None:
         return {"eligible":False,"centroid_warning":None,
                 "NASA_candidate_AND_centroid_warning":None}
-    displacement=float(mag)>threshold
+    displacement=(float(mag)>=threshold if inclusive else float(mag)>threshold)
     review=bool(displacement and flag)
     official_score=observation.original_2026_NASA_score_unchanged
     applies=bool(review and pd.notna(official_score) and float(official_score)>=.5)
@@ -110,7 +110,7 @@ def assess(frozen_file,development32_csv,holdout24_csv,holdout_manifest,out):
     rows=[]
     for item in dataframe.itertuples(index=False):
         a=score_one(item,threshold)
-        b=score_one(item,old_gate)
+        b=score_one(item,old_gate,inclusive=True)
         r=item._asdict()
         r.update({
             "new_DEVELOPMENT_CALIBRATED_centroid_magnitude_threshold_pixels":threshold,
