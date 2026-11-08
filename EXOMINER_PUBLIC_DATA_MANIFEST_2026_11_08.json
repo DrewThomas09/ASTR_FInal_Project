@@ -1,0 +1,34 @@
+{
+  "dataset": "Valizadegan et al. 2025 ExoMiner++ 2-minute TESS SPOC S1-S67 public catalogs",
+  "dataset_version_specific_doi": "10.5281/zenodo.15466293",
+  "dataset_concept_doi": "10.5281/zenodo.15466292",
+  "data_license": "CC-BY-4.0",
+  "associated_code_release": "https://github.com/nasa/ExoMiner/releases/tag/v1.0.0",
+  "official_model_pipeline_2026_guide": "https://github.com/nasa/ExoMiner/blob/main/docs/running-exominer-pipeline.md",
+  "source_metadata": "https://zenodo.org/api/records/15466293",
+  "pinned_catalog_files": [
+    {
+      "role": "historically_labeled_TCEs",
+      "key": "exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv",
+      "bytes": 8944735,
+      "md5": "c79f3651d556e71f7878a46f960d09b4",
+      "download_url": "https://zenodo.org/api/records/15466293/files/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv/content"
+    },
+    {
+      "role": "unlabeled_TCEs_with_published_scores",
+      "key": "exominerplusplus_catalog_unk_tces_s1-s67_tess-spoc-2min_complete_1-16-2025_1014.csv",
+      "bytes": 36391080,
+      "md5": "0bad0922ea704cf429fd69bacb13b0c9",
+      "download_url": "https://zenodo.org/api/records/15466293/files/exominerplusplus_catalog_unk_tces_s1-s67_tess-spoc-2min_complete_1-16-2025_1014.csv/content"
+    }
+  ],
+  "large_training_tensor_archive": {
+    "key": "tfrecords_tess-spoc-2min_s1-s67_9-24-2024_1159.tar.xz",
+    "bytes": 18954105376,
+    "md5": "1932be3c3504443e165e6192ace86278",
+    "download_url": "https://zenodo.org/api/records/15466293/files/tfrecords_tess-spoc-2min_s1-s67_9-24-2024_1159.tar.xz/content",
+    "download_during_first_catalog_pilot": false,
+    "caution": "Requires roughly 19GB compressed download and more free space for extraction; the published Zenodo record says its TESS TFRecords exclude Kepler training examples."
+  },
+  "selection_note": "Catalogs are publications of labels and existing ExoMiner scores; they are not a complete original-light-curve pixel image dataset and are not an independent unseen benchmark. Training tensors require separate large archive."
+}
