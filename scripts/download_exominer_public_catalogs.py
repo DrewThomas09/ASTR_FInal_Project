@@ -42,7 +42,7 @@ def verified_download(file_spec, target):
             request=urllib.request.Request(
                 file_spec["download_url"],
                 headers={"User-Agent":"ASTR-University-Science-Reproducibility/1.0",
-                         "Accept":"text/csv"})
+                         "Accept":"*/*"})
             md5=hashlib.md5()
             size=0
             with urllib.request.urlopen(request,timeout=100) as response:
