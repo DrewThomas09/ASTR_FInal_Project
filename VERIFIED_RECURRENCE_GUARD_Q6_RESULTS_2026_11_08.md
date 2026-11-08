@@ -65,6 +65,10 @@ The **first** live workflow run `42512177474` compiled and completed, but its ou
 
 The full program's own tests use synthetics to check that a repeating eclipse can qualify and an isolated step does not automatically qualify. Such unit tests **do not estimate astrophysical false alarms** or real instrument accuracy.
 
+## Verified post-hoc original-flux eclipse corroboration (distinct follow-up)
+
+[See the two-source observational figure and exact published eclipse-center calculation](VERIFIED_RECURRENCE_PROTECTED_STELLAR_ECLIPSES_2026_11_08.md). The original protected Kepler-1647 event is **3.468 hours before the predicted secondary stellar eclipse**; the Kepler-35 event is **2.799 hours before the predicted primary stellar eclipse**. Both raw SAP and NASA corrected PDCSAP show deep observed eclipse troughs near those centers, using the original frozen FITS SHA-256. This strengthens the physical explanation of why those 42 real cadences deserved protection, but is **not a new independent cohort** and supplies no true planet-survey false-alarm or recovery measurement.
+
 ## Interpretation for the ASTR final paper
 
 **Evidence now supports:** a simple physics-informed rule can preserve some original Kepler eclipse-like dips that our local instrument mask would otherwise erase, and it can recover a published stellar binary period or a near half-period alias from the real flux without being passed the literature. It also **misses clear repeating binaries outside its configured period range** and depends strongly on whether the original step screen produced a warning in the first place.
