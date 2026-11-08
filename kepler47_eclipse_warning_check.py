@@ -81,6 +81,46 @@ def analyze_original_warnings(rows):
     return table
 
 
+
+def circular_phase_shift_sensitivity(table, windows=EXPLORATORY_WINDOWS_DAYS,
+                                    n_offsets=20000):
+    """Descriptive *post-hoc* phase-offset check, NOT a confirmatory p-value.
+
+    Preserve all seven observed warning spacings; move their entire sequence
+    together through one fixed published binary orbital cycle.  The phase grid
+    is deterministic and equally spaced, without random sampling or tuning.
+    This controls for warning clustering but not for post-outcome system choice
+    or the choice of matching windows.  Treat as an exploratory diagnostic.
+    """
+    if n_offsets != 20000 or tuple(windows) != (.1, .3):
+        raise ValueError("The documented exploratory sensitivity grid changed")
+    if not table:
+        return {"n_warning_epochs":0, "phase_shift_grid_size":n_offsets,
+                "fractions_ge_observed":{}}
+    times=[float(r["warning_time_bkjd"]) for r in table]
+    binary_period=EPHEMERIDES["primary"]["period_days"]
+    original_distances=[
+        nearest_published_eclipse(time)["absolute_residual_days"] for time in times]
+    summary={}
+    for window in windows:
+        observed=sum(d<=window for d in original_distances)
+        exceed=0
+        for index in range(n_offsets):
+            shift=binary_period*index/n_offsets
+            count=sum(nearest_published_eclipse(time+shift)
+                      ["absolute_residual_days"]<=window for time in times)
+            exceed+=int(count>=observed)
+        summary[f"{window:.1f}_days"]={
+            "observed_close_warnings":int(observed),
+            "joint_shifts_with_at_least_observed":int(exceed),
+            "fraction_of_joint_shifts_at_least_as_aligned":float(exceed/n_offsets)}
+    return {"n_warning_epochs":len(times),
+            "phase_shift_grid_size":n_offsets,
+            "grid_span_days":binary_period,
+            "fractions_ge_observed":summary,
+            "inference_warning":"Exploratory conditional phase-shift sensitivity only: the binary system and windows were chosen after observing the warnings; NOT an independent astronomical hypothesis test."}
+
+
 def report(table):
     n=len(table)
     return {
@@ -95,6 +135,7 @@ def report(table):
         "n_sap_distinct_epochs":sum(x["seen_in_SAP"] for x in table),
         "n_pdcsap_distinct_epochs":sum(x["seen_in_PDCSAP"] for x in table),
         "source_ephemeris":"Orosz et al. 2019, DOI 10.3847/1538-3881/ab0ca0",
+        "exploratory_joint_phase_shift_sensitivity":circular_phase_shift_sensitivity(table),
         "limitations":[
             "Star and hypothesis were identified after inspecting the 12-source cohort. Results are post-hoc, not independent or a prespecified significance test.",
             "An epoch near a published eclipse suggests astrophysical contamination; it does not prove a specific predicted warning is caused by an eclipse.",
