@@ -217,6 +217,23 @@ That observation changed how I thought about our proposed modification. We origi
 
 This is probably the most important lesson from the development work so far. AI helped us reconstruct the original analysis, write new measurements, and run the full NASA model on real data. But when we tested our small changes, the results repeatedly showed that the original system had good reasons for being more complicated. A meaningful improvement will have to target a weakness the full model actually misses, rather than adding a measurement that merely seems reasonable in isolation.
 
+
+### Finding mistakes that the newer model still makes
+
+The first sixteen-star experiment showed that we could run NASA's full neural network and match its decisions to earlier published categories. But because those cases were mostly straightforward, it did not tell us where the model needed help.
+
+I therefore designed a more difficult experiment using the published **2025 ExoMiner++ results**. This time, I intentionally looked for signals that the earlier model had classified incorrectly: eight planet-related labels that it missed, and eight nonplanet labels that it accepted. I froze those sixteen star and event identifiers before running NASA's **2026 version** on them.
+
+The newer model was able to process all sixteen original events and the original telescope measurements associated with them. Against the same historical labels, it corrected **seven of the sixteen earlier mistakes**. Four previously missed planet-related signals were now accepted, and three previously accepted nonplanet signals were now rejected. **Nine disagreements remained**, including four planet-related signals that the model still scored below 0.5 and five nonplanet-labeled signals that it still scored above 0.5.
+
+This result was much more useful than simply reporting a high accuracy score. It gave us real examples to investigate. One source, **TIC 29960109**, was labeled as a nonplanet signal in the older catalog but received a 2026 planet-validation score of **0.993**. Another, **TIC 466840711**, carried a known-planet label but still received a low score of **0.137**. An eclipsing binary, **TIC 165493409**, still received a score of **0.747**, above the usual planet-candidate threshold.
+
+It is important to be careful about what these differences mean. We selected these stars *because the earlier model got them wrong*, and the new model may have encountered some of them during its own training. The original classifications may also have changed as astronomers obtained more evidence. For these reasons, the experiment does not prove that the newer ExoMiner is more accurate on previously unseen planets, or that each historical classification represents final physical truth.
+
+However, it does give us a much better way to develop the next version of our work. Instead of asking AI to add another feature simply because it sounds useful, we can investigate specific disagreements in the actual telescope measurements. The next step is to inspect NASA's detailed input views for the most persistent cases, including individual transits, possible secondary eclipses, detector-quality information, and the position of the light source. Only after understanding those failures should we propose a new adjustment and test it on different stars.
+
+This has become an important part of the project's conclusion so far: **AI has made it possible to reproduce and investigate a complicated scientific model, but the most valuable improvements come from finding out where its physical reasoning may be incomplete, not from making the model more complicated for its own sake.**
+
 ### References and course connections
 
 - ASTR/PHSC 12600: Lesson 2 (luminosity and flux); Lesson 3 (time and measurement); Lessons 5–6 (Kepler's laws and gravity); Lesson 7 (light).
