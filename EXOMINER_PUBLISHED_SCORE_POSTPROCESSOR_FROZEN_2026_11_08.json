@@ -1,0 +1,74 @@
+{
+  "experiment_id": "EXOMINER_PLUSPLUS_PUBLISHED_OOF_SCORE_POSTPROCESSOR_ABLATION_20261108",
+  "design_frozen_before_new_calibrator_training": true,
+  "historical_source": "Valizadegan et al ExoMiner++ 2025 TESS 2-minute SPOC S1-S67 labeled event table, 10 originally held-out host folds, published NASA v1.0.0 model out-of-fold scores",
+  "source_version_doi": "10.5281/zenodo.15466293",
+  "source_original_MD5": "c79f3651d556e71f7878a46f960d09b4",
+  "source_original_byte_count": 8944735,
+  "expected_rows": 57162,
+  "expected_TIC_hosts": 17206,
+  "required_published_folds": 10,
+  "unit_of_data": "TCE observation row, repeated TCEs from same TIC not independent",
+  "split_unit": "target_id star, ten published folds, never fit postprocessor on current fold labels",
+  "positive_labels": [
+    "KP",
+    "CP"
+  ],
+  "negative_labels": [
+    "EB",
+    "NTP",
+    "FP",
+    "NEB",
+    "NPC",
+    "BD"
+  ],
+  "original_model_score": "score, released published 10-fold NASA ExoMiner++ prediction; not recomputed, not changed and 2025 model cannot be equated with 2026 v2.4.0",
+  "baseline_model": "Score-only logistic calibration; input logit(clipped NASA score)",
+  "augmented_model": "Same logistic calibration plus four published physical measured fields and transit duty cycle",
+  "baseline_features": [
+    "logit_original_nasa_score"
+  ],
+  "augmented_additional_features": [
+    "log1p(tce_period)",
+    "log1p(tce_duration)",
+    "log1p(tce_max_mult_ev)",
+    "log1p(ruwe)",
+    "log1p(tce_duration/tce_period)"
+  ],
+  "model": {
+    "class": "sklearn LogisticRegression",
+    "C": 0.3,
+    "max_iter": 2000,
+    "solver": "lbfgs",
+    "class_weight": null,
+    "train_only_median_imputation": true,
+    "train_only_standardization": true
+  },
+  "primary_endpoint": "Pooled out-of-fold sklearn average_precision_score(augmented) minus average_precision_score(score-only calibration) using identical TIC-disjoint test fold",
+  "secondary_endpoints": [
+    "published_nasa_original_AP_without_any_calibration",
+    "ROC AUC",
+    "precision/recall at 0.5",
+    "AP per published fold"
+  ],
+  "confidence_interval": {
+    "method": "whole-star paired bootstrap with original TIC as cluster; resample all observations of a star together",
+    "repetitions": 350,
+    "random_seed": 2026110823,
+    "quantiles": [
+      0.025,
+      0.975
+    ]
+  },
+  "prespecified_threshold": 0.5,
+  "scientific_guardrails": [
+    "Published NASA scores are from the original authors' 2025 cross-validation, not model weights we trained.",
+    "Postprocessor training uses published historical labels on other stars, and tests only held-out historical NASA CV folds; this is not untouched exoplanet validation.",
+    "More than one sector-run TCE can belong to same TIC and must always be grouped.",
+    "No new source features or hyperparameters will be selected after reviewing primary comparison.",
+    "Even a reproducible AP gain would be relative to the 2025 released-score reference and not automatically carry over to NASA's 2026 v2.4.0 official pretrained model.",
+    "RUWE and transit diagnostics already appear in NASA's advanced original models; do not claim those concepts are new.",
+    "Compare baseline calibrated NASA score versus augmented calibration, not merely augmented model versus a weaker four-feature RF.",
+    "High score in UNK is not physical planet confirmation."
+  ]
+}
