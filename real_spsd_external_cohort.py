@@ -88,7 +88,7 @@ def unique_match(events, warning_times, tolerance=.22):
     for i, event in enumerate(events):
         for j, predicted in enumerate(warnings):
             dt = float(predicted - event["archived_time_bkjd"])
-            if abs(dt) <= tolerance:
+            if abs(dt) <= tolerance + 1e-10:
                 choices.append((abs(dt), i, j, dt))
     choices.sort()
     matched_events, matched_warnings = {}, set()
