@@ -1,0 +1,33 @@
+name: Download Official ExoMiner++ 2025 Catalogs (Checksummed)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/exominer-2025-download-catalogs.yml"
+      - "scripts/download_exominer_public_catalogs.py"
+      - "EXOMINER_PUBLIC_DATA_MANIFEST_2026_11_08.json"
+permissions:
+  contents: read
+jobs:
+  public-nasa-catalogs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download the two exact publicly released catalogs, verify bytes and original Zenodo MD5 and count entries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results/exominer_public_catalogs
+          python -u scripts/download_exominer_public_catalogs.py --manifest EXOMINER_PUBLIC_DATA_MANIFEST_2026_11_08.json --out results/exominer_public_catalogs 2>&1 | tee results/exominer_public_catalogs/download-and-verification.log
+      - name: Archive exact public original NASA team catalog CSV files and column inventories
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-exominer-2025-tess-labeled-unlabeled-catalogs-verified
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/exominer_public_catalogs/
