@@ -1,0 +1,36 @@
+# ASTR/PHSC 12600 — Project Status Update
+**Due:** November 20, 2026 · **Working title:** Can AI Improve Exoplanet Detection? Reproducing a Transit Search and Testing Its Physical Failure Modes
+
+**Student-review draft (AI-assisted).** The student should check the full results, write any personally observed details and conclusions in their own words, and disclose AI coding/analysis assistance under course requirements.
+
+## Research question and initial approach
+
+My project asks whether generative AI can help reproduce established exoplanet-detection methods and develop a small, physically motivated improvement that survives independent testing. An exoplanet crossing its star creates a periodic drop in observed brightness. The **Box Least Squares** (BLS) algorithm searches for these transit-like signals, but strong mathematical patterns can also be produced by noise, eclipsing binary stars, and instrumental defects. Detecting a periodic dip is therefore not the same as confirming a planet.
+
+The first part of the project reviewed four main scientific references: Kovács et al. (2002) on BLS; McCauliff et al. (2015) on machine learning to screen Kepler candidates; Thompson et al. (2018) on NASA's DR25 Robovetter; and Robnik et al. (2026) on instrument-aware false-alarm detection. Together, they motivated a three-part investigation: reproduce standard detection, test a simple improvement on real observations and known artificial signals, then compare the results critically with published methods.
+
+## Implementation and what the data show
+
+I developed Python scripts and Colab notebooks using Astropy, NumPy, and scikit-learn, with an openly documented AI-use log. The standard BLS implementation recovered the previously known **Kepler-69b** period of 13.72237 days at 13.71334 days, an error of about **0.066%**. On an independent NASA DR25 catalog exercise involving 8,054 Kepler Objects of Interest, a four-feature random forest achieved **81.6% agreement with historical NASA candidate/false-positive labels** on 1,619 held-out signals, compared with 52.3% for a simple signal-to-noise screening rule. However, the forest missed more historically labeled candidates (109 versus 77), and the labels are previous NASA vetter decisions, not independent confirmation of planets. A proposed additional ensemble-disagreement review method did not show a convincing advantage at an equal manual-review budget.
+
+My next experiments tested the physics more directly. A diagnostic for odd/even eclipse depths and secondary eclipses appeared promising on artificial binary signals but **failed on all six analyzed binaries in a separately preselected real Kepler cohort**, frequently because BLS locked onto a half-period alias. An iterative BLS model subsequently found the already known Kepler-20b after modeling another planet in the system, although it did not recover every target in Kepler-18. These are demonstrations and development findings, not evidence of a new planet.
+
+The most recent experiment investigated whether preprocessing could rescue weak artificial transits injected into *actual NASA Kepler stellar measurements*. An earlier near-gap mask provided no improvement. In a later frozen six-star comparison, ordinary BLS recovered **21/36** injected periods without added artificial defects, versus **22/36** for an added persistent-step mask. Yet the mask removed no real measurements in that group: the extra recovery came entirely from a different numerical threshold. With synthetic instrumental steps, the corresponding numbers were **18/36** and **19/36**. That improvement was a single corrected case, while the new mask also deleted **eight genuine injected transit measurements**. Paired-event analysis did not establish a statistically reliable advantage. Our inverted/rolled-flux control curves are not true Kepler survey false-alarm controls, so comparison with published mission-scale performance remains methodological rather than numerical.
+
+## New observational follow-up and change in direction
+
+On November 8, I completed a separate, prospectively fixed **12-star Quarter 6 SAP-versus-PDCSAP** experiment using archived Kepler photometry and an unchanged detector. Ten star files were available, but **none contained the archived instrumental-dropout flag** needed to assess natural-defect sensitivity. The experiment generated thirteen warning rows; these are not confirmed false alarms.
+
+Twelve warnings were concentrated in the **Kepler-47 binary-star system**, representing seven distinct warning times because the two photometry products sometimes flagged the same instant. An explicitly **post-hoc** comparison with published stellar-eclipse ephemerides from Orosz et al. (2019) showed that five of the seven warnings were within 2.4 hours of a predicted *stellar* eclipse. This suggests our simple detector may confuse real recurring astrophysical eclipses with instrumental discontinuities. Because the star and matching windows were selected after observing the results, this pattern is not an independent statistical validation.
+
+## Remaining work before December 11
+
+The final report will bring together the literature, a small set of real-data plots, quantitative tables and source references, and a critical analysis of why the attempted modifications often failed. I plan to explain how **Kepler's laws** connect transit periods to orbital motion, how **Newtonian gravity** describes orbital dynamics, and how timing cadence and instrument uncertainty affect measurement. If a further experiment is feasible, it must use a new preselected sample with actual archived instrument-defect markers and separately documented eclipsing binaries. I will not present an untested algorithm as a new scientific discovery.
+
+The main conclusion so far is that **AI-assisted coding can reproduce real astronomical measurements and make testing faster, but its apparent successes can disappear under independent observations, careful threshold comparisons, or proper physical interpretation**. The negative results are as important as the successful period recovery.
+
+## References and reproducibility
+
+Kovács, Zucker & Mazeh (2002), DOI: [10.1051/0004-6361:20020802](https://doi.org/10.1051/0004-6361:20020802); McCauliff et al. (2015), DOI: [10.1088/0004-637X/806/1/6](https://doi.org/10.1088/0004-637X/806/1/6); Thompson et al. (2018), DOI: [10.3847/1538-4365/aab4f9](https://doi.org/10.3847/1538-4365/aab4f9); Orosz et al. (2019), DOI: [10.3847/1538-3881/ab0ca0](https://doi.org/10.3847/1538-3881/ab0ca0); Robnik et al. (2026), DOI: [10.1093/mnras/stag419](https://doi.org/10.1093/mnras/stag419).
+
+All original code, frozen research protocols, Kepler source checksums, archived GitHub Actions outputs and AI contribution records: [DrewThomas09/ASTR_FInal_Project](https://github.com/DrewThomas09/ASTR_FInal_Project). AI assistance included literature synthesis, source inspection, software development/testing, statistical analysis and the preparation of this draft.
