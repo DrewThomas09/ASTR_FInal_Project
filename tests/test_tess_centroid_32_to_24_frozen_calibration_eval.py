@@ -37,9 +37,9 @@ def test_real_development_source_digest_required(tmp_path):
 
 
 def test_signed_centroid_bootstrap_interval_controls_manual_review():
-    assert axis_interval_nonzero("[.001,.004]","[-.002,.005]") is True
-    assert axis_interval_nonzero("[-.001,.004]","[-.002,.005]") is False
-    assert axis_interval_nonzero("null","[-.002,.005]") is None
+    assert axis_interval_nonzero("[0.001,0.004]","[-0.002,0.005]") is True
+    assert axis_interval_nonzero("[-0.001,0.004]","[-0.002,0.005]") is False
+    assert axis_interval_nonzero("null","[-0.002,0.005]") is None
 
 
 def test_calibrated_fixed_gate_flags_large_coherent_shift_in_NASA_candidate():
@@ -68,13 +68,13 @@ def test_source_with_two_original_events_is_indeterminate_not_zero_shift():
 
 
 def test_bootstrap_CI_crossing_zero_does_not_trigger_review():
-    a=score_one(fake_row(x="[-.002,.003]",y="[-.003,.003]"),.0016012455384686)
+    a=score_one(fake_row(x="[-0.002,0.003]",y="[-0.003,0.003]"),.0016012455384686)
     assert a["eligible"] is True
     assert a["centroid_warning"] is False
 
 
 def test_bad_original_interval_rejected_instead_of_forging_measurements():
     with pytest.raises(ValueError,match="not two values"):
-        parse_interval("[.002]")
+        parse_interval("[0.002]")
     with pytest.raises(ValueError,match="Malformed"):
         parse_interval("not data")
