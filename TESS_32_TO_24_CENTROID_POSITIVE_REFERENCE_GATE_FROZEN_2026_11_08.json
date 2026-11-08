@@ -1,0 +1,30 @@
+{
+  "experiment_id": "TESS_32_DEVELOPMENT_TO_24_NEW_SOURCE_CENTROID_MAGNITUDE_GATE_20261108",
+  "development_32_run": "https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42526063290",
+  "development_32_artifact_id": 13636045410,
+  "source_development_csv_path_inside_GitHub_artifact": "centroid_physics_analysis/all_32_original_TESS_stars_unchanged_NASA_scores_and_centroid_windows.csv",
+  "source_development_csv_expected_SHA256": "84367f439fb58164a28768fd838288d205c6bdd4375c68b6f5e647580c471ea5",
+  "threshold_calibration_timing": "AFTER examining original 32 development source centroid magnitudes but BEFORE any new 24-star TESS centroid/official inference results were inspected; new 24 source identities separately frozen prior to this calibration.",
+  "threshold_calibration_population": "ONLY 2025 KP/CP-labeled 32-development sources with corrected event local centroid magnitude measured, and at least 3 observed source centroid events",
+  "n_eligible_positive_development_stars": 13,
+  "calibration_quantile": 0.95,
+  "quantile_method": "higher",
+  "frozen_resulting_centroid_threshold_pixels": 0.0016012455384686,
+  "evaluation_compare": "Original untuned 0.05px manual-review rule versus single newly calibrated-from-development-stars magnitude rule, same fixed 3-event and bootstrap-axis nonzero conditions",
+  "calibrated_rule": "Flag for MANUAL REVIEW (never override NASA score) iff NASA v2.4.0 original score >= 0.5, at least 3 original measured centroid events, median event local MOM_CENTR-POS_CORR centroid displacement > training-positive 95th percentile 0.0016012455384686 pixels, AND 95-percent source EVENT bootstrap x or y interval excludes zero. The extra clinical-like threshold is NOT an independent source contamination criterion.",
+  "score_threshold": 0.5,
+  "new24_holdout_run": "https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42526495887",
+  "new24_holdout_manifest": "TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json",
+  "new24_holdout_NASA_model_training_exclusion_UNKNOWN": true,
+  "source_score_pretrained_inference_NOT_modified": true,
+  "same_physics_code": "tess_original_moment_centroid_companion.py",
+  "same_seed_for_centroid_bootstrap": 2026110811,
+  "same_bootstrap_repetitions": 500,
+  "policy": {
+    "source_selection": "24 new-to-project stars fixed independently of original 2025 score and 2026 pretrained score and not selected after seeing new centroid values",
+    "threshold_retuning": "Never change .0016012455384686 or any other decision rule after inspecting new 24 source event data",
+    "report": "All original 24 stars, quality masks, 2026 period match, missingness, NASA original scores, separate warning outcomes for KP/CP vs EB/NTP historically labeled source stars",
+    "scope": "Calibration is post-hoc to 32 development sample. The follow-up 24 sources have been held aside from our centroid threshold development, but could have appeared in NASA's own training. Neither this sidecar nor its warnings have established improved NASA neural classifier discrimination or new planets.",
+    "warning": "n=13 positive development stars, 95th percentile with 'higher' is the MAXIMUM positive reference! Very noisy threshold estimator. Not externally validated independent from NASA neural training and not necessarily useful if no new-source events cross it."
+  }
+}
