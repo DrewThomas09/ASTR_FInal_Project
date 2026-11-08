@@ -184,7 +184,7 @@ def run_original_and_guarded(t, flux, step_settings, guard_settings):
             "jump_fraction":warning["jump_fraction"],
             **context
         })
-    if not np.all(saved[~orig_keep]):
+    if not np.all(saved[orig_keep]):
         raise AssertionError("Protected-data safeguard must not delete baseline-retained cadences")
     if diagnostic["n_persistent_step_events"] != len(diagnostics):
         raise AssertionError("Baseline warning accounting changed")
