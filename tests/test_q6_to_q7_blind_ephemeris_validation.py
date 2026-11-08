@@ -42,7 +42,7 @@ def test_changed_manifest_cannot_silently_pass(tmp_path):
 def test_recovered_individual_dip_windows_and_correct_epoch():
     t,f=simulated_realistic_series()
     f=add_transits(t,f)
-    ev=q.forecast_events(t,f,p=4,epoch=2,duration=.15)
+    ev=q.forecast_events(t,f,period=4,epoch=2,duration=.15)
     assert len(ev)>=20
     assert sum(e["positive_local_depth"] for e in ev)==len(ev)
     assert np.median([e["local_depth_fraction"] for e in ev]) > .005
@@ -51,7 +51,7 @@ def test_recovered_individual_dip_windows_and_correct_epoch():
 def test_predicted_events_absent_when_phase_is_wrong():
     t,f=simulated_realistic_series()
     f=add_transits(t,f)
-    ev=q.forecast_events(t,f,p=4,epoch=3.0,duration=.15)
+    ev=q.forecast_events(t,f,period=4,epoch=3.0,duration=.15)
     assert len(ev)>=20
     assert np.median([e["local_depth_fraction"] for e in ev])<.001
 
