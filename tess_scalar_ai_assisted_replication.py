@@ -151,7 +151,10 @@ def host_bootstrap_delta_ap(host_ids,labels,left,right,n_rep=350,seed=2026110819
     if not (len(h)==len(y)==len(a)==len(b)):
         raise ValueError("Scores and IDs must align")
     stars,inverse=np.unique(h,return_inverse=True)
-    bins=[np.flatnonzero(inverse==i) for i in range(len(stars))]
+    # Sort source rows once: do not rescan every star against all TCEs.
+    ordered=np.argsort(inverse,kind="stable")
+    cuts=np.flatnonzero(np.diff(inverse[ordered]))+1
+    bins=np.split(ordered,cuts)
     if len(stars)<15:
         raise ValueError("Need at least fifteen independent host clusters")
     rng=np.random.default_rng(seed)
@@ -191,8 +194,7 @@ def run(labeled_path,output_dir="results/tess_scalar_ablation",
     n=metrics_at_frozen_threshold(y,official)
     primary_delta=float(a["average_precision_sklearn"]-b["average_precision_sklearn"])
     uncertainty=host_bootstrap_delta_ap(df.target_id,y,baseline,augmented,
-                                        n_rep=spec["evaluation"]["uncertainty"].split("Host-star cluster bootstrap ")[1].split(" replications")[0]
-                                        if False else 350,seed=2026110819)
+                                        n_rep=350,seed=2026110819)
     per_fold=[]
     for k in range(10):
         where=folds==k
