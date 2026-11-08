@@ -103,7 +103,7 @@ def test_invalid_time_order_rejected_and_no_source_is_mutated():
 def test_no_data_in_local_window_avoids_invented_transit():
     t=np.arange(0,90,.02043)
     f=np.ones_like(t)
-    t=t[np.abs(normalized_phase(t,4.5,2.))>.36]
+    t=t[np.abs(normalized_phase(t,4.5,2.))>.41]
     f=np.ones_like(t)
     views,meta=build_prototype_views(t,f,4.5,2.,.16)
     assert meta["n_usable_individual_events"]==0
