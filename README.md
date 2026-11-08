@@ -1,3 +1,7 @@
+## Final report introduction: history of calibration, transit photometry and ExoMiner replication
+
+**[Read/edit the full student-voice opening report draft](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md).** Connects course Lesson 2 (flux versus luminosity and inverse-square law), Lesson 3 (timing), Lessons 5–6 (orbital physics), and Lesson 7 (light) to the history of exoplanet discovery, transit depth, Kepler/TESS methods and ExoMiner's multi-view neural vetting. Explains original MAST and Exoplanet Archive sources, the actual Zenodo 57,162 labeled/147,567 unlabeled TESS records, the still-undownloaded ~19 GB training archive, and **what is genuinely replicated versus still planned**. The text acknowledges the AI-assisted code/data work and does not claim the current prototype outperforms NASA.
+
 # AI-assisted exoplanet detection | ASTR 12600
 
 ## November 8: Actual official ExoMiner++ TESS catalogs now acquired and reproducibly audited
