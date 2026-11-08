@@ -156,3 +156,42 @@ Concrete source-backed example: previously labeled **eclipsing binary TIC 318986
 
 **Overall evidence:** the official NASA model is reproducibly runnable on multiple genuine original source files and sharply separates this frozen historical class-balanced demonstration cohort. Our physically interpretable extra event metrics work on the **same** telescope measurements, but **they do not presently provide a validated improvement over NASA's model**. Moreover, current NASA ExoMiner already uses individual transit, odd/even and source-centroid branches, so our sidecar cannot be called original novelty merely for reconstructing those concepts. The next legitimate test needs previously withheld host stars, fully documented 2026 training exclusions, comparison at a common false-alarm rate and possibly controlled instrument-step injections.
 
+
+## Harder result: what happens to the ExoMiner++ errors from 2025 when scored by the 2026 model?
+
+**[Original source, score-dependent error-challenge selection committed before the new scores](TESS_16STAR_2025_ERRORS_VS_2026_FROZEN_2026_11_08.json)** · [full genuine model + matching original SPOC FITS experiment: 217 tests passed](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42523749559) · [unchanged original 2025 and 2026 scores, all 16 source manifests, original flux-event measurements and paired figure](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42523749559/artifacts/13634607477) · [paired source audit code](tess_exominer_2025_error_challenge.py).
+
+**Research question:** the first class-balanced study achieved 16/16 agreement with historical labels, which was useful software verification but did not identify failure modes. A **separate, deliberately difficult cohort** was instead selected from cases that **the published original 2025 ExoMiner++ model got wrong** against its original labels: 8 historic KP/CP observations with NASA 2025 scores below 0.5 (**2025 false negatives**) and 8 historically negative-source observations (EB/NTP/FP/NPC etc.) with 2025 scores at least 0.5 (**2025 false positives**). Selection used the old 2025 score **on purpose**, plus a fixed source-hash sorting algorithm, but **no 2026 model scores**. Strict original public Zenodo source MD5, TIC+sector+TCE UID, original 2025 labels and score thresholds were verified.
+
+The **actual unchanged official NASA ExoMiner++ v2.4.0** container then scored all 16 exact original 2025 event IDs, with **17 total SPOC TCE scores** across these original stars, **16 matched previously selected TCEs**, and **16/16 matched original TESS SPOC light curves** independently examined by our physical sidecar. The original NASA processing/inference elapsed ~**94.77 seconds** after source download/container startup. No original science cases disappeared from the denominator; there were **zero missing original TCE UIDs**.
+
+### All outcomes against the ORIGINAL historical 2025 class label
+
+| Historical 2025 ExoMiner++ model error category, deliberately selected | Earlier mistakes | New 2026 model now agrees with old label | Error persists in 2026 |
+|---|---:|---:|---:|
+| Older model missed KP/CP-labeled planets/candidates | 8 | **4** | **4** |
+| Older model accepted nonplanet-labeled EB/NTP/FP/NPC TCEs | 8 | **3** | **5** |
+| **Total** | **16** | **7** | **9** |
+
+These are **7 resolved and 9 persistent disagreements with original 2025 labels**, not proof that the 2026 model is inherently better or worse on independent stars. **This population is intentionally enriched for the original model's errors and cannot yield either a general accuracy estimate or a fair original-versus-new aggregate precision/recall comparison.** Moreover, the 2026 model may have been trained on these same older public sources, original labels may be incomplete or changed, and a model score is not independent physical follow-up.
+
+### Specific persisted cases for error analysis
+
+| Exact original TESS source UID | Historical 2025 category | Original published 2025 score | Real NASA 2026 score | Independently measured full source event windows | Question to inspect with original DV and model evidence |
+|---|---|---:|---:|---:|---|
+| `29960109-1-S4` | NPC (not a planet class) | 0.5128 | **0.9934** | 8 | Very confident current planet score against earlier nonplanet classification; inspect pixel localization, DV target/candidate association and nature of the original label |
+| `354518617-1-S6` | NTP | 0.6228 | **0.9433** | 2 | Strong current planet score with only two event windows passing independent sideband-validity checks; inspect pipeline TCE windows and original quality flags |
+| `165493409-1-S10` | EB | 0.8712 | **0.7465** | 2 | Persistently planet-like score for an earlier eclipsing-binary label; check secondary eclipse, period alias and pixel difference images |
+| `466840711-1-S11` | KP | 0.1803 | **0.1373** | 6 | Persistently low score despite a previously known planet label and multiple observable windows; check ephemeris and photometric/source contamination |
+| `158623531-1-S3` | KP | 0.3075 | **0.1836** | 2 | Earlier planet label still low under current classifier; short sector sample and missing event information may matter, without proving causation |
+
+Other persistent source cases are `178155732-1-S4` (CP, 2025 0.1006 → 2026 0.2724), `460205581-1-S11` (CP, 0.0960 → 0.0329), `49899799-1-S4` (FP, 0.8388 → 0.7103), and `101395259-1-S9` (FP, 0.8396 → 0.7812). Actual reference scores with all precision are in archived `all_16_prespecified_2025_model_errors_and_actual_2026_outcomes.csv`.
+
+Examples that changed historical 2025 error status: `422655579-1-S4` (KP label; 2025 0.1163 → 2026 **0.7420**) and `167554898-1-S6` (EB label; 2025 0.6266 → 2026 **0.0491**). These are examples of changed model behavior on an old-source retrospective sample; without a version-matched architecture ablation, the evidence cannot tell us which new feature or new training data was responsible.
+
+**Physics implication:** for the nine persistence cases, simply increasing the sensitivity to flux dips would likely make some of the historically negative examples worse, while automatically vetoing deep dips could reject historically known planet sources. Some sources show only one or two usable independently checked event windows, so an odd/even median-difference test may be **unavailable**, not negative. The next useful engineering change must be driven by **actual NASA detailed model input diagnostics and original source-position evidence**, rather than inventing another catalog threshold.
+
+### Focused engineering diagnostic, not a new test cohort
+
+The five-source [non-blind, qualitative input-inspection plan](TESS_5_PERSISTENT_DISAGREEMENTS_INPUT_REVIEW_2026_11_08.md) documents why we selected two persistent known-planet disagreements and three strong nonplanet-label disagreements for detailed full original NASA input plot and DV report inspection. The [official NASA diagnostic-plot generation workflow](.github/workflows/nasa-exominer-five-disagreement-inputs.yml) was committed. **The selection is made AFTER looking at the new 2026 scores: it is valid for debugging, never as a statistically independent test.** Do not claim any generated PDF/model input graphic until the workflow actually completes and the output is inspected.
+
