@@ -1,0 +1,43 @@
+name: Fresh Kepler Q6 Real SPSD External Cohort
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/real-spsd-external-cohort.yml'
+      - 'real_spsd_external_cohort.py'
+      - 'tests/test_real_spsd_external_cohort.py'
+      - 'REAL_SPSD_EXTERNAL_COHORT_FROZEN_2026_11_08.json'
+
+permissions:
+  contents: read
+
+jobs:
+  external-archival-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific and testing dependencies
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" "astropy>=6,<9" "scipy>=1.11,<2" "requests>=2.31,<3" "scikit-learn>=1.3,<2" "pytest>=8,<10"
+      - name: Verify full existing scientific regression suite
+        run: python -m pytest -q tests
+      - name: Compare SAP and PDCSAP on the frozen 12-KIC Kepler cohort
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p results/real_spsd_external_cohort
+          timeout -k 10s 1500s python -u real_spsd_external_cohort.py --manifest REAL_SPSD_EXTERNAL_COHORT_FROZEN_2026_11_08.json --out results/real_spsd_external_cohort 2>&1 | tee results/real_spsd_external_cohort/run.log
+      - name: Preserve source SHA-256, all planned targets, flagged events, and errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler-real-q6-independent-spsd-sap-pdc
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/real_spsd_external_cohort/
