@@ -1,0 +1,41 @@
+name: Historical Real SPSD Safety Check (Development Only)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/recurrence-guard-known-spsd.yml'
+      - 'recurrence_guard_known_spsd_safety.py'
+
+permissions:
+  contents: read
+
+jobs:
+  known-positive-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install science dependencies
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" "astropy>=6,<9" "scipy>=1.11,<2" "requests>=2.31,<3" "scikit-learn>=1.3,<2" "pytest>=8,<10"
+      - name: Verify all existing software tests
+        run: python -m pytest -q tests
+      - name: Apply unchanged frozen guard to previously documented Kepler Q6 instrumental dropout
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p results/known_spsd_safety
+          timeout -k 10s 550s python -u recurrence_guard_known_spsd_safety.py --out results/known_spsd_safety 2>&1 | tee results/known_spsd_safety/run.log
+      - name: Preserve known positive source hash, warning-level decisions and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-spsd-safety-check-not-independent
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/known_spsd_safety/
