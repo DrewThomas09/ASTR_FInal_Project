@@ -181,6 +181,23 @@ We have now attached our event-recovery measurements to the **same TESS observat
 
 For a convincing conclusion, I would want to see more genuine or realistically injected planetary signals recovered **at the same false-alarm rate**, with uncertainty calculated across independent stars. If we cannot produce that evidence, our conclusion should be that AI helped us understand and reproduce a complex scientific workflow, but that we have **not yet demonstrated a better method for discovering planets**.
 
+
+### Trying to improve ExoMiner's own predictions
+
+After running the real NASA model, I wanted to get closer to the central question of the project: **can AI help make a small improvement to an already sophisticated model, rather than simply build a much weaker replacement?**
+
+I designed another experiment using the researchers' own **2025 ExoMiner++ prediction scores**. Instead of training another random forest from scratch, I tested whether a simple model could improve those existing scores by considering additional physical information about the transit.
+
+I made two versions of this experiment. The first used only ExoMiner++'s original score and tried to calibrate it statistically. The second used the same score but added the reported orbital period, transit duration, detection strength, Gaia's RUWE measurement, and the fraction of the orbit occupied by the transit. These quantities could plausibly help identify cases where an unusual orbital shape or unresolved stellar companion makes a signal less likely to be a planet.
+
+To prevent an unfair comparison, both versions used exactly the same **57,162 historical TESS transit-event records** and the same ten groups of stars. A star held out for testing could not appear in the training data. I also fixed the choices of input measurements and model settings *before* running the comparison.
+
+The experiment produced a result I had not hoped for, but one worth reporting. The original, unmodified ExoMiner++ scores had an average precision of **0.9704**. Calibrating those scores without additional measurements produced **0.9695**, and adding the extra physical measurements produced **0.9694**. The difference between the two new versions was effectively zero. When we calculated uncertainty across whole stars, the interval included both a small improvement and a small worsening.
+
+This meant I could not claim that AI had improved ExoMiner++ with our proposed change. In fact, the original scores performed slightly better than either new version. This does not establish that no improvements are possible. It suggests something more specific: **the model already uses many of the same physical measurements, so adding a few summary numbers to its final score is not enough**.
+
+Importantly, we tested a statistical *postprocessor* of NASA's already-published 2025 scores, not a newly trained version of its neural network. The exercise taught us how to construct a controlled experiment, preserve the original model as a baseline, and accept a negative result without changing the experiment until it looks successful. To test a more meaningful improvement, we need to examine the original light curves and instrument diagnostics on a larger set of stars, where the cause of an apparent transit is genuinely uncertain.
+
 ### References and course connections
 
 - ASTR/PHSC 12600: Lesson 2 (luminosity and flux); Lesson 3 (time and measurement); Lessons 5–6 (Kepler's laws and gravity); Lesson 7 (light).
