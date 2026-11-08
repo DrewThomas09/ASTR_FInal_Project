@@ -198,6 +198,25 @@ This meant I could not claim that AI had improved ExoMiner++ with our proposed c
 
 Importantly, we tested a statistical *postprocessor* of NASA's already-published 2025 scores, not a newly trained version of its neural network. The exercise taught us how to construct a controlled experiment, preserve the original model as a baseline, and accept a negative result without changing the experiment until it looks successful. To test a more meaningful improvement, we need to examine the original light curves and instrument diagnostics on a larger set of stars, where the cause of an apparent transit is genuinely uncertain.
 
+
+### Moving beyond one star: testing the real NASA model on sixteen systems
+
+The next problem was that our first successful ExoMiner++ run involved only one target from NASA's documentation. That showed the software worked, but it did not tell us how it behaved across different astronomical signals.
+
+To make the test more useful, I selected **sixteen stars** from the public TESS catalog **before looking at the model's scores**. The group included four known planet systems, four candidate planet signals, four eclipsing binaries, and four examples labeled as nontransiting phenomena. Within each category, I deliberately included weaker and stronger detected signals so that the experiment would not consist only of the clearest examples.
+
+I then ran NASA's actual pretrained **2026 ExoMiner++ model** on the matching telescope observations. The software found and scored **22 transit-like events** among the sixteen stars. Sixteen of those were the exact events I had chosen ahead of time. All sixteen were available for analysis, and our separate physical-measurement program successfully examined the same original TESS light curves.
+
+The results were encouraging for reproducing the system. The model assigned scores above its default planet-candidate threshold to **all eight previously labeled planets or planet candidates**. It assigned scores below that threshold to **all eight eclipsing binaries or nontransiting phenomena**. In other words, its classifications agreed with the earlier published categories for **16 of the 16 selected events**.
+
+However, this is not evidence that ExoMiner has 100% accuracy on newly discovered planets. These stars were previously studied, the sample was deliberately balanced by label, and we have not verified that the 2026 neural network was trained without them. The result is evidence that we can correctly run and inspect the original model across multiple classes, rather than a new independent measurement of its overall accuracy.
+
+The extra physical measurements were also revealing. Across the sixteen original light curves, our program examined **81 individual brightness events**. One eclipsing-binary system, **TIC 318986273**, produced a very deep dip, roughly **11.6%** of the local stellar light, yet NASA's planet-validation score was almost zero. The brightness also returned close to normal after the eclipse. This showed that even a deep, repeatable, well-formed dip with a normal recovery can come from two stars rather than a planet.
+
+That observation changed how I thought about our proposed modification. We originally hoped that tracking how the light recovers after a dip might distinguish genuine planetary transits from instrument problems. It may still be useful for studying certain instrument defects, but the sixteen-star experiment showed clearly that **it cannot distinguish planets from eclipsing binaries by itself**. Both phenomena can return to their normal brightness afterward. The model needs the additional evidence that ExoMiner already uses, including alternating eclipse shapes and evidence about which star produced the signal.
+
+This is probably the most important lesson from the development work so far. AI helped us reconstruct the original analysis, write new measurements, and run the full NASA model on real data. But when we tested our small changes, the results repeatedly showed that the original system had good reasons for being more complicated. A meaningful improvement will have to target a weakness the full model actually misses, rather than adding a measurement that merely seems reasonable in isolation.
+
 ### References and course connections
 
 - ASTR/PHSC 12600: Lesson 2 (luminosity and flux); Lesson 3 (time and measurement); Lessons 5–6 (Kepler's laws and gravity); Lesson 7 (light).
