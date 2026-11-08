@@ -55,7 +55,7 @@ Counts are intentionally **method-level**. The same Kepler-34 warning times occu
 
 **Kepler-16 (KIC 12644769):** One PDCSAP warning was not protected. Its measured local trough depth at the warning was approximately **0.065%**, below the frozen 0.25% floor; its reported binary period is also much longer than the 22-day search. The rule has real sensitivity limitations.
 
-**Remaining eight analyzed stars without any original warnings:** Kepler-64, Kepler-413, Kepler-453, Kepler-1661, and the five planet hosts Kepler-1, -2, -3, -5 and -6 (actually nine remaining stars: these four binaries plus five planet hosts). A no-warning source cannot contribute a positive or negative event-level comparison of the new safeguard.
+**Remaining nine analyzed stars without any original warnings:** Kepler-64, Kepler-413, Kepler-453, Kepler-1661, and the five planet hosts Kepler-1, -2, -3, -5 and -6. A no-warning source cannot contribute a positive or negative event-level comparison of the new safeguard.
 
 **All 13 sources:** None had an original archived positive SPSD quality-bit-1024 marker. Thus **we still cannot measure performance on documented real instrument steps** in this independent cohort. Although the prior known positive KIC 7461601 demonstrates the old step rule, that preselected educational source is not part of this holdout and cannot serve as independent instrument-sensitivity validation.
 
