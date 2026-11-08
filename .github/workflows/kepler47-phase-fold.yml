@@ -1,0 +1,51 @@
+name: Kepler-47 Observed Binary Phase Fold
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/kepler47-phase-fold.yml'
+      - 'kepler47_phase_fold_diagnostic.py'
+      - 'tests/test_kepler47_phase_fold_diagnostic.py'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  phase-fold-physical-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific requirements
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" "astropy>=6,<9" "scipy>=1.11,<2" "requests>=2.31,<3" "scikit-learn>=1.3,<2" "pytest>=8,<10"
+      - name: Run all scientific regressions
+        run: python -m pytest -q tests
+      - name: Get unmodified original Q6 warning timestamps
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p original
+          gh run download 42510882421 --repo "${{ github.repository }}" -n kepler-real-q6-independent-spsd-sap-pdc --dir original
+      - name: Verify original warning CSV fingerprint
+        run: echo '1be4b1c9e28f31ad506cfed191c7818a9aa8d1627a269a87d89de3c6bc0a0b99  original/unmatched_warnings_not_confirmed_false_alarms.csv' | sha256sum -c -
+      - name: Fetch same official Kepler-47 source and plot stellar eclipse-folded flux
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p results/kepler47_phase_fold
+          timeout -k 10s 600s python -u kepler47_phase_fold_diagnostic.py --warnings original/unmatched_warnings_not_confirmed_false_alarms.csv --out results/kepler47_phase_fold 2>&1 | tee results/kepler47_phase_fold/run.log
+      - name: Preserve original-file SHA, event table, physical plots and complete logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler47-original-flux-binary-phase-physical-plots
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/kepler47_phase_fold/
