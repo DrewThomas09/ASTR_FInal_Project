@@ -1,0 +1,91 @@
+{
+  "schema_version": "2026-11-08-period-aware-validation-v1",
+  "locked_before_first_new_training": true,
+  "purpose": "Safety-oriented period-bin validation threshold policy to reduce historical long-period (>100 d) candidate dismissals in the same four-feature forest. Report false-positive tradeoff, balanced accuracy, and all negative outcomes. No guarantee of improvement, no physical exoplanet confirmation.",
+  "source": {
+    "table": "q1_q17_dr25_koi",
+    "expected_sha256": "c907e064c7369d4b073ba422283ddfbbf7499d472ec3cc0787254f3407e5e045",
+    "features": [
+      "koi_period",
+      "koi_duration",
+      "koi_depth",
+      "koi_model_snr"
+    ],
+    "expected_labeled_rows": 8054
+  },
+  "development_motivation": "Previously examined seed-12600 long-period group: RF labeled-candidate recall 44/71 while logistic 66/71, but the logistic let many more historical false-positive labels through. This is explicitly an after-the-fact method-development idea.",
+  "new_group_split_seeds": [
+    14000,
+    14001,
+    14002,
+    14003,
+    14004,
+    14005,
+    14006,
+    14007,
+    14008,
+    14009
+  ],
+  "evaluation": "GroupShuffleSplit by KIC host, exactly like ml_screening.split_by_star, 20% distinct-star test, 25% of remaining distinct-star validation. Never tune on test labels. Host sets do overlap ACROSS seeds so split results are not independent evidence.",
+  "rf_parameters": {
+    "n_estimators": 120,
+    "max_depth": 9,
+    "min_samples_leaf": 3,
+    "random_state": "each split seed",
+    "imputation": "training median",
+    "feature_transform": "log1p"
+  },
+  "baseline": {
+    "threshold": "ONE global validation candidate recall>=0.90 cutoff",
+    "from": "ml_screening.cutoff"
+  },
+  "new_method": {
+    "bins": [
+      {
+        "name": "short",
+        "lower_inclusive": 0,
+        "upper_exclusive": 10
+      },
+      {
+        "name": "medium",
+        "lower_inclusive": 10,
+        "upper_exclusive": 100
+      },
+      {
+        "name": "long",
+        "lower_inclusive": 100,
+        "upper_exclusive": null
+      }
+    ],
+    "per_bin_goal_historical_candidate_recall_on_validation": 0.9,
+    "minimum_positive_validation_examples_to_use_bin_threshold": 30,
+    "fallback_if_fewer": "Use the original global validation threshold for that bin",
+    "missing_period": "Use the original global validation cutoff, no excluded test rows",
+    "same_RF_scores_for_baseline_and_new_policy": true,
+    "no_retraining_or_new_predictors": true
+  },
+  "primary_scientific_endpoint": "Difference in balanced accuracy on TEST signals with period >=100 days, period-bin policy minus global-threshold policy, for predeclared first seed 14000.",
+  "secondary_measures": [
+    "Long-period candidate recall and false-positive rate, with denominators and star-clustered uncertainty.",
+    "Overall balanced accuracy and false-negative/false-positive counts.",
+    "Per-bin counts, cutoff values and fallback logic.",
+    "Each of the ten overlapping grouped-host split results without pooling p-values.",
+    "No automatic human-review intervention or claim of more confirmed planets."
+  ],
+  "stats": {
+    "two_sided_host_method_swap_permutations": 20000,
+    "permutation_seed": 2026110803,
+    "paired_star_bootstrap_repetitions": 2000,
+    "bootstrap_seed": 2026110804,
+    "alpha": 0.05,
+    "interpretation": "Even any low p value here is a data-development sensitivity analysis, NOT truly independent confirmation; original NASA catalog, baseline and original long-period difficulty already inspected.",
+    "multiple_testing": "One primary long-period balanced-accuracy contrast; other endpoints descriptive. All results must be retained regardless of direction."
+  },
+  "limitations": [
+    "The catalog's previous Robovetter candidate/false-positive labels are not confirmed physical planets.",
+    "Fewer long-period observations and low transit count can make faint planets harder; no direct light-curve completeness metric estimated.",
+    "Improving recall can also increase false-positive candidate alerts; a threshold movement is NOT intrinsic classifier skill improvement.",
+    "The method was conceived after viewing a weakness in prior split, so the reported new seeded folds are not an entirely independent scientific cohort.",
+    "When score rankings are unchanged, ROC AUC cannot improve: only operational decision thresholds move."
+  ]
+}
