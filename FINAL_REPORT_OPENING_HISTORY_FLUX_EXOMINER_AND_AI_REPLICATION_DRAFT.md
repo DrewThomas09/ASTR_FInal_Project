@@ -160,11 +160,24 @@ The earlier pictures of Kepler-35 showed very different odd and even eclipse sha
 
 This is exactly why I wanted to work on a well-established model instead of immediately building a replacement. Each additional input may appear physically reasonable, but a model improves only if the information helps on enough independent observations and does not create new mistakes.
 
+
+### Connecting our new measurements to NASA's actual model
+
+We have now been able to go one step further than examining separate Kepler examples. We ran the original NASA ExoMiner++ model and our additional brightness-recovery measurements on **the same TESS observation**.
+
+The official model found one transit-like event for **TIC 167526485 in Sector 6**, with a reported period of about **5.01 days**. Its pretrained network assigned the signal a planet-validation score of **0.0203** and classified it as **not a planet candidate** at the standard threshold.
+
+We then examined the original TESS flux measurements that NASA's pipeline had downloaded for this specific event. Our code identified **four separate brightness dips**, each around **1.1–1.2%** of the local light level. The star's measured brightness also returned close to its earlier level after each dip.
+
+This result is interesting because it shows why the transit method needs more than a search for repeated changes in flux. By itself, the light curve looks like a series of real eclipses. But there are several things that might cause such a pattern, including planets, eclipsing stars, or light entering the telescope from another source. ExoMiner has access to additional diagnostics that our simple recovery check does not capture.
+
+The result does **not** tell us why NASA rejected this particular signal, or whether the source was definitively a binary star or an instrument effect. It also does not yet show that our additional measurement improves the classification. But it proves that we can now examine **the same underlying telescope measurements as the actual ExoMiner model** and compare what each diagnostic reports, without modifying the original model's score.
+
 ### Where the development stands
 
 The project has now moved through three distinct stages: a simple machine-learning baseline, reconstruction and testing of real transit measurements, and finally a successful run of the **official pretrained ExoMiner++ neural network**. We have also completed one small feature experiment on the TESS catalog, with a modest but statistically uncertain result.
 
-The next stage is more demanding. We need to apply the official pretrained model to a wider, fixed set of stars and then attach our event-recovery measurements to those **same TESS observations**, not to a separate Kepler example. Only after this can we test whether an added input or modified decision rule helps the existing model rather than merely improving one of our smaller substitutes.
+We have now attached our event-recovery measurements to the **same TESS observations** used by NASA's real pretrained model for one documented source. The next stage is more demanding: testing a wider, fixed set of stars rather than relying on this single example. Only after this can we test whether an added input or modified decision rule helps the existing model rather than merely improving one of our smaller substitutes.
 
 For a convincing conclusion, I would want to see more genuine or realistically injected planetary signals recovered **at the same false-alarm rate**, with uncertainty calculated across independent stars. If we cannot produce that evidence, our conclusion should be that AI helped us understand and reproduce a complex scientific workflow, but that we have **not yet demonstrated a better method for discovering planets**.
 
