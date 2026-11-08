@@ -10,7 +10,7 @@ Reanalyzing the **original archived case-level results without changing the froz
 
 [Precommitted 12-star Quarter 6 cohort and frozen rules](REAL_SPSD_EXTERNAL_COHORT_FROZEN_2026_11_08.json) · [exact reproducible instrument experiment](real_spsd_external_cohort.py) · [full analysis methods and caveats](REAL_SPSD_EXTERNAL_COHORT_METHODS.md) · [automated GitHub Action](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/workflows/real-spsd-external-cohort.yml).
 
-This experiment applies the unchanged November 7 local-step detector to **both original SAP_FLUX and NASA PDC-corrected PDCSAP_FLUX at the same timestamps** for twelve *preselected* Kepler Quarter 6 stars. The known favorable teaching example KIC 7461601 is explicitly **excluded**. Only after detection does the experiment match candidate step onsets to original FITS bit-1024 SPSD archival event markers; all star download failures remain reported. Every source FITS SHA-256, matched event, unmatched warning and limitation is retained. **This is a newly frozen observational test, not a completed verified scientific result until the original NASA run finishes**; no unflagged warning is presumed a genuine false positive, and there is no new planet detection claim.
+This experiment applies the unchanged November 7 local-step detector to **both original SAP_FLUX and NASA PDC-corrected PDCSAP_FLUX at the same timestamps** for twelve *preselected* Kepler Quarter 6 stars. The known favorable teaching example KIC 7461601 is explicitly **excluded**. Only after detection does the experiment match candidate step onsets to original FITS bit-1024 SPSD archival event markers; all star download failures remain reported. Every source FITS SHA-256, matched event, unmatched warning and limitation is retained. **The original NASA run subsequently completed; see the verified negative outcome in the next section**; no unflagged warning is presumed a genuine false positive, and there is no new planet detection claim.
 
 ## November 8 verified: New real-Q6 source audit and binary eclipse contamination
 
@@ -20,7 +20,7 @@ This experiment applies the unchanged November 7 local-step detector to **both o
 
 **Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
-**[November 20 project status report draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md)** is ready for student review, citation verification, and submission-format editing. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
+**[Concise November 20 submission draft](NOV_20_STATUS_UPDATE_CONCISE_DRAFT.md)** and the [full project status draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md) are ready for student review, citation verification, and submission-format editing. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
 
 ## Real, NASA-labeled instrument defect: physical case study
 
