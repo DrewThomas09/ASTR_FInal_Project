@@ -1,0 +1,187 @@
+{
+  "experiment_id": "EXOMINER_16_HOST_SCORE_BLIND_FEASIBILITY_20261108",
+  "source": "Original public NASA-team ExoMiner++ 2025 2-minute SPOC S1-S67 Zenodo labeled TCE catalog",
+  "source_version_doi": "10.5281/zenodo.15466293",
+  "source_original_md5": "c79f3651d556e71f7878a46f960d09b4",
+  "selection_timestamp_date": "2026-11-08",
+  "precommitted_status": "Chosen and source-verified BEFORE looking at 2026 pretrained ExoMiner scores for these particular 16 TIC/sector candidates",
+  "selection_method": "On authentic public labeled CSV read ONLY uid,target_id,label,fold,tce_period,tce_duration,tce_max_mult_ev (NOT score): restrict single-sector runs in sectors 3..12, period 2..10d, duration .05..0.4d; for each label KP,CP,EB,NTP choose the lexicographically smallest SHA256('ASTR_MODEL_COHORT_20261108|'+uid) from 7<=MES<20 and 20<=MES<80, two separate TICs per stratum, without repetition.",
+  "selection_score_blind": true,
+  "selection_seed_string": "ASTR_MODEL_COHORT_20261108",
+  "model_to_run": "Original official NASA ExoMiner++ v2.4.0 planet-validation SINGLE pretrained model, image/version digest pinned separately at runtime",
+  "task": "TESS SPOC 2-minute planet-validation; not end-to-end transit search and not independent planet confirmation",
+  "evaluation_preregistered": [
+    "report all 16 requested source TICs, sectors, and original published 2025 labels even when NASA 2026 data collection fails",
+    "record exact NASA model image digest, version and original produced TCE UID and signal score",
+    "report what fraction of exact requested source event UIDs gets scored and which fail",
+    "report confusion of NASA PC/NOT_PC with original 2025 published KP+CP vs EB+NTP (only if matching exact source UID exists), labeled descriptive only, no generalizable CIs or NASA version-v1 comparison",
+    "calculate original measured pre/post step, local depth, individual event counts on same matching TESS SPOC FITS with explicit missing-data exclusions",
+    "never optimize, train or retune thresholds or the source cohort on these 16 stars, and never treat their historical labels as new independent planet truth"
+  ],
+  "no_significance_claim_under_16_stars": true,
+  "not_independent_of_nasa_2026_training": true,
+  "n_total_prespecified_sources": 16,
+  "n_per_class": 4,
+  "source_records": [
+    {
+      "uid": "220029715-1-S11",
+      "tic_id": 220029715,
+      "sector_run": "11-11",
+      "published_2025_label": "KP",
+      "published_2025_fold": 2,
+      "period_days_from_published_catalog": 3.185221,
+      "signal_multiple_event_statistic": 13.291478,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "248111245-1-S10",
+      "tic_id": 248111245,
+      "sector_run": "10-10",
+      "published_2025_label": "KP",
+      "published_2025_fold": 8,
+      "period_days_from_published_catalog": 4.636234,
+      "signal_multiple_event_statistic": 19.722195,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "38846515-1-S8",
+      "tic_id": 38846515,
+      "sector_run": "8-8",
+      "published_2025_label": "KP",
+      "published_2025_fold": 7,
+      "period_days_from_published_catalog": 2.849369,
+      "signal_multiple_event_statistic": 70.754509,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "12862099-1-S3",
+      "tic_id": 12862099,
+      "sector_run": "3-3",
+      "published_2025_label": "KP",
+      "published_2025_fold": 7,
+      "period_days_from_published_catalog": 2.423823,
+      "signal_multiple_event_statistic": 36.095585,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "307210830-1-S10",
+      "tic_id": 307210830,
+      "sector_run": "10-10",
+      "published_2025_label": "CP",
+      "published_2025_fold": 1,
+      "period_days_from_published_catalog": 3.690771,
+      "signal_multiple_event_statistic": 18.432001,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "387690507-1-S6",
+      "tic_id": 387690507,
+      "sector_run": "6-6",
+      "published_2025_label": "CP",
+      "published_2025_fold": 4,
+      "period_days_from_published_catalog": 6.388488,
+      "signal_multiple_event_statistic": 16.44689,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "366622912-1-S7",
+      "tic_id": 366622912,
+      "sector_run": "7-7",
+      "published_2025_label": "CP",
+      "published_2025_fold": 9,
+      "period_days_from_published_catalog": 3.115247,
+      "signal_multiple_event_statistic": 26.915272,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "70899085-1-S5",
+      "tic_id": 70899085,
+      "sector_run": "5-5",
+      "published_2025_label": "CP",
+      "published_2025_fold": 5,
+      "period_days_from_published_catalog": 4.051764,
+      "signal_multiple_event_statistic": 35.307442,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "348555861-1-S12",
+      "tic_id": 348555861,
+      "sector_run": "12-12",
+      "published_2025_label": "EB",
+      "published_2025_fold": 9,
+      "period_days_from_published_catalog": 2.155607,
+      "signal_multiple_event_statistic": 9.544192,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "132448273-1-S8",
+      "tic_id": 132448273,
+      "sector_run": "8-8",
+      "published_2025_label": "EB",
+      "published_2025_fold": 6,
+      "period_days_from_published_catalog": 2.254351,
+      "signal_multiple_event_statistic": 17.306421,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "318986273-1-S10",
+      "tic_id": 318986273,
+      "sector_run": "10-10",
+      "published_2025_label": "EB",
+      "published_2025_fold": 9,
+      "period_days_from_published_catalog": 3.107369,
+      "signal_multiple_event_statistic": 68.259659,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "294206967-1-S10",
+      "tic_id": 294206967,
+      "sector_run": "10-10",
+      "published_2025_label": "EB",
+      "published_2025_fold": 1,
+      "period_days_from_published_catalog": 2.757546,
+      "signal_multiple_event_statistic": 24.080891,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "142206468-1-S3",
+      "tic_id": 142206468,
+      "sector_run": "3-3",
+      "published_2025_label": "NTP",
+      "published_2025_fold": 6,
+      "period_days_from_published_catalog": 9.956525,
+      "signal_multiple_event_statistic": 12.070317,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "287350461-1-S3",
+      "tic_id": 287350461,
+      "sector_run": "3-3",
+      "published_2025_label": "NTP",
+      "published_2025_fold": 1,
+      "period_days_from_published_catalog": 9.57214,
+      "signal_multiple_event_statistic": 11.655705,
+      "MES_band": "7-20"
+    },
+    {
+      "uid": "177308817-1-S9",
+      "tic_id": 177308817,
+      "sector_run": "9-9",
+      "published_2025_label": "NTP",
+      "published_2025_fold": 0,
+      "period_days_from_published_catalog": 8.646241,
+      "signal_multiple_event_statistic": 42.206486,
+      "MES_band": "20-80"
+    },
+    {
+      "uid": "349521875-1-S5",
+      "tic_id": 349521875,
+      "sector_run": "5-5",
+      "published_2025_label": "NTP",
+      "published_2025_fold": 9,
+      "period_days_from_published_catalog": 7.673023,
+      "signal_multiple_event_statistic": 20.754747,
+      "MES_band": "20-80"
+    }
+  ]
+}
