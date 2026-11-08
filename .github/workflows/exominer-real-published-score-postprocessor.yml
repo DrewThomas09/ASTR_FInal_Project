@@ -1,0 +1,54 @@
+name: Frozen Original ExoMiner++ Score-only vs Physics Postprocessor (Actual TESS Data)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exominer-real-published-score-postprocessor.yml'
+      - 'EXOMINER_PUBLISHED_SCORE_POSTPROCESSOR_FROZEN_2026_11_08.json'
+      - 'exominer_published_score_postprocessor.py'
+      - 'tests/test_exominer_published_score_postprocessor.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-2025-tess-score-physics-postprocess:
+    runs-on: ubuntu-latest
+    timeout-minutes: 19
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact analytical and validation requirements
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scikit-learn>=1.3,<2' 'matplotlib>=3.7,<4' 'pytest>=8,<10' 'scipy>=1.11,<2' 'astropy>=6,<9' 'requests>=2.31,<3'
+      - name: Run all current scientific regression tests before model fitting
+        run: python -m pytest -q tests
+      - name: Read original verified 2025 ExoMiner++ source, no score tuning
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/exominer_2025
+          gh run download 42516458999 --repo "${{ github.repository }}" -n official-exominer-2025-tess-labeled-unlabeled-catalogs-verified --dir data/exominer_2025
+      - name: Train both preregistered postprocessors on original research 10 TIC-disjoint folds
+        shell: bash
+        env:
+          PYTHONUNBUFFERED: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          MPLBACKEND: Agg
+        run: |
+          set -euo pipefail
+          mkdir -p results/official_2025_exominer_score_postprocessor
+          python -u exominer_published_score_postprocessor.py \
+            --labeled data/exominer_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv \
+            --protocol EXOMINER_PUBLISHED_SCORE_POSTPROCESSOR_FROZEN_2026_11_08.json \
+            --out results/official_2025_exominer_score_postprocessor 2>&1 | tee results/official_2025_exominer_score_postprocessor/execution_log.txt
+      - name: Preserve original NASA vs calibrated inference scores and star-cluster uncertainty
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frozen-real-ExoMinerplusplus-2025-published-score-physics-calibration
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/official_2025_exominer_score_postprocessor/
