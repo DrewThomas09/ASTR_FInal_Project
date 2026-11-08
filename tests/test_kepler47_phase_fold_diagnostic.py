@@ -16,7 +16,9 @@ def test_primary_binary_phase_wraps_periodically():
     t=e["epoch_bjd"]-BKJD_REFERENCE_BJD
     period=e["period_days"]
     assert float(phase_primary(t)) == pytest.approx(0,abs=1e-12)
-    assert float(phase_primary(t+period)) == pytest.approx(0,abs=1e-12)
+    second=float(phase_primary(t+period))
+    # 0 and 1 are physically the same periodic phase; allow FP rounding at wrap.
+    assert min(abs(second),abs(second-1.0)) < 1e-10
 
 
 def test_secondary_binary_phase_not_forced_to_half():
