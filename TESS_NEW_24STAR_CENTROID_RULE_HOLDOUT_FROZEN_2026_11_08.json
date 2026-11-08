@@ -1,0 +1,270 @@
+{
+  "experiment_id": "TESS_NEW_TO_STUDENT_24_STAR_FIXED_CENTROID_GATE_HOLDOUT_20261108",
+  "created_before_24star_2026_pretrained_model_scores_and_centroid_measurements": true,
+  "fixed_original_source": "Original published ExoMiner++ 2025 TESS SPOC 2-min S1-S67 labeled source DOI 10.5281/zenodo.15466293, canonical MD5 c79f3651d556e71f7878a46f960d09b4",
+  "source_score_blind_selection": true,
+  "previous_sample_exclusion": "All previous 32 observed hosts from the two existing 16-star cohorts and the NASA tutorial target TIC 167526485, giving 33 previously handled sources excluded",
+  "selection_algorithm": "Read ONLY original 2025 uid,target_id,label,fold,tce_period,tce_duration,tce_max_mult_ev source fields; NEVER read original score column. Restrict true event '-1-S#' with single sector 3..12, period 2..10 days, duration 0.05..0.4 days, published label KP/CP/EB/NTP, MES [7,20) or [20,80), exclude 33 prior TICs. For each of 4 labels and 2 MES bands take first 3 distinct TICs by ascending SHA256('ASTR_CENTROID_24STAR_HOLDOUT_20261108|'+uid) without replacement.",
+  "selection_seed": "ASTR_CENTROID_24STAR_HOLDOUT_20261108",
+  "original_class_balance": {
+    "KP": 6,
+    "CP": 6,
+    "EB": 6,
+    "NTP": 6
+  },
+  "MES_band_balance_per_class": {
+    "7_to_20": 3,
+    "20_to_80": 3
+  },
+  "number_new_star_hosts": 24,
+  "relative_independence": "Holdout relative to our 32 development stars and .05-pixel rule only. NASA's pretraining may include these historical source stars; no assertion of independent official model inference.",
+  "unchanged_rule_reference": "TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json",
+  "centroid_rule_frozen_BEFORE_this_holdout": "At least 3 valid independent events with 3 inside/6 each side real MOM_CENTR-POS_CORR observations; median event-local vector shift >=.05 TESS pixels and at least one 95pct event-bootstrap axis interval excludes zero, 500 event-level bootstrap reps fixed seed 2026110811",
+  "model_container": "ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9",
+  "model_status": "Unchanged official NASA ExoMiner++ v2.4.0 pretrained SINGLE planet-validation original SPOC 2-min model",
+  "evaluation": "Report original NASA scores and period identity, all 24 source statuses, corrected and uncorrected centroid events, fraction eligible for manual-review gate, number of historical KP+CP versus EB+NTP sources flagged, whether NASA PC-labeled score signals are affected. Do not train or tune .05 gate on this source.",
+  "not_new_nasa_classifier": true,
+  "not_independent_new_planet_truth": true,
+  "source_records": [
+    {
+      "uid": "287563610-1-S11",
+      "tic_id": 287563610,
+      "sector_run": "11-11",
+      "original_2025_historical_label": "KP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 3.7997396,
+      "old_2025_duration_days_display_only": 0.0952351,
+      "old_2025_multiple_event_statistic_display_only": 14.8987255
+    },
+    {
+      "uid": "234825296-1-S6",
+      "tic_id": 234825296,
+      "sector_run": "6-6",
+      "original_2025_historical_label": "KP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 9.2460623,
+      "old_2025_duration_days_display_only": 0.1004493,
+      "old_2025_multiple_event_statistic_display_only": 7.7569795
+    },
+    {
+      "uid": "42821097-1-S6",
+      "tic_id": 42821097,
+      "sector_run": "6-6",
+      "original_2025_historical_label": "KP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 3.8954563,
+      "old_2025_duration_days_display_only": 0.1986185,
+      "old_2025_multiple_event_statistic_display_only": 12.4248886
+    },
+    {
+      "uid": "59843967-1-S6",
+      "tic_id": 59843967,
+      "sector_run": "6-6",
+      "original_2025_historical_label": "KP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 2.5168247,
+      "old_2025_duration_days_display_only": 0.105623,
+      "old_2025_multiple_event_statistic_display_only": 34.0931015
+    },
+    {
+      "uid": "166833457-1-S4",
+      "tic_id": 166833457,
+      "sector_run": "4-4",
+      "original_2025_historical_label": "KP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 2.9624815,
+      "old_2025_duration_days_display_only": 0.080476,
+      "old_2025_multiple_event_statistic_display_only": 78.3125458
+    },
+    {
+      "uid": "78055054-1-S5",
+      "tic_id": 78055054,
+      "sector_run": "5-5",
+      "original_2025_historical_label": "KP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 4.3884706,
+      "old_2025_duration_days_display_only": 0.1272472,
+      "old_2025_multiple_event_statistic_display_only": 78.8490067
+    },
+    {
+      "uid": "413248763-1-S8",
+      "tic_id": 413248763,
+      "sector_run": "8-8",
+      "original_2025_historical_label": "CP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 3.9307916,
+      "old_2025_duration_days_display_only": 0.0555232,
+      "old_2025_multiple_event_statistic_display_only": 16.5031414
+    },
+    {
+      "uid": "73228647-1-S10",
+      "tic_id": 73228647,
+      "sector_run": "10-10",
+      "original_2025_historical_label": "CP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 2.5404551,
+      "old_2025_duration_days_display_only": 0.1014918,
+      "old_2025_multiple_event_statistic_display_only": 7.6056848
+    },
+    {
+      "uid": "460984940-1-S10",
+      "tic_id": 460984940,
+      "sector_run": "10-10",
+      "original_2025_historical_label": "CP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 2.7967227,
+      "old_2025_duration_days_display_only": 0.1042888,
+      "old_2025_multiple_event_statistic_display_only": 9.7267513
+    },
+    {
+      "uid": "144700903-1-S6",
+      "tic_id": 144700903,
+      "sector_run": "6-6",
+      "original_2025_historical_label": "CP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 2.3268108,
+      "old_2025_duration_days_display_only": 0.0695458,
+      "old_2025_multiple_event_statistic_display_only": 20.4978638
+    },
+    {
+      "uid": "101011575-1-S8",
+      "tic_id": 101011575,
+      "sector_run": "8-8",
+      "original_2025_historical_label": "CP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 6.3974385,
+      "old_2025_duration_days_display_only": 0.0883114,
+      "old_2025_multiple_event_statistic_display_only": 25.9386444
+    },
+    {
+      "uid": "179317684-1-S9",
+      "tic_id": 179317684,
+      "sector_run": "9-9",
+      "original_2025_historical_label": "CP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 4.2307954,
+      "old_2025_duration_days_display_only": 0.1813338,
+      "old_2025_multiple_event_statistic_display_only": 52.0480995
+    },
+    {
+      "uid": "10756751-1-S3",
+      "tic_id": 10756751,
+      "sector_run": "3-3",
+      "original_2025_historical_label": "EB",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 3.488888,
+      "old_2025_duration_days_display_only": 0.3125,
+      "old_2025_multiple_event_statistic_display_only": 15.7962408
+    },
+    {
+      "uid": "126586580-1-S7",
+      "tic_id": 126586580,
+      "sector_run": "7-7",
+      "original_2025_historical_label": "EB",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 3.9275494,
+      "old_2025_duration_days_display_only": 0.3931038,
+      "old_2025_multiple_event_statistic_display_only": 12.7281981
+    },
+    {
+      "uid": "364200513-1-S12",
+      "tic_id": 364200513,
+      "sector_run": "12-12",
+      "original_2025_historical_label": "EB",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 7.6747165,
+      "old_2025_duration_days_display_only": 0.1783987,
+      "old_2025_multiple_event_statistic_display_only": 8.7419071
+    },
+    {
+      "uid": "279569718-1-S12",
+      "tic_id": 279569718,
+      "sector_run": "12-12",
+      "original_2025_historical_label": "EB",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 3.9800091,
+      "old_2025_duration_days_display_only": 0.222221,
+      "old_2025_multiple_event_statistic_display_only": 34.6253281
+    },
+    {
+      "uid": "278988794-1-S8",
+      "tic_id": 278988794,
+      "sector_run": "8-8",
+      "original_2025_historical_label": "EB",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 7.5927172,
+      "old_2025_duration_days_display_only": 0.1772273,
+      "old_2025_multiple_event_statistic_display_only": 75.1320419
+    },
+    {
+      "uid": "443171652-1-S6",
+      "tic_id": 443171652,
+      "sector_run": "6-6",
+      "original_2025_historical_label": "EB",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 6.6277761,
+      "old_2025_duration_days_display_only": 0.125,
+      "old_2025_multiple_event_statistic_display_only": 30.7226887
+    },
+    {
+      "uid": "235170859-1-S6",
+      "tic_id": 235170859,
+      "sector_run": "6-6",
+      "original_2025_historical_label": "NTP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 9.8463707,
+      "old_2025_duration_days_display_only": 0.1337069,
+      "old_2025_multiple_event_statistic_display_only": 11.2587509
+    },
+    {
+      "uid": "59127833-1-S5",
+      "tic_id": 59127833,
+      "sector_run": "5-5",
+      "original_2025_historical_label": "NTP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 8.591424,
+      "old_2025_duration_days_display_only": 0.1110675,
+      "old_2025_multiple_event_statistic_display_only": 18.2809601
+    },
+    {
+      "uid": "73303344-1-S10",
+      "tic_id": 73303344,
+      "sector_run": "10-10",
+      "original_2025_historical_label": "NTP",
+      "MES_band": "7-20",
+      "old_2025_period_days_display_only": 9.0065031,
+      "old_2025_duration_days_display_only": 0.1957677,
+      "old_2025_multiple_event_statistic_display_only": 14.9812336
+    },
+    {
+      "uid": "357567470-1-S12",
+      "tic_id": 357567470,
+      "sector_run": "12-12",
+      "original_2025_historical_label": "NTP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 8.4681549,
+      "old_2025_duration_days_display_only": 0.1804839,
+      "old_2025_multiple_event_statistic_display_only": 26.3096848
+    },
+    {
+      "uid": "147455347-1-S4",
+      "tic_id": 147455347,
+      "sector_run": "4-4",
+      "original_2025_historical_label": "NTP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 9.4273367,
+      "old_2025_duration_days_display_only": 0.1462328,
+      "old_2025_multiple_event_statistic_display_only": 23.9757538
+    },
+    {
+      "uid": "357105141-1-S12",
+      "tic_id": 357105141,
+      "sector_run": "12-12",
+      "original_2025_historical_label": "NTP",
+      "MES_band": "20-80",
+      "old_2025_period_days_display_only": 9.5493975,
+      "old_2025_duration_days_display_only": 0.3916267,
+      "old_2025_multiple_event_statistic_display_only": 30.9233589
+    }
+  ]
+}
