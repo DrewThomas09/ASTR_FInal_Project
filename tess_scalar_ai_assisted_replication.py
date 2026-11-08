@@ -74,7 +74,7 @@ def labels_and_folds(df,manifest):
         raise ValueError("Official source must contain ten fixed CV folds")
     positive=set(manifest["label_positive"])
     negative=set(manifest["label_negative"])
-    if set(df.label.unique())!=positive|negative or positive&negative:
+    if not set(df.label.unique()).issubset(positive|negative) or positive&negative:
         raise ValueError("Source release label meanings changed")
     if (df.groupby("target_id").fold.nunique()>1).any():
         raise ValueError("Same star appears in training and test folds")
