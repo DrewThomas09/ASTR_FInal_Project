@@ -1,5 +1,11 @@
 # AI-assisted exoplanet detection | ASTR 12600
 
+## November 8: Paired statistical validity audit of the frozen study
+
+[New paired analysis and interpretation](PAIRED_VALIDITY_AUDIT_2026_11_08.md) · [reproducible analysis code](paired_validity_audit.py) · [regression tests](tests/test_paired_validity_audit.py) · [hash-verified audit workflow](.github/workflows/paired-validity-audit.yml).
+
+Reanalyzing the **original archived case-level results without changing the frozen detector**, the local step method yielded exactly one extra recovery among 36 matched injections in each condition. Both conditions had zero baseline-only cases and one local-only case (**exact two-sided discordance p = 1.00** each). On constructed defective proxy nulls, standard BLS flagged 13/24 and local step 10/24, with three baseline-only discordances (**p = 0.25**). These exploratory exact tests do not establish population significance because only six independent stars contributed repeated cases. On real-no-artifact photometry, all light curves were unchanged and the apparent extra recovery vanished under the baseline numerical score threshold. In the synthetic defect condition, eight genuine transit cadences were deleted from **one** KIC 9002278 injection. This is a statistical and reproducibility extension, **not** a new astronomical experiment, a true survey FAP comparison, or proof of superiority.
+
 **Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
 **[November 20 project status report draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md)** is ready for student review, citation verification, and submission-format editing. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
