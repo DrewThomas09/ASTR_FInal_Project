@@ -90,3 +90,26 @@ This is a new step beyond the previous separate Kepler demo: **both methods were
 
 **Meaning for model development:** we have proven end-to-end **input co-location** of official NASA ExoMiner and our own optical-event processing on an original space-telescope source. The next *scientific* requirement is a large, previously unexamined TESS cohort with controlled full-model-versus-augmented comparison before any claim of improving NASA exoplanet discrimination.
 
+
+## New model-development result: a controlled attempt to improve the published ExoMiner++ score
+
+**[Frozen research question and hyperparameters, committed before fitting](EXOMINER_PUBLISHED_SCORE_POSTPROCESSOR_FROZEN_2026_11_08.json)** · [new fitted-model source](exominer_published_score_postprocessor.py) · [original-2025 real-data successful Actions run, **211 tests passed**](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42523223355) · [all 57,162 exact-UID matched out-of-fold scores, model logs, plotted original-score PR curves and cohort-bootstrap interval](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42523223355/artifacts/13633912673).
+
+**Question:** could a small, reproducible AI-assisted statistical postprocessor actually improve the **NASA team's published 2025 ExoMiner++ neural scores** when orbital duration, period, signal strength and Gaia RUWE are included? This is more directly linked to NASA's actual strong prediction scores than our earlier four-feature random forests. It is **not** a modification of NASA's pretrained neural-network weights.
+
+Frozen design: use NASA/USRA released TESS SPOC 2-minute 2025 original catalog Zenodo `10.5281/zenodo.15466293`, original MD5 `c79f3651d556e71f7878a46f960d09b4`. **57,162** historical TCE observations, **17,206** distinct stars, 3,681 published KP/CP positives; preserve the **original authors' 10 star-disjoint out-of-fold assignments**. Fit on the other nine source folds and predict only each excluded star's TCEs. Baseline fitted postprocessor: logistic regression on only the logit-transformed original released NASA score. Additional-feature postprocessor: **identical** fixed logistic regression with the logit original NASA score *plus* log-transformed original period, duration, MES, Gaia RUWE and duration/period ratio. Train-only median-imputation and scaling. Fixed C=0.3, threshold 0.5, no test-driven tuning. Primary endpoint: average-precision delta **new augmented minus new score-only**; whole-TIC bootstrap 350 draws, seed 2026110823.
+
+| Historical label metric / NASA 2025 released data | Raw NASA scores, unmodified (not trained here) | New NASA-score-only calibration | New NASA score + physics calibration |
+|---|---:|---:|---:|
+| **Average precision / PR-AUC** | **0.9703595** | **0.9694660** | **0.9693761** |
+| ROC AUC | 0.9971312 | 0.9970308 | 0.9970612 |
+| Precision, threshold 0.5 | 92.366% | 92.565% | 92.515% |
+| Recall, threshold 0.5 | 92.692% | 92.339% | 92.339% |
+| TP / FP / FN | 3412 / 282 / 269 | 3399 / 273 / 282 | 3399 / 275 / 282 |
+
+**Primary change:** **−0.00008989 AP** with whole-star 95% bootstrap interval **[−0.00119364, +0.00098342]**. The interval crosses zero, so **there is no statistically resolved score improvement**. Even the newly calibrated score-only baseline slightly trails the unmodified original NASA ranks. Relative to score-only recalibration, the extra physics metadata accepted two more historical negatives at threshold 0.5 while recovering no additional historical positive labels. This makes the tested feature change a **negative/inconclusive finding, not a claim of optimization success**.
+
+The first full software test run had **one test-fixture error**, not a model or source data error: an intended cross-fold contamination fixture used rows 0 and 10, which both came from fold 0. We changed the synthetic test to compare rows 0 and 1, which genuinely belong to different folds. **No model settings, source cohort, threshold, science labels or evaluation settings were modified after seeing the result.** The corrected original-source workflow passed **211** tests.
+
+**Interpretation:** ExoMiner++'s learned classification is already strong on its own historical labeled TESS sample, and a simple reweighting of published scalar attributes contributes no reliable gain. The trial does not prove further improvements are impossible: original model version 2025 differs from current 2026 v2.4.0, and new sources/instrument artifact recovery may create different failure modes. Any next candidate improvement needs **event-level flux and instrument evidence on newly held-out sources**, not just more catalog numbers.
+
