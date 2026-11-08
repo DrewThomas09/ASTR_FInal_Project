@@ -97,6 +97,12 @@ McCauliff et al. (2015), *Automatic Classification of Kepler Planetary Transit C
 
 **Concluding language suggestion:** We reproduced established numerical methods and several real signals, but independent testing exposed serious alias and false-positive limitations. The project's improvement is a transparent, AI-assisted development/evaluation workflow with selected promising components, not a demonstrated superior survey detector.
 
+### November 8 source-grounded extension: real astrophysical eclipses versus instrument defects
+
+The [fresh twelve-source Kepler Q6 archive-label experiment](VERIFIED_REAL_SPSD_EXTERNAL_Q6_RESULTS_2026_11_08.md) was preselected and run on original NASA files. Ten sources were available; two planned failures remained in the denominator. The observed sources contained **no SPSD bit-1024 positive events**, making the primary natural-defect sensitivity question *unanswerable on this cohort*. Across those ten sources were only thirteen method-level warnings (six SAP, seven PDCSAP), twelve of them concentrated on known eclipsing-binary system Kepler-47.
+
+[Independent published stellar ephemerides applied to those original warnings](VERIFIED_KEPLER47_ECLIPSE_CHECK_2026_11_08.md) show five of seven distinct warning times within ±0.1 days of a published binary eclipse, and six within ±0.3 days. The analysis is **post-hoc** and should be placed in Part III as a failure-mode investigation. With all warning intervals held fixed, a 20,000-offset binary phase-shift sensitivity exercise gave fractions 0.02125 and 0.0749 at those respective windows; these are not confirmatory p-values because the object and windows were examined after the outcome. The physical concern is that a local negative-step screen can confuse astrophysical variability with instrumental damage. Future work needs an untouched sample of *both* genuine source-labeled discontinuities and binaries before claiming a new repeatability veto.
+
 ## Course alignment: explicit rubric and checklist map
 
 From the instructor's *FinalProject.pdf*: project is **35% of course grade**; grading includes **40% depth/scope/quantitative accuracy**, **15% writing**, **15% originality/perspective**, **10% synthesis of at least two lectures**, **5% bibliography**, **5% proposal**, **10% status report**. For a non-essay computer program, a **minimum 300-word explanatory write-up** is required and **every project must have a quantitative component**. The **Project Elements Checklist Form** must be completed and appended to the write-up.
