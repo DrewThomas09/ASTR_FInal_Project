@@ -1,0 +1,147 @@
+{
+  "schema_version": "2026-11-08-recurrence-guard-v1",
+  "state": "prospectively fixed before this group's Q6 flux was inspected; exploratory independent source cohort; parameters held fixed throughout",
+  "science_question": "Does a local photometric recurrence safeguard distinguish repeat stellar eclipse-like dips from nonperiodic instrumental changes when applied to the existing November 7 sudden-step heuristic, without inappropriately protecting verified instrument events?",
+  "selection_rule": "Eight published Kepler eclipsing binaries/circumbinary-planet hosts and five separately confirmed single-host transiting-planet examples, named by literature before running this cohort. Disjoint from Kepler-47, documented KIC7461601 SPSD and the earlier Q6 preselected cohort and Q8 six-star step study. ALL unavailable files remain in denominator; no replacements.",
+  "quarter": 6,
+  "data": "MAST original Kepler Quarter 6 long-cadence FITS. Read original TIME, SAP_FLUX, PDCSAP_FLUX, SAP_QUALITY with joint-valid positive finite pairing; retain original quality-flagged points for instrument diagnostic; no planet discovery claims.",
+  "sources": [
+    {
+      "kic": 12644769,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-16",
+      "published_binary_period_days": 41.078,
+      "source": "https://academic.oup.com/mnras/article/488/3/3482/5497941"
+    },
+    {
+      "kic": 8572936,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-34",
+      "published_binary_period_days": 27.796,
+      "source": "https://academic.oup.com/mnras/article/488/3/3482/5497941"
+    },
+    {
+      "kic": 9837578,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-35",
+      "published_binary_period_days": 20.734,
+      "source": "https://academic.oup.com/mnras/article/488/3/3482/5497941"
+    },
+    {
+      "kic": 4862625,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-64 / PH1",
+      "published_binary_period_days": 20.0002,
+      "source": "https://archive.stsci.edu/kepler/eclipsing_binaries.html"
+    },
+    {
+      "kic": 12351927,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-413",
+      "published_binary_period_days": 10.116146,
+      "source": "https://doi.org/10.1088/0004-637X/784/1/14"
+    },
+    {
+      "kic": 9632895,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-453",
+      "published_binary_period_days": 27.322,
+      "source": "https://archive.stsci.edu/kepler/eclipsing_binaries.html"
+    },
+    {
+      "kic": 5473556,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-1647",
+      "published_binary_period_days": 11.259,
+      "source": "https://academic.oup.com/mnras/article/488/3/3482/5497941"
+    },
+    {
+      "kic": 6504534,
+      "role": "published_eclipsing_binary",
+      "name": "Kepler-1661",
+      "published_binary_period_days": 28.1626,
+      "source": "https://archive.stsci.edu/kepler/eclipsing_binaries.html"
+    },
+    {
+      "kic": 11446443,
+      "role": "published_transiting_planet_host",
+      "name": "TrES-2 / Kepler-1",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-1"
+    },
+    {
+      "kic": 10666592,
+      "role": "published_transiting_planet_host",
+      "name": "HAT-P-7 / Kepler-2",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-2"
+    },
+    {
+      "kic": 10748390,
+      "role": "published_transiting_planet_host",
+      "name": "HAT-P-11 / Kepler-3",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-3"
+    },
+    {
+      "kic": 8191672,
+      "role": "published_transiting_planet_host",
+      "name": "Kepler-5",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-5"
+    },
+    {
+      "kic": 10874614,
+      "role": "published_transiting_planet_host",
+      "name": "Kepler-6",
+      "source": "https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-6"
+    }
+  ],
+  "original_step_rule": "Identical unchanged localized_downward_step_mask() and preprocessing block from LOCALIZED_STEP_STUDY_FROZEN_2026_11_07.json, with no epoch supplied. Never call archival label until after warnings are calculated.",
+  "recurrence_guard": {
+    "definition": "At each original detected step onset, scan fixed periods and compare short-dip evidence in independent repeated cycle windows using only normalized flux/time, with no published ephemerides or source roles. A protected warning is retained as evidence but the local destructive mask is suppressed.",
+    "period_search_min_days": 2.5,
+    "period_search_max_days": 22,
+    "period_grid_step_days": 0.02,
+    "minimum_other_cycles_with_valid_windows": 3,
+    "minimum_other_cycles_showing_a_dip": 3,
+    "minimum_repetition_fraction": 0.75,
+    "absolute_event_depth_floor": 0.0025,
+    "sigma_depth_multiplier": 4,
+    "trough_window_days": [
+      -0.1,
+      0.16
+    ],
+    "baseline_left_days": [
+      -0.54,
+      -0.27
+    ],
+    "baseline_right_days": [
+      0.29,
+      0.56
+    ],
+    "minimum_samples_per_window": 4,
+    "maximum_local_gap_days": 0.16,
+    "freeze_against_reuse": "No tuning on Kepler-47 or the old 12-star cohort after new observational outcomes; 2026-11-08 code and parameters fixed before first new flux experiment."
+  },
+  "posthoc_label_matching": {
+    "instrument_spsd_bit": 1024,
+    "archival_cluster_merge_days": 0.45,
+    "archival_event_match_days": 0.22
+  },
+  "metrics": [
+    "all planned source counts and file failures",
+    "raw source SHA-256",
+    "archival bit1024 event counts and matched warnings, if present",
+    "raw warnings count and guarded count on both SAP and PDCSAP",
+    "warning-level periodic evidence and scan period",
+    "binary versus planet-host counts only descriptively; not a valid instrument FAP estimate",
+    "cadences spared by guard (not equivalent to confirmed real signals)",
+    "number of archival positive instrument events incorrectly protected, if any"
+  ],
+  "limitations": [
+    "Repetition guard will fail on long periods with fewer than 4 observed eclipse cycles in Q6; several of the named stars have published periods above 22 days and are deliberately retained as difficult cases.",
+    "Published binary orbital periods/roles are reserved for post-hoc description and not given to recurrence search.",
+    "Confirmed planet host label does not imply absence of binary or instrumental contaminants.",
+    "Confirmed binaries are purposely selected and not a random sample of Kepler data.",
+    "Quality bit1024 labels are incomplete and may be absent; do not claim precision/FAP from unmatched warnings.",
+    "Period-grid multiple testing creates risk of spurious recurrence; offline controls and independent sources must be evaluated.",
+    "This method protects data rather than identifying planets; improved cadences retained do not establish higher planet recall."
+  ]
+}
