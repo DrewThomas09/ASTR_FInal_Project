@@ -1,0 +1,206 @@
+{
+  "experiment_id": "EXOMINER_2025_MISTAKES_VS_2026_PRETRAINED_CHALLENGE_20261108",
+  "study_design": "Retrospective, selected-by-2025-score ERROR CHALLENGE on a new 16-star source cohort, not unbiased holdout; compare exactly matching original 2025 published TESS TCE UID with authentic 2026 v2.4.0 pretrained output.",
+  "NASA_2026_model_score_blind_at_source_selection": true,
+  "original_2025_score_is_allowed_and_DELIBERATELY_used_for_source_selection": true,
+  "source_version_DOI": "10.5281/zenodo.15466293",
+  "source_exact_MD5": "c79f3651d556e71f7878a46f960d09b4",
+  "selection_method": "Original NASA 2025 labeled source table; restrict single-sector event UID suffix '-1-S#' in sectors 3-12; 2<=period<=10 d and 0.05<=duration<=0.4 d; label KP/CP and original 2025 published score <.5 defines 2025 false negative; label other than KP/CP and score >=.5 defines 2025 false positive; sort uid by SHA256('ASTR_NASA_2026_ERROR_CHALLENGE_20261108|'+uid), take first 8 distinct hosts of each historical error kind. No 2026 new-model score or outcome was inspected in this selection.",
+  "fixed_selection_seed": "ASTR_NASA_2026_ERROR_CHALLENGE_20261108",
+  "source_record_count": 16,
+  "error_groups": {
+    "2025_false_negative_planet": 8,
+    "2025_false_positive_nonplanet": 8
+  },
+  "original_2025_score_precision": "6-decimal values below are display-only rounded from the original catalog; the exact original 2025 score is retrieved by uid from original MD5-verified source for numerical comparisons. Selection was determined using the full original float, not rounded displays.",
+  "model_to_evaluate": "NASA real 2026 ExoMiner++ v2.4.0 planet-validation single pretrained, container digest sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9",
+  "no_exclusions_after_nasa_results": true,
+  "predeclared_primary_goal": "Compare number of resolved versus persistent 2025 historical misclassifications, only for exact 2025 UID events successfully scored by 2026. Account for every unscored source in original frozen denominator.",
+  "no_inference_or_generalization_claim": true,
+  "limitations": [
+    "Deliberately selected previous 2025 model errors: cannot estimate true model precision, reliability or event prevalence from this group.",
+    "2026 model may have encountered same 2025 stars in training; no independent test claim.",
+    "Pre-existing human 2025 labels and later decisions may disagree or evolve; investigate actual DV reports and external physical follow-up before declaring model correct.",
+    "2026 and 2025 ExoMiner++ are distinct model versions and different training populations; scoring changes alone cannot identify which architectural component caused them.",
+    "All extra TCEs found by NASA pipeline beyond the frozen exact UIDs must remain separate.",
+    "Physical sidecar does not modify NASA's neural output scores, hence no new model performance claim."
+  ],
+  "source_records": [
+    {
+      "uid": "279741379-1-S3",
+      "tic_id": 279741379,
+      "sector_run": "3-3",
+      "published_2025_label": "CP",
+      "published_2025_fold": 1,
+      "published_2025_score_display_rounded": 0.257548,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 7.793127,
+      "published_2025_multiple_event_statistic_display": 8.077571
+    },
+    {
+      "uid": "106402532-1-S9",
+      "tic_id": 106402532,
+      "sector_run": "9-9",
+      "published_2025_label": "CP",
+      "published_2025_fold": 6,
+      "published_2025_score_display_rounded": 0.426538,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 4.886506,
+      "published_2025_multiple_event_statistic_display": 10.06841
+    },
+    {
+      "uid": "178155732-1-S4",
+      "tic_id": 178155732,
+      "sector_run": "4-4",
+      "published_2025_label": "CP",
+      "published_2025_fold": 0,
+      "published_2025_score_display_rounded": 0.100623,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 5.97188,
+      "published_2025_multiple_event_statistic_display": 10.478373
+    },
+    {
+      "uid": "422655579-1-S4",
+      "tic_id": 422655579,
+      "sector_run": "4-4",
+      "published_2025_label": "KP",
+      "published_2025_fold": 3,
+      "published_2025_score_display_rounded": 0.116291,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 2.903458,
+      "published_2025_multiple_event_statistic_display": 27.757355
+    },
+    {
+      "uid": "466840711-1-S11",
+      "tic_id": 466840711,
+      "sector_run": "11-11",
+      "published_2025_label": "KP",
+      "published_2025_fold": 3,
+      "published_2025_score_display_rounded": 0.180257,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 2.485338,
+      "published_2025_multiple_event_statistic_display": 7.770462
+    },
+    {
+      "uid": "29960110-1-S4",
+      "tic_id": 29960110,
+      "sector_run": "4-4",
+      "published_2025_label": "CP",
+      "published_2025_fold": 7,
+      "published_2025_score_display_rounded": 0.49877,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 2.491115,
+      "published_2025_multiple_event_statistic_display": 10.197658
+    },
+    {
+      "uid": "460205581-1-S11",
+      "tic_id": 460205581,
+      "sector_run": "11-11",
+      "published_2025_label": "CP",
+      "published_2025_fold": 3,
+      "published_2025_score_display_rounded": 0.09598,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 8.322728,
+      "published_2025_multiple_event_statistic_display": 19.722456
+    },
+    {
+      "uid": "158623531-1-S3",
+      "tic_id": 158623531,
+      "sector_run": "3-3",
+      "published_2025_label": "KP",
+      "published_2025_fold": 0,
+      "published_2025_score_display_rounded": 0.307499,
+      "published_2025_error_kind": "2025_missed_historical_planet",
+      "published_2025_period_days_display": 7.872777,
+      "published_2025_multiple_event_statistic_display": 84.038857
+    },
+    {
+      "uid": "169532369-1-S5",
+      "tic_id": 169532369,
+      "sector_run": "5-5",
+      "published_2025_label": "FP",
+      "published_2025_fold": 0,
+      "published_2025_score_display_rounded": 0.827356,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 3.603493,
+      "published_2025_multiple_event_statistic_display": 30.996933
+    },
+    {
+      "uid": "167554898-1-S6",
+      "tic_id": 167554898,
+      "sector_run": "6-6",
+      "published_2025_label": "EB",
+      "published_2025_fold": 0,
+      "published_2025_score_display_rounded": 0.62662,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 4.453499,
+      "published_2025_multiple_event_statistic_display": 92.06366
+    },
+    {
+      "uid": "49899799-1-S4",
+      "tic_id": 49899799,
+      "sector_run": "4-4",
+      "published_2025_label": "FP",
+      "published_2025_fold": 5,
+      "published_2025_score_display_rounded": 0.838837,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 7.011175,
+      "published_2025_multiple_event_statistic_display": 147.066406
+    },
+    {
+      "uid": "17660071-1-S7",
+      "tic_id": 17660071,
+      "sector_run": "7-7",
+      "published_2025_label": "NTP",
+      "published_2025_fold": 7,
+      "published_2025_score_display_rounded": 0.616201,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 9.206777,
+      "published_2025_multiple_event_statistic_display": 9.084975
+    },
+    {
+      "uid": "29960109-1-S4",
+      "tic_id": 29960109,
+      "sector_run": "4-4",
+      "published_2025_label": "NPC",
+      "published_2025_fold": 7,
+      "published_2025_score_display_rounded": 0.512783,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 2.491281,
+      "published_2025_multiple_event_statistic_display": 11.187614
+    },
+    {
+      "uid": "165493409-1-S10",
+      "tic_id": 165493409,
+      "sector_run": "10-10",
+      "published_2025_label": "EB",
+      "published_2025_fold": 0,
+      "published_2025_score_display_rounded": 0.871235,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 9.112109,
+      "published_2025_multiple_event_statistic_display": 37.647457
+    },
+    {
+      "uid": "354518617-1-S6",
+      "tic_id": 354518617,
+      "sector_run": "6-6",
+      "published_2025_label": "NTP",
+      "published_2025_fold": 9,
+      "published_2025_score_display_rounded": 0.622793,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 8.587214,
+      "published_2025_multiple_event_statistic_display": 15.483387
+    },
+    {
+      "uid": "101395259-1-S9",
+      "tic_id": 101395259,
+      "sector_run": "9-9",
+      "published_2025_label": "FP",
+      "published_2025_fold": 5,
+      "published_2025_score_display_rounded": 0.839633,
+      "published_2025_error_kind": "2025_accepted_historical_nonplanet",
+      "published_2025_period_days_display": 7.573138,
+      "published_2025_multiple_event_statistic_display": 57.287258
+    }
+  ]
+}
