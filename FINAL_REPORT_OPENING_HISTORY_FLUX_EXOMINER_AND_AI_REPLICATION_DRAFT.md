@@ -72,6 +72,59 @@ ExoMiner++ already includes related checks, so adding them by itself would not c
 
 This brings the project back to the course's central question: **what can we learn from a measurement, and how confident should we be in the conclusion?** The telescope measures a small change in incoming starlight. Physics helps explain what that change could mean. Machine learning helps organize enormous amounts of evidence. Our experiment is about whether AI can make it easier to reproduce and improve that process while remaining honest about what the data actually show.
 
+
+## The experiment: what does it take to reproduce a complicated model?
+
+Once I understood what ExoMiner was trying to do, I divided the practical work into two questions. First, could I use AI to help recreate the steps that lead to a planet classification? Second, once the original system was working, could I use AI to propose and test a small change without making its predictions less reliable?
+
+I started smaller than ExoMiner itself. The first model used four numbers already reported in the Kepler catalog: the estimated orbital period, the length and depth of the transit, and its signal-to-noise ratio. I trained a **random forest**, a model that combines many decision trees, and compared it with simpler methods. I also made sure observations of the same star did not appear in both the training data and the held-out test data. Otherwise, the model might appear to perform well because it had already seen information about that star.
+
+On the historical Kepler labels, the random forest achieved **81.29% balanced accuracy**, compared with **76.61%** for logistic regression and **50.23%** for a signal-to-noise-only rule. Balanced accuracy averages how well a model recognizes each of the two classes, rather than letting one large class dominate the score. Further tests showed that the forest's improvement over those comparison models was statistically meaningful **for agreement with these historical labels**. It still did not mean that we had independently identified 81% of real planets. NASA's earlier classifications were the answers our model was trying to reproduce.
+
+This was useful because it gave us a working baseline. But it also showed why recreating ExoMiner would require much more than adding more trees. ExoMiner looks at the *shape of the light itself*, not just four summary numbers.
+
+### Going back to the actual telescope measurements
+
+The next step was to work with the original NASA light-curve files. These files include when each observation was made, how much light the telescope recorded, and flags indicating possible problems with the measurement. The brightness measurements need to be cleaned and normalized carefully so that we are looking for changes relative to the star's usual flux, not mistaking gaps or bad measurements for transits.
+
+Using AI-assisted Python code, I recreated some of the inputs that appear in ExoMiner. One view shows the star's brightness across a complete possible orbit. Another zooms in on the expected transit. Two more separate alternating **odd and even** events, and another checks for a possible eclipse on the opposite side of the orbit. I also created a view containing up to **20 individual transit events**, so that one unusual dip cannot simply disappear inside an average.
+
+There was an important technical challenge here: not every expected transit has measurements available. A telescope may stop observing the star, or some data may be flagged as unreliable. At first glance, an empty part of a light curve might look like an ordinary brightness measurement if it is filled with a default number. I therefore kept a separate record showing which parts of each view actually contained observations. The goal was to stop the model from treating missing information as evidence.
+
+Two examples helped explain why these extra inputs matter. For **Kepler-12**, a known planet-host system, the fitted period was about **4.44 days**, and the repeated transit dips looked relatively consistent. For **Kepler-35**, a known eclipsing-binary system, the simple transit search selected a period of about **10.37 days**, roughly half the stars' actual orbital period. The odd and even dips looked very different because the program was mixing two different stellar eclipses. A model that checked only whether the light dimmed repeatedly might get confused. A model that compared the separate events would have much more information.
+
+These were useful demonstrations of the physics behind ExoMiner. They were **not yet a recreation of its neural network**. NASA's model also uses information we had not reconstructed, including more detailed instrument diagnostics and pixel-level evidence showing where a signal originates.
+
+### Checking whether we could reproduce the published results
+
+In parallel, I worked with the actual ExoMiner++ TESS catalogs. These contain the model's already-published classifications and scores. Before analyzing them, we verified that the downloaded files matched the researchers' originals. Even a simple mistake, such as using a different release of the catalog, would make a reported replication difficult to trust.
+
+The labeled catalog contained **57,162 transit-event records from 17,206 stars**. We checked that the researchers' ten evaluation groups did not place the same star into different groups. We also recreated a precision-recall analysis from the scores in the released catalog. Its average precision was about **0.970**, which confirmed that we could read and evaluate the published scoring data correctly.
+
+However, this result belongs to **NASA's already-trained ExoMiner++ models**. We did not generate those scores with a neural network trained by our project. The comparison also reminded me why a very high overall score can be misleading: many records are repeated observations, and the mix of known planets and nonplanets is not the same as the mix of objects a new sky survey would encounter.
+
+The hardest part of the full replication remains reproducing the inputs and preprocessing for the actual neural network. The researchers released approximately **19 GB of compressed TESS training examples**, separate from the much smaller catalogs. Those inputs still have to be matched to the correct model version, split by star, and normalized using training data rather than information from the test set. At this stage, we have verified the catalogs and built a prototype of several input views, but **we have not yet retrained ExoMiner++ or run its official pretrained model on a new sample**.
+
+### What went wrong, and why those failures mattered
+
+Not every experiment improved the result. One early idea was to adjust the classification threshold for planets with longer orbital periods. The change helped retain more objects labeled as candidates, but it also admitted many more false positives, so overall balanced accuracy became worse. It was a useful reminder that finding more apparent planets is not an improvement if the method also mistakes substantially more nonplanets for planets.
+
+The same problem appeared when we tried to protect real brightness dips from being removed as instrument errors. Our safeguard preserved **42 telescope measurements** associated with two real stellar-eclipse warnings. That showed the data-cleaning rule could remove legitimate astronomical information. But those events were **stellar eclipses, not new planetary discoveries**, and the safeguard also missed other eclipses. We still need enough genuine instrument-error examples to test whether a new rule would accidentally preserve bad data.
+
+AI helped us write, run, and check these experiments, but it did not prevent mistakes. For example, one attempt to download the official catalog failed because the archive rejected the requested file format. Another automated test failed because the test removed observations from a slightly narrower time window than the code was supposed to examine. We corrected those problems, but neither correction counted as a scientific improvement. That distinction matters: **getting a program to run successfully is not the same as proving its conclusions are right**.
+
+## The next test: can AI help improve a model without breaking it?
+
+The next stage is to run the **official ExoMiner++ model** on the correct TESS observations and reproduce its outputs. Only then can we make a meaningful comparison between NASA's unmodified model and a version with one specific change.
+
+The modification I want to investigate is how the system handles ambiguous changes in brightness. A planet transit usually returns toward the star's normal flux after the planet passes. An instrument problem may cause a more persistent change. I want to test whether examining that difference, along with the consistency of individual events and possible half-period errors, helps the system reject misleading signals **without deleting real transit information**.
+
+ExoMiner++ already checks several related things. Therefore, I cannot claim this is a new idea simply because AI helped implement it. The question is whether our particular method adds useful information **beyond what the existing system already uses**.
+
+To test that fairly, the original model and the modified model would need to examine the same previously unseen stars. We would choose the evaluation rules before looking at the answers and compare how many known or artificially injected planet signals each method identifies **at the same false-alarm rate**. If the modified version finds more planets but also accepts more eclipsing binaries or instrument errors, the result would be a trade-off rather than a clear success.
+
+That is the larger purpose of this project. I am using exoplanet detection as a way to test whether AI can help someone work with a difficult, established scientific system: understand the original research, reproduce its data and methods, find a specific weakness, and test a small change. The hardest part is not getting AI to generate a more complicated algorithm. It is making sure the algorithm still respects the underlying physics and produces evidence that another researcher could check.
+
 ### References and course connections
 
 - ASTR/PHSC 12600: Lesson 2 (luminosity and flux); Lesson 3 (time and measurement); Lessons 5–6 (Kepler's laws and gravity); Lesson 7 (light).
