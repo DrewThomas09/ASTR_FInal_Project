@@ -1,0 +1,125 @@
+name: Real NASA ExoMiner 32-source TESS Event-local Centroid + Period Alias Companion
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/nasa-exominer-32star-centroid-companion.yml'
+      - 'TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json'
+      - 'tess_32star_centroid_alias_source_tics.csv'
+      - 'tess_original_moment_centroid_companion.py'
+      - 'tests/test_tess_original_moment_centroid_companion.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  real-nasa-32-tess-centroid-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install physical measurement and reproducibility dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scikit-learn>=1.3,<2' 'matplotlib>=3.7,<4' 'pytest>=8,<10' 'scipy>=1.11,<2' 'astropy>=6,<9' 'requests>=2.31,<3'
+      - name: Run ALL existing and new source-FITS centroid physical tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests
+          python - <<'PY'
+          import pandas as pd
+          from tess_original_moment_centroid_companion import verify_frozen_manifest
+          meta=verify_frozen_manifest('TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json')
+          t=pd.read_csv('tess_32star_centroid_alias_source_tics.csv',dtype=str)
+          fixed={(str(r['tic_id']),r['sector_run']) for r in meta['source_records']}
+          provided={(str(i.tic_id),i.sector_run) for i in t.itertuples(index=False)}
+          assert len(t)==32 and len(fixed)==32 and fixed==provided
+          print("All 32 source pairs frozen before examining original MOM_CENTR shift results.")
+          PY
+      - name: Obtain NASA original 2025 pinned source CSV with no changed scoring labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/nasa_2025 results/nasa_TESS_32centroid
+          gh run download 42516458999 --repo "${{ github.repository }}" \
+            -n official-exominer-2025-tess-labeled-unlabeled-catalogs-verified --dir data/nasa_2025
+          test -s data/nasa_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv
+          cp tess_32star_centroid_alias_source_tics.csv results/nasa_TESS_32centroid/tics_writable.csv
+          cp TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json results/nasa_TESS_32centroid/original_precommitted_centroid_source_manifest.json
+      - name: Pull the exact original official NASA ExoMiner++ v2.4.0 pretrained image
+        timeout-minutes: 18
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker pull "$image" 2>&1 | tee results/nasa_TESS_32centroid/pinned_nasa_original_model_pull.log
+          docker image inspect "$image" --format '{{json .RepoDigests}}' > results/nasa_TESS_32centroid/verified_nasa_original_image_digest.json
+          docker image inspect "$image" --format '{{.Id}}' > results/nasa_TESS_32centroid/verified_nasa_image_id.txt
+      - name: Run untouched original pretrained NASA model on 32 previously inspected TESS stars
+        timeout-minutes: 25
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9'
+          docker run --rm --shm-size=2g \
+            -e OPENBLAS_NUM_THREADS=1 \
+            -e OMP_NUM_THREADS=1 \
+            -e MKL_NUM_THREADS=1 \
+            -e TF_NUM_INTRAOP_THREADS=1 \
+            -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/results/nasa_TESS_32centroid/tics_writable.csv:/tics_tbl.csv" \
+            -v "${PWD}/results/nasa_TESS_32centroid:/outputs" \
+            "$image" \
+            --tic_ids_fp=/tics_tbl.csv \
+            --output_dir=/outputs \
+            --data_collection_mode=2min \
+            --num_processes=1 \
+            --num_jobs=4 \
+            --get_mast_urls_dv_reports=false \
+            --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable \
+            --task=planet-validation \
+            --exominer_model=single \
+            --max_model_workers=1 2>&1 | tee results/nasa_TESS_32centroid/unchanged_nasa_full_model_stdout.log
+          test -s results/nasa_TESS_32centroid/predictions_spoc-tces_set.csv
+      - name: Compute source-aligned event local MOM_CENTR minus POS_CORR metrics on the original same TESS source FITS
+        timeout-minutes: 8
+        shell: bash
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p results/nasa_TESS_32centroid/centroid_physics_analysis
+          python -u tess_original_moment_centroid_companion.py \
+            --frozen TESS_32STAR_CENTROID_ALIAS_COMPANION_FROZEN_2026_11_08.json \
+            --original-2025 data/nasa_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv \
+            --official-nasa-2026 results/nasa_TESS_32centroid/predictions_spoc-tces_set.csv \
+            --source-fits-root results/nasa_TESS_32centroid \
+            --out results/nasa_TESS_32centroid/centroid_physics_analysis 2>&1 | tee results/nasa_TESS_32centroid/centroid_physics_analysis/actual_source_centroid_execution.log
+      - name: Archive real unchanged NASA scores + 32 original TESS source integrity, event arrays and centroid warnings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-original-NASA-TESS-32star-centroid-with-fixed-manual-review-gate-NOT-neural-improvement
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            results/nasa_TESS_32centroid/original_precommitted_centroid_source_manifest.json
+            results/nasa_TESS_32centroid/pinned_nasa_original_model_pull.log
+            results/nasa_TESS_32centroid/verified_nasa_original_image_digest.json
+            results/nasa_TESS_32centroid/verified_nasa_image_id.txt
+            results/nasa_TESS_32centroid/unchanged_nasa_full_model_stdout.log
+            results/nasa_TESS_32centroid/run_main.log
+            results/nasa_TESS_32centroid/master_tic_tracking_summary.csv
+            results/nasa_TESS_32centroid/master_tce_tracking_summary.csv
+            results/nasa_TESS_32centroid/predictions_spoc-tces_set.csv
+            results/nasa_TESS_32centroid/job_*/run_*.log
+            results/nasa_TESS_32centroid/centroid_physics_analysis/
