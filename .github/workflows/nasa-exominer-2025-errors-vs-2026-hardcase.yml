@@ -1,0 +1,121 @@
+name: Freeze 2025 ExoMiner Mistakes and Challenge Official 2026 Pretrained Model (16 TICs)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/nasa-exominer-2025-errors-vs-2026-hardcase.yml'
+      - 'TESS_16STAR_2025_ERRORS_VS_2026_FROZEN_2026_11_08.json'
+      - 'tess_16star_historical_2025_error_challenge_tics.csv'
+      - 'tess_exominer_2025_error_challenge.py'
+      - 'tests/test_tess_exominer_2025_error_challenge.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-nasa-v240-on-prior-v100-error-cases:
+    runs-on: ubuntu-latest
+    timeout-minutes: 52
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run all scientific software regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scikit-learn>=1.3,<2' 'matplotlib>=3.7,<4' 'pytest>=8,<10' 'scipy>=1.11,<2' 'astropy>=6,<9' 'requests>=2.31,<3'
+          python -m pytest -q tests
+      - name: Acquire exact original NASA 2025 labeled source and verify preselected 16 genuine errors
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/exominer_2025 results/nasa_exominer_hardcase16
+          gh run download 42516458999 --repo "${{ github.repository }}" -n official-exominer-2025-tess-labeled-unlabeled-catalogs-verified --dir data/exominer_2025
+          python - <<'PY'
+          import pandas as pd
+          from tess_exominer_2025_error_challenge import load_manifest,source_2025_rows
+          meta=load_manifest('TESS_16STAR_2025_ERRORS_VS_2026_FROZEN_2026_11_08.json')
+          path='data/exominer_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv'
+          source_2025_rows(path,meta)
+          tab=pd.read_csv('tess_16star_historical_2025_error_challenge_tics.csv',dtype=str)
+          assert len(tab)==16
+          actual={(str(v.tic_id),str(v.sector_run)) for v in tab.itertuples(index=False)}
+          expected={(str(x['tic_id']),str(x['sector_run'])) for x in meta['source_records']}
+          assert actual==expected,"Frozen source ID list mismatch"
+          print("Verified 16 genuine 2025 NASA model mistakes, exact public source hash; 8 older false positives + 8 false negatives.")
+          PY
+          cp tess_16star_historical_2025_error_challenge_tics.csv results/nasa_exominer_hardcase16/tics_writable.csv
+          cp TESS_16STAR_2025_ERRORS_VS_2026_FROZEN_2026_11_08.json results/nasa_exominer_hardcase16/frozen_challenge_manifest.json
+      - name: Pull SAME pinned genuine 2026 NASA ExoMiner++ v2.4.0 image
+        timeout-minutes: 17
+        shell: bash
+        run: |
+          set -euo pipefail
+          nasa_image="ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9"
+          docker pull "$nasa_image" 2>&1 | tee results/nasa_exominer_hardcase16/immutable_source_image_pull.log
+          docker image inspect "$nasa_image" --format '{{json .RepoDigests}}' > results/nasa_exominer_hardcase16/pinned_nasa_model_immutable_digest.json
+      - name: Execute official NASA v2.4.0 original full TESS SPOC model, not student-trained RF
+        timeout-minutes: 26
+        shell: bash
+        run: |
+          set -euo pipefail
+          nasa_image="ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9"
+          docker run --rm --shm-size=2g \
+            -e OPENBLAS_NUM_THREADS=1 \
+            -e OMP_NUM_THREADS=1 \
+            -e MKL_NUM_THREADS=1 \
+            -e TF_NUM_INTRAOP_THREADS=1 \
+            -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/results/nasa_exominer_hardcase16/tics_writable.csv:/tics_tbl.csv" \
+            -v "${PWD}/results/nasa_exominer_hardcase16:/outputs" \
+            "$nasa_image" \
+            --tic_ids_fp=/tics_tbl.csv \
+            --output_dir=/outputs \
+            --data_collection_mode=2min \
+            --num_processes=1 \
+            --num_jobs=4 \
+            --get_mast_urls_dv_reports=false \
+            --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable \
+            --task=planet-validation \
+            --exominer_model=single \
+            --max_model_workers=1 2>&1 | tee results/nasa_exominer_hardcase16/original_nasa_model_stdout.log
+          test -s results/nasa_exominer_hardcase16/predictions_spoc-tces_set.csv
+      - name: Match exact original 2025 model mistakes against official real 2026 pretrained TCEs
+        timeout-minutes: 5
+        shell: bash
+        env:
+          PYTHONUNBUFFERED: '1'
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p results/nasa_exominer_hardcase16/hardcase_audit
+          python -u tess_exominer_2025_error_challenge.py \
+            --manifest TESS_16STAR_2025_ERRORS_VS_2026_FROZEN_2026_11_08.json \
+            --historical-catalog data/exominer_2025/exominerplusplus_catalog_labeled_tces_s1-s67_tess-spoc-2min_complete_1-14-2025_1039.csv \
+            --nasa-predictions results/nasa_exominer_hardcase16/predictions_spoc-tces_set.csv \
+            --nasa-source-root results/nasa_exominer_hardcase16 \
+            --out results/nasa_exominer_hardcase16/hardcase_audit \
+            2>&1 | tee results/nasa_exominer_hardcase16/hardcase_audit/retrospective_2025_errors_vs_new_model.log
+      - name: Keep all requested errors, exact 2025 and 2026 scores, original FITS hashes and unmodified model logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-NASA-2026-model-on-16-frozen-2025-error-cases-not-independent-validation
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            results/nasa_exominer_hardcase16/frozen_challenge_manifest.json
+            results/nasa_exominer_hardcase16/immutable_source_image_pull.log
+            results/nasa_exominer_hardcase16/pinned_nasa_model_immutable_digest.json
+            results/nasa_exominer_hardcase16/original_nasa_model_stdout.log
+            results/nasa_exominer_hardcase16/run_main.log
+            results/nasa_exominer_hardcase16/master_tic_tracking_summary.csv
+            results/nasa_exominer_hardcase16/master_tce_tracking_summary.csv
+            results/nasa_exominer_hardcase16/predictions_spoc-tces_set.csv
+            results/nasa_exominer_hardcase16/job_*/run_*.log
+            results/nasa_exominer_hardcase16/hardcase_audit/
