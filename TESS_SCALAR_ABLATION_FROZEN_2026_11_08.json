@@ -1,0 +1,71 @@
+{
+  "study_id": "EXOMINER2025_TESS_SCALAR_AI_ASSISTED_REPLICATION_ABLATION_20261108",
+  "prespecified_before_model_training": true,
+  "status": "FROZEN_SOFTWARE_EXPERIMENT_NOT_INDEPENDENT_NASA_MODEL_REPLICATION",
+  "source": "Official Zenodo v1.0.0 ExoMiner++ TESS 2-minute S1-S67 labeled source and its research-team 10-fold published scores",
+  "data_version_DOI": "10.5281/zenodo.15466293",
+  "original_md5": "c79f3651d556e71f7878a46f960d09b4",
+  "expected_TCE_row_count": 57162,
+  "expected_unique_TIC_hosts": 17206,
+  "label_positive": [
+    "KP",
+    "CP"
+  ],
+  "label_negative": [
+    "NTP",
+    "EB",
+    "NEB",
+    "FP",
+    "NPC",
+    "BD"
+  ],
+  "published_fold_column": "fold",
+  "require_all_10_folds": true,
+  "split_unit": "target_id",
+  "forbid_same_star_between_train_and_test": true,
+  "negative_label_interpretation": "published disposition class, not independent physical ground truth",
+  "baseline_named": "4TCE_RF",
+  "baseline_features": [
+    "tce_period",
+    "tce_duration",
+    "tce_prad",
+    "tce_max_mult_ev"
+  ],
+  "augmented_named": "4TCE_RF_plus_duty_cycle_and_RUWE",
+  "augmented_additional_features": [
+    "transit_duty_cycle_ratio",
+    "ruwe"
+  ],
+  "physical_rationale": "Transient duration relative to orbit may distinguish eclipse geometry; Gaia RUWE is a noisy unresolved-companion proxy. RUWE already occurs in official contemporary ExoMiner, so this feature ablation is NOT claimed as newly invented NASA feature or direct architecture improvement.",
+  "feature_transform": "log1p(period/duration/radius/MES), log1p(duty_cycle_ratio), log1p(ruwe), train-only median imputation; no source IDs, epochs, labels or published ExoMiner scores used as inputs",
+  "model": {
+    "algorithm": "sklearn RandomForestClassifier",
+    "n_estimators": 80,
+    "max_depth": 9,
+    "min_samples_leaf": 6,
+    "class_weight": "balanced_subsample",
+    "n_jobs": 2,
+    "random_state": 12600,
+    "threshold": 0.5
+  },
+  "evaluation": {
+    "primary": "Pooled out-of-fold average_precision_score(augmented) - average_precision_score(baseline)",
+    "secondary": [
+      "ROC AUC",
+      "threshold>=0.5 precision",
+      "threshold>=0.5 recall",
+      "score correlation with published NASA ExoMiner++ OOF score"
+    ],
+    "uncertainty": "Host-star cluster bootstrap 350 replications, seed 2026110819, CI quantiles 2.5%/97.5%; replicate each star's entire set of sector observations together.",
+    "report_exact_fold_sizes": true,
+    "report_missing_ruwe": true
+  },
+  "guardrails": [
+    "Published ExoMiner++ released score at same folded TCE rows is a source-provided comparison, not independently generated official NASA inference.",
+    "NASA v1.0.0 reference model uses many additional waveform/pixel features and Kepler training sources; scalar RF cannot claim to replicate its network.",
+    "Holdout means only withholding labels for this new RF on historical released researchers' folds. It is not untouched scientific validation for new discoveries.",
+    "Do not tune feature choice, random forest hyperparameters or decision threshold after seeing the test metrics.",
+    "Multiple TCEs per star are correlated; cluster resample by TIC and avoid treating observation rows as independent exoplanets.",
+    "Prior Q6 Kepler morphology code and this TESS scalar model target different missions and tasks; do not merge scores as though matched event inputs."
+  ]
+}
