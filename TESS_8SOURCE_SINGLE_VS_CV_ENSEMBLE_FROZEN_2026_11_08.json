@@ -1,0 +1,77 @@
+{
+  "experiment_id": "EXOMINER_V240_EIGHT_TESS_SINGLE_VS_CV_ENSEMBLE_20261108",
+  "chosen_before_ensemble_scores": true,
+  "source": "Existing 2025 labels in historical 16+16 original NASA TESS studies",
+  "scientific_limits": "Diagnostic deliberately includes already inspected stars, not independent NASA neural training exclusion or prospective model accuracy",
+  "original_model_image": "ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9",
+  "tasks": [
+    "planet-validation"
+  ],
+  "models": [
+    "single",
+    "cv_ensemble"
+  ],
+  "software_NASA_docs": "https://github.com/nasa/ExoMiner/blob/main/docs/running-exominer-pipeline.md",
+  "compare_exact_uid_only": true,
+  "compare_fitted_period_within_fraction": 0.01,
+  "decision_threshold": 0.5,
+  "uncertainty_caveat": "NASA may publish only ensemble-average score; do not report variance without per-model predictions",
+  "sources": [
+    {
+      "tic_id": 165493409,
+      "sector_run": "10-10",
+      "UID": "165493409-1-S10",
+      "published_2025_label": "EB",
+      "selection_group": "hardcase_EB"
+    },
+    {
+      "tic_id": 466840711,
+      "sector_run": "11-11",
+      "UID": "466840711-1-S11",
+      "published_2025_label": "KP",
+      "selection_group": "hardcase_KP"
+    },
+    {
+      "tic_id": 29960109,
+      "sector_run": "4-4",
+      "UID": "29960109-1-S4",
+      "published_2025_label": "NPC",
+      "selection_group": "hardcase_NPC"
+    },
+    {
+      "tic_id": 354518617,
+      "sector_run": "6-6",
+      "UID": "354518617-1-S6",
+      "published_2025_label": "NTP",
+      "selection_group": "hardcase_NTP"
+    },
+    {
+      "tic_id": 220029715,
+      "sector_run": "11-11",
+      "UID": "220029715-1-S11",
+      "published_2025_label": "KP",
+      "selection_group": "reference_KP"
+    },
+    {
+      "tic_id": 307210830,
+      "sector_run": "10-10",
+      "UID": "307210830-1-S10",
+      "published_2025_label": "CP",
+      "selection_group": "reference_CP"
+    },
+    {
+      "tic_id": 348555861,
+      "sector_run": "12-12",
+      "UID": "348555861-1-S12",
+      "published_2025_label": "EB",
+      "selection_group": "reference_EB"
+    },
+    {
+      "tic_id": 142206468,
+      "sector_run": "3-3",
+      "UID": "142206468-1-S3",
+      "published_2025_label": "NTP",
+      "selection_group": "reference_NTP"
+    }
+  ]
+}
