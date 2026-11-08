@@ -1,0 +1,51 @@
+name: Paired evidence audit (frozen data, no NASA rerun)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/paired-validity-audit.yml'
+      - 'paired_validity_audit.py'
+      - 'tests/test_paired_validity_audit.py'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  paired-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed analysis requirements
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "scipy>=1.11,<2" "pytest>=8,<10"
+      - name: Download original frozen November 7 analysis artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p original
+          gh run download 42402819710 --repo "${{ github.repository }}" -n new-kepler-localized-defect-ablation --dir original
+      - name: Check original data file SHA-256 values
+        working-directory: original
+        run: |
+          cat > /tmp/original_checksums.txt <<'EOF'
+          7d76583f0790ae543b164232c9f5b3ce27b6a583ae1dbd89ef3cd7c0b9a7bf1e  all_paired_injection_trials.csv
+          7acd1de5a306a56aeec07e1bdd1bfdcaa2ae8329f054604f1e72f1980336a730  heldout_proxy_nulls.csv
+          fe0d565e90fa2ea4c1af9d7a1c0909d601192003432e5718313f2a63b2eee0d7  frozen_method_thresholds.json
+          EOF
+          sha256sum --check /tmp/original_checksums.txt
+      - name: Verify code-level tests
+        run: python -m pytest -q tests/test_paired_validity_audit.py
+      - name: Compute paired disagreements and star-level resampling
+        run: python paired_validity_audit.py --results original --out results/paired_validity_audit
+      - name: Preserve audit report and machine-readable output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paired-kepler-frozen-validity-audit
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/paired_validity_audit/
