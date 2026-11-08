@@ -73,3 +73,20 @@ The new TESS-specific [companion diagnostic](tess_official_event_recovery_compan
 3. Run NASA realistic planet-injection/recovery tests **at fixed empirical false-alarm budget**, with host-level uncertainty. Only then can any change be called an exoplanet-detection improvement rather than an engineering example.
 
 **AI disclosure:** GPT-6 located public NASA/Zenodo data, authored code, performed original-data execution and testing, worked through the read-only input error, analyzed uncertainty and drafted prose. The student must independently review the scientific claims and comply with course AI-use policies.
+
+## The same TESS data: completed physical feature sidecar beside official neural inference
+
+**[Successful same-input NASA + descriptive event-recovery Actions run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42519715623)** and **[archived actual original NASA predictions + SHA-verified MAST source metadata + all four per-event measurements](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42519715623/artifacts/13633161147)**. The [physical companion code](tess_official_event_recovery_companion.py) and [source-matching/immutability tests](tests/test_tess_official_event_recovery_companion.py) are in main.
+
+This is a new step beyond the previous separate Kepler demo: **both methods were run on the exact same original TESS light-curve source and TCE ephemeris**.
+
+- NASA SPOC raw-source file: `tess2018349182500-s0006-0000000167526485-0126-s_lc.fits`, original SHA256 `41365d738d2a872378a12a4d49068ccdf317710fd04179d6aa8542b4e66f3078`.
+- **14,592** quality-zero original TESS 2-minute cadences in the sidecar, and the original unmodified NASA v2.4.0 **planet-validation score 0.020304145 / NOT_PC** for `167526485-1-S6`.
+- At the NASA TCE's original period ~**5.01159 days** and epoch, the independent recovery code found **4 real flux dips** with locally normalized depths **1.138%, 1.167%, 1.236%, 1.224%**. Median event depth **1.195%**.
+- Post- versus pre-event median flux recovered fairly closely: across the four events, median `|post-pre|/(|local depth|+noise)` is **0.04039**. This statistic is descriptive, not a NASA feature, an independently calibrated probability or a physical planetary proof.
+- There were only **two odd and two even** real event windows. The preregistered event-level uncertainty rule correctly **does not report an odd/even confidence interval** with fewer than three per group, avoiding false precision.
+- **Important scientific result:** a remarkably repeatable `~1.2%` dip can receive a low planet-validation score once NASA considers its broader stellar and pixel diagnostics. We did **not** determine the astrophysical/instrumental source of this event or demonstrate the ExoMiner classification is independently correct. Recovery to baseline is insufficient to distinguish a planetary transit from an eclipsing star.
+- No original NASA neural weights or decisions were changed. The sidecar reports its metrics alongside, rather than modifying the official `predictions_spoc-tces_set.csv` score.
+
+**Meaning for model development:** we have proven end-to-end **input co-location** of official NASA ExoMiner and our own optical-event processing on an original space-telescope source. The next *scientific* requirement is a large, previously unexamined TESS cohort with controlled full-model-versus-augmented comparison before any claim of improving NASA exoplanet discrimination.
+
