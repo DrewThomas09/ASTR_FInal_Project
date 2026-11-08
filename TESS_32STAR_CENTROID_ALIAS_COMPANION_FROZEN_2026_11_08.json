@@ -1,0 +1,323 @@
+{
+  "experiment_id": "TESS_FIXED_32_STAR_LOCAL_CENTROID_AND_ALIAS_COMPANION_20261108",
+  "created_prior_to_new_centroid_values_or_decisions": true,
+  "selection": "UNION of two already-executed, already-score-inspected fixed 16-star TESS cohorts, NOT a new score-blind test of either NASA's model or its improvement. Both prior cohorts already inspected and published in this repo.",
+  "frozen_2025_source_files": [
+    "TESS_16STAR_OFFICIAL_EXOMINER_COHORT_FROZEN_2026_11_08.json",
+    "TESS_16STAR_2025_ERRORS_VS_2026_FROZEN_2026_11_08.json"
+  ],
+  "source_2025_DOI": "10.5281/zenodo.15466293",
+  "source_2025_exact_MD5": "c79f3651d556e71f7878a46f960d09b4",
+  "fixed_n_unique_stars": 32,
+  "fixed_n_exact_original_TCE_UIDs": 32,
+  "official_2026_model": "unchanged authentic NASA ExoMiner++ v2.4.0 single planet-validation model, original 2-minute SPOC TCEs",
+  "official_model_container": "ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9",
+  "original_fits_centroid_columns": {
+    "source": "SPOC MOM_CENTR1 / MOM_CENTR2, POS_CORR1 / POS_CORR2 in pixels, original QUALITY and PDCSAP_FLUX/ TIME",
+    "primary": "(MOM_CENTR1-POS_CORR1, MOM_CENTR2-POS_CORR2) paired local in-transit displacement compared with average of pre/post sideband medians in both coordinates",
+    "secondary": "raw MOM_CENTR1/2 without POS_CORR subtraction, separate descriptive analysis",
+    "strict_missingness": "Do not set missing centroids, spacecraft correction, or observables to zero. If POS_CORR is missing, primary result missing; raw-centroid secondary still available if measured."
+  },
+  "event_definitions": {
+    "transit_half_duration_fraction": 0.5,
+    "pre_post_inner_duration_multiplier": 1.5,
+    "pre_post_outer_duration_multiplier": 3.5,
+    "outer_maximum_orbit_fraction": 0.44,
+    "minimum_real_measurements_during": 3,
+    "minimum_real_measurements_each_pre_and_post": 6,
+    "minimum_independent_events_for_bootstrap": 3
+  },
+  "fixed_event_uncertainty": {
+    "method": "500 source-within-event bootstrap samples of whole observed event shift vectors; descriptive only, does not account for systematic telescope noise and not p-value",
+    "repetitions": 500,
+    "seed": 2026110811
+  },
+  "fixed_experimental_flag_NOT_VALIDATED_FOR_SCIENCE": {
+    "name": "candidate_centroid_veto",
+    "min_individual_events": 3,
+    "median_2d_shift_at_least_pixels": 0.05,
+    "bootstrap_95pct_axis_excludes_zero": true,
+    "meaning": "If original official NASA planet-validation score >=0.5 and measured corrected centroid displacement is >=.05 pixel (~1.05 arcsec with TESS 21 arcsec/pixel), and event-bootstrap x or y CI excludes zero, flag candidate for manual review, not automatically declare a false planet.",
+    "output": "warning flag and optionally thresholded comparison to historical 2025 classes; NEVER overwrite or claim to improve NASA predictions",
+    "warning": "Physical threshold is a demonstration gate chosen before measuring new centroid values; not mission-calibrated or independent prospective performance."
+  },
+  "original_2025_2026_source_identity": {
+    "period_tolerance_fraction": 0.01,
+    "category_names": [
+      "period_consistent_within_one_percent",
+      "new_period_double_alias",
+      "new_period_half_alias",
+      "different_fitted_period",
+      "no_exact_UID"
+    ],
+    "transit_duration_2025": "days",
+    "transit_duration_2026": "hours, convert old days * 24"
+  },
+  "analysis_rules": [
+    "Report every one of 32 original stars including missing FITS, missing centroid columns, missing orbital ephemerides or model errors",
+    "Do not use NASA current score or original 2025 label to fit any centroid values, choose source selection, periods, thresholds, or exclusions",
+    "Only source-identity-period-consistent original UIDs are comparable as same fitted ephemeris at this stage; ephemeris consistency does not establish identical astrophysical source",
+    "No tuned false-alarm threshold or a new or confirmed planet claim; this is exploratory comparison on reused previously examined sources",
+    "Per-event centroid displacement and fixed .05px experimental manual-review flag are not novel relative to NASA's already-existing centroid/difference-image inputs",
+    "Compare historical-label warnings by category DESCRIPTIVELY only and report positives and negatives flagged; no generalizable performance gain",
+    "Source-locus results should subsequently motivate a separate truly independent star-disjoint future study with documented official 2026 training exclusions"
+  ],
+  "source_records": [
+    {
+      "uid": "220029715-1-S11",
+      "tic_id": 220029715,
+      "sector_run": "11-11",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "248111245-1-S10",
+      "tic_id": 248111245,
+      "sector_run": "10-10",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "38846515-1-S8",
+      "tic_id": 38846515,
+      "sector_run": "8-8",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "12862099-1-S3",
+      "tic_id": 12862099,
+      "sector_run": "3-3",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "307210830-1-S10",
+      "tic_id": 307210830,
+      "sector_run": "10-10",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "387690507-1-S6",
+      "tic_id": 387690507,
+      "sector_run": "6-6",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "366622912-1-S7",
+      "tic_id": 366622912,
+      "sector_run": "7-7",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "70899085-1-S5",
+      "tic_id": 70899085,
+      "sector_run": "5-5",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "348555861-1-S12",
+      "tic_id": 348555861,
+      "sector_run": "12-12",
+      "published_2025_label": "EB",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "132448273-1-S8",
+      "tic_id": 132448273,
+      "sector_run": "8-8",
+      "published_2025_label": "EB",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "318986273-1-S10",
+      "tic_id": 318986273,
+      "sector_run": "10-10",
+      "published_2025_label": "EB",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "294206967-1-S10",
+      "tic_id": 294206967,
+      "sector_run": "10-10",
+      "published_2025_label": "EB",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "142206468-1-S3",
+      "tic_id": 142206468,
+      "sector_run": "3-3",
+      "published_2025_label": "NTP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "287350461-1-S3",
+      "tic_id": 287350461,
+      "sector_run": "3-3",
+      "published_2025_label": "NTP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "7-20"
+    },
+    {
+      "uid": "177308817-1-S9",
+      "tic_id": 177308817,
+      "sector_run": "9-9",
+      "published_2025_label": "NTP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "349521875-1-S5",
+      "tic_id": 349521875,
+      "sector_run": "5-5",
+      "published_2025_label": "NTP",
+      "source_cohort": "prior_16star_class_balanced",
+      "cohort_original_mES_band": "20-80"
+    },
+    {
+      "uid": "279741379-1-S3",
+      "tic_id": 279741379,
+      "sector_run": "3-3",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "106402532-1-S9",
+      "tic_id": 106402532,
+      "sector_run": "9-9",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "178155732-1-S4",
+      "tic_id": 178155732,
+      "sector_run": "4-4",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "422655579-1-S4",
+      "tic_id": 422655579,
+      "sector_run": "4-4",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "466840711-1-S11",
+      "tic_id": 466840711,
+      "sector_run": "11-11",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "29960110-1-S4",
+      "tic_id": 29960110,
+      "sector_run": "4-4",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "460205581-1-S11",
+      "tic_id": 460205581,
+      "sector_run": "11-11",
+      "published_2025_label": "CP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "158623531-1-S3",
+      "tic_id": 158623531,
+      "sector_run": "3-3",
+      "published_2025_label": "KP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "169532369-1-S5",
+      "tic_id": 169532369,
+      "sector_run": "5-5",
+      "published_2025_label": "FP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "167554898-1-S6",
+      "tic_id": 167554898,
+      "sector_run": "6-6",
+      "published_2025_label": "EB",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "49899799-1-S4",
+      "tic_id": 49899799,
+      "sector_run": "4-4",
+      "published_2025_label": "FP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "17660071-1-S7",
+      "tic_id": 17660071,
+      "sector_run": "7-7",
+      "published_2025_label": "NTP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "29960109-1-S4",
+      "tic_id": 29960109,
+      "sector_run": "4-4",
+      "published_2025_label": "NPC",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "165493409-1-S10",
+      "tic_id": 165493409,
+      "sector_run": "10-10",
+      "published_2025_label": "EB",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "354518617-1-S6",
+      "tic_id": 354518617,
+      "sector_run": "6-6",
+      "published_2025_label": "NTP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    },
+    {
+      "uid": "101395259-1-S9",
+      "tic_id": 101395259,
+      "sector_run": "9-9",
+      "published_2025_label": "FP",
+      "source_cohort": "prior_16star_old_score_error_enriched",
+      "cohort_original_mES_band": null
+    }
+  ]
+}
