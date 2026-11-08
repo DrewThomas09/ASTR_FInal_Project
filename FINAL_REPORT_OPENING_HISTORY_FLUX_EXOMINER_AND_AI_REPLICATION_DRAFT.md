@@ -249,6 +249,33 @@ These findings changed how we interpret the earlier comparison. Just because two
 
 This was another example of something AI was useful for: not merely generating a modification, but **helping identify a problem with the data and how the scientific experiment was being compared**. We therefore built a **source-identity check directly into our evaluation software**, comparing both model versions' fitted periods, epochs, transit durations, and event identifiers. On the same original sixteen difficult sources, the code found **thirteen period-consistent entries**, **one near-exact doubled-period alias**, and **two entries where the fitted period changed substantially**. Among the thirteen period-consistent cases, the current model agreed with the older labels on seven and still disagreed on six. The three other cases need separate physical-signal matching, so I no longer treat their raw event-number comparisons as proof of a persistent classification error. The corrected experiment passed **224 software tests**. This did not make ExoMiner better at finding planets, but it improved the scientific validity of our attempt to measure whether the model had changed.
 
+
+### Our latest experiment: testing where the light actually comes from
+
+After finding that a simple change to ExoMiner's classification scores did not make the results better, I wanted to return to the actual measurements. One idea from our earlier research was that a suspicious brightness dip might be easier to identify if we also measured whether the light appeared to move across the telescope's detector during the event.
+
+This connects directly to what we studied in class about **flux and calibration**. TESS does not measure the total luminosity of a star directly. It records light reaching a set of pixels, each of which may include light from more than one star. If one of those stars dims, the average position of the light in the pixels can shift. Astronomers call that average position the **centroid**.
+
+We used the original NASA TESS files to measure that position immediately **before, during, and after** the expected transit. We also tried removing the estimated motion of the spacecraft itself, because an instrument moving slightly is not the same thing as a star moving across the sky. The program required real observations on both sides of each event. If an observation was missing or marked as unreliable, we did not fill in an imaginary value.
+
+Our first experiment used **32 previously examined stars**. NASA's actual pretrained ExoMiner model classified the original signals, while our separate code calculated how much the centroid moved. The additional program successfully processed the original light curves of **all 32 stars** and measured **146 separate usable events**. However, only 23 of those stars had at least three events with enough measurements for our confidence calculation.
+
+We originally set a rule to flag a signal for extra review if its centroid moved at least **0.05 pixels**, roughly one arcsecond on TESS's detector, with consistent evidence across observed events. The largest median shift we actually measured was only **0.0082 pixels**. As a result, **not one star was flagged**.
+
+This was a clear negative result: the code worked, but the threshold was too conservative to be useful. Instead of changing the cutoff and presenting the new version as though it had always been our plan, we kept the result and tested the same rule on **24 additional stars** that we had not used during development. We selected those stars from the published catalog without looking at either model's scores. They gave us **102 more real observed events**, and again the 0.05-pixel rule flagged **no sources**.
+
+We then tried one controlled adjustment. Using only the previously examined 32-star group, we selected a new, smaller threshold of approximately **0.0016 pixels** based on the largest centroid shifts among thirteen usable planet-labeled examples. We fixed that threshold **before examining the new 24-star centroid results** and applied it to those different stars without changing anything else.
+
+This time, the program identified **five sources for manual review**. Four had earlier classifications as **eclipsing binaries**, while one had an earlier **known-planet** label. That initially sounded like an improvement because the new rule had identified the stellar eclipses.
+
+But when we compared these warnings with NASA's complete model, an important problem appeared. **ExoMiner had already rejected all four binary-star signals.** The only new warning affecting a source that NASA had accepted belonged to the known-planet-labeled signal **TIC 78055054**, which ExoMiner had given a score of approximately **0.60**.
+
+In other words, our new rule did not fix a demonstrated mistake. It mostly repeated decisions NASA had already made and risked rejecting something that astronomers had previously classified as a planet. We therefore could not describe the modification as making ExoMiner more accurate.
+
+This was probably our most useful lesson in the project. It is relatively easy to use AI to produce another algorithm, generate an interesting plot, or suggest a reasonable-sounding feature. It is much harder to show that the feature improves a model that already uses detailed physical information. In this case, testing **56 different stars and 248 real observed transit or eclipse windows** was enough to demonstrate that our apparently promising change did **not** provide an established benefit.
+
+I still think this was a productive use of AI in research. We went from reading a paper, to running the original NASA software, to building our own measurement from telescope observations, to designing a controlled comparison and rejecting a change that did not work. The result was not a new planet or a better neural network, but a clearer understanding of **why the original scientific model is complicated and how difficult it is to improve responsibly**.
+
 ### References and course connections
 
 - ASTR/PHSC 12600: Lesson 2 (luminosity and flux); Lesson 3 (time and measurement); Lessons 5–6 (Kepler's laws and gravity); Lesson 7 (light).
