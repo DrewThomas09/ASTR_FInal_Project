@@ -62,6 +62,20 @@ Comparing methods that use **exactly the same four inputs** is a more useful tes
 
 The result supports a nonlinear relationship among the four transit measurements and NASA's historical vetter labels. It is not evidence the forest has learned a true physical planet-confirmation mechanism.
 
+## Further direct host-paired comparison to four-feature logistic (secondary, exploratory)
+
+The follow-up [read-only host-block audit](dr25_secondary_paired_tradeoff.py) used the **identical, source-hash-verified** first-split prediction file from the original statistical workflow (SHA-256 `3682e0be30506ddcfe4bbb0c683ed6884454c5e5fbf8d946922fb48248712663`). No new score fitting, retraining, threshold selection, replacement source, or selective omission was permitted.
+
+[Successful audited GitHub Actions run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42514137142) · [original secondary results and test logs](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42514137142/artifacts/13631130293). **149 full project regressions passed**.
+
+- **Paired forest-minus-logistic balanced accuracy:** **+4.6779 percentage points**; 20,000 two-sided host-block method-swap permutations gave **one** result at least as extreme, Monte Carlo **p = 2/20,001 = 0.000099995**. This is an **exploratory secondary p-value**, not an additional independent hypothesis confirmation.
+- Star-clustered 2,000-replicate 95% interval for forest-minus-logistic **balanced accuracy**: **[+2.28,+6.92] pp**.
+- Forest-minus-logistic historical **candidate recall**: **−2.23 pp**, 95% cluster interval **[−5.10,+0.59] pp**, including zero; do not call this a statistically supported increase in recall.
+- Forest-minus-logistic historical **false-positive acceptance rate**: **−11.59 pp**, 95% cluster interval **[−15.13,−7.75] pp**, entirely below zero.
+- Paired KOI disagreements (same 1,619 test signals): **216** forest-correct/logistic-wrong versus **146** forest-wrong/logistic-correct. Exact row-level McNemar is deliberately not our primary inference because KOIs from the same host can be dependent.
+
+**Interpretation:** the forest's overall superior historical label agreement is primarily attributable to filtering out more *historically labeled false positives*, not retaining more historical candidate signals. The long-period subgroup is a serious exception: among 71 candidate labels with P≥100 d the forest retained 44 and logistic retained 66, though logistic also admitted 58/69 historical false positives versus the forest's 16/69. These class-level tradeoffs are essential to a credible scientific interpretation.
+
 ## Replication across ten grouped-star splits (do not pool p-values)
 
 Additional group splits were fixed as seeds **12601 through 12609**, each using independent host sets within its own train/validation/test partition.
