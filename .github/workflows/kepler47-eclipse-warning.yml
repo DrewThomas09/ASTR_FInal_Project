@@ -1,0 +1,42 @@
+name: Posthoc Kepler-47 Eclipse Ephemeris Audit
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/kepler47-eclipse-warning.yml'
+      - 'kepler47_eclipse_warning_check.py'
+      - 'tests/test_kepler47_eclipse_warning_check.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audited-ephemeris:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific test requirements
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2,<4" "matplotlib>=3.7,<4" "scipy>=1.11,<2" "astropy>=6,<9" "scikit-learn>=1.3,<2" "requests>=2.31,<3" "pytest>=8,<10"
+      - name: Verify entire project test suite
+        run: python -m pytest -q tests
+      - name: Download ORIGINAL frozen observational warnings
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p original
+          gh run download 42510882421 --repo "${{ github.repository }}" -n kepler-real-q6-independent-spsd-sap-pdc --dir original
+      - name: Check original warning file cryptographic fingerprint
+        run: echo '1be4b1c9e28f31ad506cfed191c7818a9aa8d1627a269a87d89de3c6bc0a0b99  original/unmatched_warnings_not_confirmed_false_alarms.csv' | sha256sum -c -
+      - name: Match distinct Kepler-47 warnings to published primary and secondary eclipses
+        run: python kepler47_eclipse_warning_check.py --warnings original/unmatched_warnings_not_confirmed_false_alarms.csv --out results/kepler47_eclipse_audit
+      - name: Preserve event-level eclipse-phase comparison and chart
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exploratory-kepler47-eclipse-warning-alignment
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/kepler47_eclipse_audit/
