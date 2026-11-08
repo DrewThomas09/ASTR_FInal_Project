@@ -103,7 +103,7 @@ The labeled catalog contained **57,162 transit-event records from 17,206 stars**
 
 However, this result belongs to **NASA's already-trained ExoMiner++ models**. We did not generate those scores with a neural network trained by our project. The comparison also reminded me why a very high overall score can be misleading: many records are repeated observations, and the mix of known planets and nonplanets is not the same as the mix of objects a new sky survey would encounter.
 
-The hardest part of the full replication remains reproducing the inputs and preprocessing for the actual neural network. The researchers released approximately **19 GB of compressed TESS training examples**, separate from the much smaller catalogs. Those inputs still have to be matched to the correct model version, split by star, and normalized using training data rather than information from the test set. At this stage, we have verified the catalogs and built a prototype of several input views, but **we have not yet retrained ExoMiner++ or run its official pretrained model on a new sample**.
+The hardest part of the full replication remains reproducing the inputs and preprocessing for the actual neural network. The researchers released approximately **19 GB of compressed TESS training examples**, separate from the much smaller catalogs. Those inputs still have to be matched to the correct model version, split by star, and normalized using training data rather than information from the test set. At this stage, we have verified the catalogs and built a prototype of several input views. We have since **run NASA's official pretrained model on one documented TESS target**, but **have not retrained ExoMiner++ or reproduced its full published benchmark**.
 
 ### What went wrong, and why those failures mattered
 
@@ -115,7 +115,7 @@ AI helped us write, run, and check these experiments, but it did not prevent mis
 
 ## The next test: can AI help improve a model without breaking it?
 
-The next stage is to run the **official ExoMiner++ model** on the correct TESS observations and reproduce its outputs. Only then can we make a meaningful comparison between NASA's unmodified model and a version with one specific change.
+We have now run the **official pretrained ExoMiner++ model** on a documented TESS target and saved its original prediction. The next stage is to expand that run into a properly selected set of observations and compare NASA's unmodified system with a version containing one specific, independently tested change.
 
 The modification I want to investigate is how the system handles ambiguous changes in brightness. A planet transit usually returns toward the star's normal flux after the planet passes. An instrument problem may cause a more persistent change. I want to test whether examining that difference, along with the consistency of individual events and possible half-period errors, helps the system reject misleading signals **without deleting real transit information**.
 
@@ -124,6 +124,49 @@ ExoMiner++ already checks several related things. Therefore, I cannot claim this
 To test that fairly, the original model and the modified model would need to examine the same previously unseen stars. We would choose the evaluation rules before looking at the answers and compare how many known or artificially injected planet signals each method identifies **at the same false-alarm rate**. If the modified version finds more planets but also accepts more eclipsing binaries or instrument errors, the result would be a trade-off rather than a clear success.
 
 That is the larger purpose of this project. I am using exoplanet detection as a way to test whether AI can help someone work with a difficult, established scientific system: understand the original research, reproduce its data and methods, find a specific weakness, and test a small change. The hardest part is not getting AI to generate a more complicated algorithm. It is making sure the algorithm still respects the underlying physics and produces evidence that another researcher could check.
+
+
+## Further model development: moving from prototypes to the real NASA network
+
+After building the earlier Kepler prototypes, I wanted to make sure we were not mistaking a good-looking simulation for a successful replication. We therefore tried running NASA's **actual ExoMiner++ software**, using the researchers' published instructions, rather than recreating the appearance of its outputs ourselves.
+
+Our first attempt did not work. The NASA program needed to rewrite part of its input file, but our automated runner had mounted that file as read-only. Once we found the precise source of the error, we made a writable copy of the input and kept the original untouched. This was a software problem rather than a problem with astronomy, but it was another example of why reproduction requires attention to small technical details.
+
+The corrected experiment succeeded. The official pretrained model downloaded the original TESS observations and other diagnostic measurements for **TIC 167526485, Sector 6**, the example used in NASA's documentation. It processed the signal using the official neural network, **ExoMiner version 2.4.0**, and returned a **planet-validation score of 0.0203**, with a classification of **NOT_PC** (not a planet candidate). The detected event's reported period was about **5.01 days**. The original spacecraft data were processed through the official pipeline, with exactly one transit-like event successfully scored. The model and its result were not our own recreation; we preserved the NASA model version, software image identifier, logs, and exact output CSV so we can repeat the run.
+
+This was the first time the project actually ran ExoMiner++ itself. It did not confirm that the program is correct for every star, and one example cannot reproduce the published accuracy of the entire system. But it removed an important obstacle: we now know how to run and inspect the genuine scientific software, not just the simpler programs we created before it.
+
+### A small feature experiment on the same TESS catalog
+
+I also wanted to test whether a relatively small change could make a simpler model more useful. For this experiment, we used the **57,162 previously labeled TESS event records** from the 2025 ExoMiner++ dataset and divided them by their original ten published groups of host stars. This prevented observations of the same star from appearing in both training and testing data.
+
+We first trained a random forest using **orbital period, transit duration, estimated planet radius, and signal strength**. Then we created an otherwise identical model with two additional inputs. The first measured the **fraction of the orbit occupied by the event**, which gives the model some information about the geometry of an apparent transit. The second used **Gaia's RUWE measurement**, a measure of how well a star's apparent motion fits the expected astrometric model. Unusually large RUWE values can sometimes suggest a companion star or other complications, although they are not direct proof of a binary.
+
+Both models were trained and tested on exactly the same source records and the same ten star-separated folds. We froze the feature choices and model settings before running the comparison, rather than continuing to change the model until we got a result we liked.
+
+The four-feature model achieved an **average precision of 0.6211**. The six-feature model increased that to **0.6446**, an improvement of about **0.0234**. For context, using the researchers' already-published ExoMiner++ scores on those same TESS records gave an average precision of **0.9704**. We did not retrain NASA's neural network to produce that last number; it was a comparison with the official published results.
+
+At first, the small increase seemed promising. However, the statistical test was less convincing. By repeatedly resampling whole stars rather than individual event rows, we estimated a 95% uncertainty interval for the feature change of approximately **-0.0110 to +0.0537**. Because this interval includes zero, we could not rule out that the apparent increase was due to the particular sample of stars. Moreover, at the default score threshold of 0.5, the modified random forest actually had slightly worse precision and recall than the original random forest.
+
+This was **not a demonstrated improvement**. It was a completed experiment that showed the kind of trade-off we have to check. It also emphasized how much stronger the complete ExoMiner++ approach is than a model based only on a handful of summary measurements. Finally, RUWE and related geometric measurements already appear in NASA's more advanced models, so simply adding them to our small random forest would not be a new discovery.
+
+### Testing the shapes of real events
+
+Alongside that comparison, we continued developing a physical diagnostic on the original Kepler data. We measured the brightness immediately **before, during, and after each expected eclipse or transit**. The idea was that a temporary event should recover toward the earlier level of brightness, while some detector problems leave a longer-lasting change. We also compared the depths of alternate events to look for periods that are really half of a binary star's orbital period.
+
+We applied the program to two previously known systems, **Kepler-12**, which hosts a known transiting planet, and **Kepler-35**, a system with eclipsing stars. We examined both Kepler **Quarter 6 and Quarter 7**, recording the actual observations used. The code found **20 and 18 usable events** for Kepler-12 in the two quarters, and **7 and 8 usable eclipses** for Kepler-35. On both stars, the local brightness usually recovered after the event. This was useful physical evidence, but it also showed an important limitation: **recovery alone cannot tell us whether the object is a planet or a star**, because stellar eclipses also end.
+
+The earlier pictures of Kepler-35 showed very different odd and even eclipse shapes. However, when we calculated uncertainty from the smaller collection of *individual observed events*, the intervals for the depth difference still included zero. That meant the event-level statistical evidence was not as strong as the folded picture initially suggested. Rather than adjust the test until it became significant, we retained the inconclusive result.
+
+This is exactly why I wanted to work on a well-established model instead of immediately building a replacement. Each additional input may appear physically reasonable, but a model improves only if the information helps on enough independent observations and does not create new mistakes.
+
+### Where the development stands
+
+The project has now moved through three distinct stages: a simple machine-learning baseline, reconstruction and testing of real transit measurements, and finally a successful run of the **official pretrained ExoMiner++ neural network**. We have also completed one small feature experiment on the TESS catalog, with a modest but statistically uncertain result.
+
+The next stage is more demanding. We need to apply the official pretrained model to a wider, fixed set of stars and then attach our event-recovery measurements to those **same TESS observations**, not to a separate Kepler example. Only after this can we test whether an added input or modified decision rule helps the existing model rather than merely improving one of our smaller substitutes.
+
+For a convincing conclusion, I would want to see more genuine or realistically injected planetary signals recovered **at the same false-alarm rate**, with uncertainty calculated across independent stars. If we cannot produce that evidence, our conclusion should be that AI helped us understand and reproduce a complex scientific workflow, but that we have **not yet demonstrated a better method for discovering planets**.
 
 ### References and course connections
 
