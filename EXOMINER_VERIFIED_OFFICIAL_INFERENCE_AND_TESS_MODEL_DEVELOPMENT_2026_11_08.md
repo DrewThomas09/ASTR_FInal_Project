@@ -113,3 +113,46 @@ The first full software test run had **one test-fixture error**, not a model or 
 
 **Interpretation:** ExoMiner++'s learned classification is already strong on its own historical labeled TESS sample, and a simple reweighting of published scalar attributes contributes no reliable gain. The trial does not prove further improvements are impossible: original model version 2025 differs from current 2026 v2.4.0, and new sources/instrument artifact recovery may create different failure modes. Any next candidate improvement needs **event-level flux and instrument evidence on newly held-out sources**, not just more catalog numbers.
 
+
+## Verified larger experiment: NASA v2.4.0 on 16 **score-blind-selected** TESS host stars
+
+**[Exact cohort frozen BEFORE looking at this cohort's pretrained scores](TESS_16STAR_OFFICIAL_EXOMINER_COHORT_FROZEN_2026_11_08.json)** · [Original TIC/sector input file](tess_16star_official_exominer_tics.csv) · [actual official v2.4.0 cohort+original-FITS run: success, **204 full regression tests passed**](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42522859511) · [all unchanged model outputs, source logs, 16 original FITS SHA256 identifiers, 81 individual event diagnostics and plotted scores](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42522859511/artifacts/13634466730).
+
+**Study purpose:** go beyond the one documented NASA example without cherry-picking subjects based on model performance. The sample is a **feasibility and model-behavior study**, not a test on guaranteed new exoplanets.
+
+### Frozen source selection, actual NASA run and coverage
+
+The source was the exactly **MD5-pinned original published 2025 labeled TESS SPOC 2-minute table**, DOI `10.5281/zenodo.15466293`. Before reviewing the 2026 pretrained model's scores on this cohort, the candidate list was frozen as follows: four published historical label strata **KP, CP, EB, NTP**, with two TCEs per stratum from **7≤multiple-event statistic<20** and two from **20≤statistic<80**. All targets were single-sector runs **S3–S12** with period 2–10 days, duration 0.05–0.4 days, and selected by a **fixed SHA256 ordering of original TCE UID, without ever reading the source score**. Sixteen distinct TIC stars and sixteen exact original TCE UIDs were fixed in the cohort manifest. This was **not** a random census of all TESS stars or a fresh independent holdout from the original 2026 model training population.
+
+Actual original NASA model: **unchanged ExoMiner++ v2.4.0 single pretrained binary planet-validation model** running the **same previously verified immutable Docker image digest**, with official NASA SPOC DV, original LC and difference-image processing. The pipeline completed successfully in **177.55 seconds** after image preparation and scored **22 SPOC TCE observations total** from these sixteen stars. Of the 22, exactly **16 were the prespecified historical event IDs**; the six other TCEs were not silently counted as independent or reclassified into our preregistered primary source cohort.
+
+**Source retention:** **16 of 16 exact TCE UIDs scored by NASA**, **16 of 16 same original TIC+sector MAST FITS recovered for our independent postprocessor**, **16 unique original SHA256 file identities**, and **81 actual observed individual-event windows** assessed. All sixteen requested IDs appear in `all_16_frozen_stars_including_failed_sources.csv`, along with explicit source-missing/analysis-error statuses if applicable. None were missing in this run.
+
+### Original model's raw scores versus the published historical label strata
+
+| Originally published 2025 source label | n exact preselected TCEs | NASA 2026 original score range | Count with raw score ≥0.5 |
+|---|---:|---|---:|
+| KP (known planets) | 4 | 0.830526–0.929169 | **4/4** |
+| CP (candidate planets) | 4 | 0.894892–0.979924 | **4/4** |
+| EB (stellar eclipsing binaries) | 4 | 8.52e−10–0.000739 | **0/4** |
+| NTP (non-transiting phenomena) | 4 | 1.41e−19–0.00002098 | **0/4** |
+
+Thus, among these **exact 16 previously labeled observations**, the pretrained NASA v2.4.0 decisions agree with the earlier KP/CP-versus-EB/NTP grouping on **8/8 positives and 8/8 negatives** (TP 8, FN 0, FP 0, TN 8). **This is not 100% model accuracy on new or independent planets**. The cohort was deliberately balanced by label and signal range, it is very small, and the 2026 model's training exclusions have not been verified. These sources may overlap or closely resemble its development data. There is **no meaningful survey-wide accuracy interval or independent detection/false-alarm probability** based on these 16 cases.
+
+### Physical findings from the exact SAME original TESS light curves
+
+Our **independent sidecar** [source](tess_exominer_16star_cohort_audit.py) uses the official output TCE period, epoch and duration to inspect *original quality-zero NASA SPOC PDCSAP flux* on the same original TIC/sector FITS, with no invented observed cadences. It measures per-event pre/during/post medians, a `|post-pre|/(|event depth|+noise)` recovery ratio, and odd/even depth differences where enough true event epochs exist. It neither modifies NASA's neural scores nor feeds additional measurements back into the network.
+
+| Originally labeled class | Median original 2026 NASA score | Median observed local depth | Median original TESS pre/post step ratio | Available full-event windows |
+|---|---:|---:|---:|---:|
+| KP | **0.8549** | **0.6915%** | **0.0322** | 4–7 events/star |
+| CP | **0.9571** | **1.0968%** | **0.0658** | 4–8 events/star |
+| EB | **~0.000012** | **1.8757%** | **0.0550** | 6–8 events/star |
+| NTP | **~0.000003** | **0.0268%** | **0.1146** | 2–3 events/star |
+
+These **median-of-event medians** are small-group descriptive statistics, not estimates of a general class distribution. The recovery step ratios for known planetary transits **overlap strongly** with those of stellar eclipses. That is a **negative result for using recovery alone to certify a planet**; both planets and eclipsing binaries can produce genuine temporary dimming that returns to the baseline.
+
+Concrete source-backed example: previously labeled **eclipsing binary TIC 318986273 / Sector 10** has median local eclipse depth **~11.59%** and returns relatively closely to baseline (step ratio ~0.0293), yet NASA gives it a planet-validation score **8.5 × 10⁻¹⁰**, correctly matching the historic EB group. Conversely, previously labeled **non-transit signal TIC 177308817 / Sector 9** shows a local median dip **~2.19%** but receives a NASA score **~2.1 × 10⁻⁵**. Those cases illustrate why a dramatic brightness dip or a clean return to normal does **not** independently establish a planet. We have not separately proven the physical mechanism behind the NTP event or why NASA chose each score.
+
+**Overall evidence:** the official NASA model is reproducibly runnable on multiple genuine original source files and sharply separates this frozen historical class-balanced demonstration cohort. Our physically interpretable extra event metrics work on the **same** telescope measurements, but **they do not presently provide a validated improvement over NASA's model**. Moreover, current NASA ExoMiner already uses individual transit, odd/even and source-centroid branches, so our sidecar cannot be called original novelty merely for reconstructing those concepts. The next legitimate test needs previously withheld host stars, fully documented 2026 training exclusions, comparison at a common false-alarm rate and possibly controlled instrument-step injections.
+
