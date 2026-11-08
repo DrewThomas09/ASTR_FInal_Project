@@ -1,0 +1,87 @@
+name: Review Original NASA ExoMiner Input Diagnostics for Five Persistently Disputed TESS Events
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/nasa-exominer-five-disagreement-inputs.yml'
+      - 'tess_5_persistent_model_disagreement_diagnostic_tics.csv'
+permissions:
+  contents: read
+jobs:
+  real-nasa-input-diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 44
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve exact five post-hoc diagnostic source identifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results/nasa_five_disagreement_inputs
+          cp tess_5_persistent_model_disagreement_diagnostic_tics.csv results/nasa_five_disagreement_inputs/tics_writable.csv
+          cp TESS_5_PERSISTENT_DISAGREEMENTS_INPUT_REVIEW_2026_11_08.md results/nasa_five_disagreement_inputs/inspection_protocol.md
+          test "$(tail -n +2 tess_5_persistent_model_disagreement_diagnostic_tics.csv | grep -c ',')" -eq 5
+          cat tess_5_persistent_model_disagreement_diagnostic_tics.csv
+      - name: Use same exact authentic 2026 NASA v2.4.0 image and preserve original digest
+        timeout-minutes: 17
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9"
+          docker pull "$image" 2>&1 | tee results/nasa_five_disagreement_inputs/pinned_image_pull.log
+          docker image inspect "$image" --format '{{json .RepoDigests}}' > results/nasa_five_disagreement_inputs/pinned_nasa_original_image_digest.json
+      - name: Run original pretrained NASA model and request its REAL individual input plots and DV reports
+        timeout-minutes: 19
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="ghcr.io/nasa/exominer@sha256:1b7ffac9db8afe1787ec9a0464ed8cc16ab91b7a280e6e824c27e3a121b0c6e9"
+          docker run --rm --shm-size=2g \
+            -e OPENBLAS_NUM_THREADS=1 \
+            -e OMP_NUM_THREADS=1 \
+            -e MKL_NUM_THREADS=1 \
+            -e TF_NUM_INTRAOP_THREADS=1 \
+            -e TF_NUM_INTEROP_THREADS=1 \
+            -v "${PWD}/results/nasa_five_disagreement_inputs/tics_writable.csv:/tics_tbl.csv" \
+            -v "${PWD}/results/nasa_five_disagreement_inputs:/outputs" \
+            "$image" \
+            --tic_ids_fp=/tics_tbl.csv \
+            --output_dir=/outputs \
+            --data_collection_mode=2min \
+            --num_processes=1 \
+            --num_jobs=5 \
+            --get_mast_urls_dv_reports=true \
+            --stellar_parameters_source=tess-spoc \
+            --ruwe_source=unavailable \
+            --task=planet-validation \
+            --exominer_model=single \
+            --max_model_workers=1 \
+            --plot_inputs_to_model 2>&1 | tee results/nasa_five_disagreement_inputs/original_nasa_model_and_diagnostic_stdout.log
+          if [[ ! -s results/nasa_five_disagreement_inputs/predictions_spoc-tces_set.csv ]]; then
+            echo "Authentic model produced no TCE scores; inspect original NASA logs" >&2
+            exit 1
+          fi
+          echo "Original NASA generated research input figures:"
+          find results/nasa_five_disagreement_inputs -type f \( -name '*.pdf' -o -name '*.png' \) | sort | tee results/nasa_five_disagreement_inputs/actual_generated_diagnostic_figures_manifest.txt
+          echo "SPOC original source-tracking files:"
+          find results/nasa_five_disagreement_inputs -type f -name 'run_*.log' | sort
+      - name: Archive original model predictions, generated input view figures, report links, source errors and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-v240-five-persistent-model-error-input-DV-figures
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            results/nasa_five_disagreement_inputs/inspection_protocol.md
+            results/nasa_five_disagreement_inputs/pinned_image_pull.log
+            results/nasa_five_disagreement_inputs/pinned_nasa_original_image_digest.json
+            results/nasa_five_disagreement_inputs/original_nasa_model_and_diagnostic_stdout.log
+            results/nasa_five_disagreement_inputs/run_main.log
+            results/nasa_five_disagreement_inputs/master_tic_tracking_summary.csv
+            results/nasa_five_disagreement_inputs/master_tce_tracking_summary.csv
+            results/nasa_five_disagreement_inputs/predictions_spoc-tces_set.csv
+            results/nasa_five_disagreement_inputs/dv_reports_all_jobs.csv
+            results/nasa_five_disagreement_inputs/actual_generated_diagnostic_figures_manifest.txt
+            results/nasa_five_disagreement_inputs/plot_inputs_to_model/
+            results/nasa_five_disagreement_inputs/job_*/run_*.log
