@@ -38,7 +38,7 @@ The strongest conclusion is a methodological distinction important for the final
 
 ## Reproducibility
 
-- **Verified successful GitHub Actions run:** [run 43291965755](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43290976819); **254 scientific regression tests passed**, including five additional strict source-pairing and invalid-data failure-mode tests, source SHA pins and same-event comparisons succeeded, original source-level sample size rechecked.
+- **Verified successful GitHub Actions run:** [run 43291965755](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43291965755); **254 scientific regression tests passed**, including five additional strict source-pairing and invalid-data failure-mode tests, source SHA pins and same-event comparisons succeeded, original source-level sample size rechecked.
 - **Complete original event-aligned source results and figure:** [GitHub Actions artifact 13975484787](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43291965755/artifacts/13978490345)
 - **Executable primary source reproducibility script:** [`tess_56star_paired_pointing_motion_robustness_nov12.py`](tess_56star_paired_pointing_motion_robustness_nov12.py)
 - **Pinned official GitHub workflow:** [`.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml`](.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml)
