@@ -22,7 +22,7 @@ SOURCES=[
 D32="all_32_original_TESS_stars_unchanged_NASA_scores_and_centroid_windows.csv"
 D24="all_24_UNSEEN_TO_OUR_CENTROID_RULE_source_TICs_with_NASA_original_scores.csv"
 HASH32="84367f439fb58164a28768fd838288d205c6bdd4375c68b6f5e647580c471ea5"
-HASH24="5a480b898fd3e54e84f2d60eb4f422a628d3d9e9f08a"
+HASH24="5a480b898fd3e54e84f2d60eb4f422a628d3d3aa7fe93da985b2c3f3d9e9f08a"
 
 def read_original_events(root):
  rows=[]
