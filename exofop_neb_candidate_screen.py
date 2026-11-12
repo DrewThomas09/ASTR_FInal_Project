@@ -21,7 +21,7 @@ PREVIOUS = (
     "TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json",
 )
 EXTRA_EXPOSED_TICS = {167526485}
-WANTED = {"NEB", "EB"}
+WANTED = {"NEB", "EB", "FP"}
 REQUIRED_COLUMNS = (
     "TIC ID", "TOI", "TFOPWG Disposition", "Epoch (BJD)",
     "Period (days)", "Duration (hours)", "Time Series Observations",
@@ -111,6 +111,8 @@ def candidate_rows(raw_bytes, previous):
                 "NEB catalog status; neighbor identity/coordinates and direct original follow-up must be independently checked"
                 if classification=="NEB" else
                 "EB catalog status only; not confirmed on-target source without independently located eclipses"
+                if classification=="EB" else
+                "FP is a broad catalog label, NOT a verified nearby or on-target eclipsing binary; inspect ground-based follow-up notes"
             ),
             "truth_localization_verified": False,
             "original_TESS_SPOC_2min_FITS_verified": False,
@@ -155,7 +157,9 @@ def run(repo_root, output_dir, input_csv=None):
     ordered, counts = candidate_rows(raw, previous)
     for group in sorted(WANTED):
         rows = ordered.get(group, [])
-        name = "NEB_nearby_binary_NEEDS_source_verification" if group=="NEB" else "EB_control_NEEDS_onsource_proof"
+        name = {"NEB":"NEB_nearby_binary_NEEDS_source_verification",
+                "EB":"EB_control_NEEDS_onsource_proof",
+                "FP":"FP_broad_false_positive_category_NEEDS_subtype_evidence"}[group]
         with (out/(name+".csv")).open("w",newline="",encoding="utf-8") as handle:
             fields = list(rows[0]) if rows else [
                 "TIC_ID","TOI","catalog_TFOPWG_disposition","candidate_evidence_status"
@@ -173,10 +177,12 @@ def run(repo_root, output_dir, input_csv=None):
         "screen_counts": dict(counts),
         "eligible_catalog_NEBS_new_distinct_TICs": len(ordered["NEB"]),
         "eligible_catalog_EBS_new_distinct_TICs": len(ordered["EB"]),
+        "broad_FP_status_followup_review_distinct_TICs": len(ordered["FP"]),
         "preview_first_12_hash_ordered_each_not_selected_or_validated": selected,
         "strict_research_boundary": [
             "This is an external ExoFOP disposition-and-ephemeris screening, not an independent truth-verified localization study.",
-            "NEB status is a lead for identifying an off-target eclipsing star; must inspect ground-based follow-up for which neighbor and sky coordinates.",
+            "The public ExoFOP TOI catalog has broad FP/PC dispositions rather than NEB/EB subtypes; do not call zero NEB/EB subtype rows zero real eclipsing binaries.",
+            "NEB status (when available) is a lead for identifying an off-target eclipsing star; must inspect ground-based follow-up for which neighbor and sky coordinates.",
             "EB status is not proof that the TESS target is the eclipsing source; must verify directly before making on-target control labels.",
             "The TOI tables and timing may have changed after original TESS sectors; compare to exact 2-minute SPOC source light curves and event ephemerides later.",
             "Do not mix this new potential cohort with the original 56 TESS sources, or treat multiple TOIs around one TIC as independent stars.",
@@ -192,8 +198,10 @@ def run(repo_root, output_dir, input_csv=None):
         "screen_counts": dict(counts),
         "distinct_catalog_NEB_potential_targets":len(ordered["NEB"]),
         "distinct_catalog_EB_potential_targets":len(ordered["EB"]),
+        "broad_FP_status_followup_review_distinct_TICs":len(ordered["FP"]),
         "first_12_NEB_TOI_only_preliminary": [x["TOI"] for x in selected["NEB"]],
         "first_12_EB_TOI_only_preliminary": [x["TOI"] for x in selected["EB"]],
+        "first_12_FP_TOI_only_preliminary": [x["TOI"] for x in selected["FP"]],
         "ground_truth_confirmed":0,
         "centroid_measurements_performed":0
     },indent=2),flush=True)
