@@ -1,0 +1,70 @@
+name: Genuine TOI 4255 ExoFOP-ephemeris TESS SPOC LC + TPF WCS centroid event physics
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-toi4255-original-spoc-wcs-event-vectors.yml'
+      - 'tess_toi4255_original_spoc_neb_vector_case.py'
+      - 'tests/test_tess_toi4255_original_spoc_neb_vector_case.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate-authentic-neighbor-sky-direction-versus-observed-centroid:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install physical-source analysis, original FITS and testing dependencies
+        run: |
+          python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'matplotlib>=3.7,<4' 'astropy>=6,<9' 'scikit-learn>=1.3,<2' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run all scientific tests, including correct WCS and off-target sign safeguards
+        run: python -m pytest -q tests
+      - name: Retrieve exactly archived, pre-existing original ExoFOP neighbor and MAST source manifests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/mast evidence/exofop results/TOI4255_verified_original_SPOC
+          gh run download 43316442840 --repo "${{ github.repository }}" \
+            -n original-MAST-TESS-SPOC-two-NEB-LC-TP-product-discovery-NOT-science-accuracy \
+            --dir evidence/mast
+          gh run download 43303521905 --repo "${{ github.repository }}" \
+            -n original-ExoFOP-two-reported-NEB-neighbor-astrometry-posthoc-NOT-blind \
+            --dir evidence/exofop
+          test -s evidence/mast/two_NEB_TESS_SPOC_original_MAST_product_discovery.json
+          test -s evidence/exofop/TIC_82302240_original_nearby_targets.csv
+      - name: Download original TESS SPOC LC TP FITS and analyze identical observed eclipses with authentic WCS
+        env:
+          PYTHONUNBUFFERED: '1'
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_toi4255_original_spoc_neb_vector_case.py \
+            --mast-discovery evidence/mast/two_NEB_TESS_SPOC_original_MAST_product_discovery.json \
+            --exofop-neighbors evidence/exofop/TIC_82302240_original_nearby_targets.csv \
+            --out results/TOI4255_verified_original_SPOC \
+            --working data/TOI4255_original_FITS_temp \
+            2>&1 | tee results/TOI4255_verified_original_SPOC/full_source_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/TOI4255_verified_original_SPOC/TOI4255_original_TESS_SPOC_WCS_offtarget_vector_case_study.json').read_text())
+          assert d['TOI']=='4255.01' and d['TIC_ID']==82302240
+          assert len(d['sector_records'])==2
+          assert d['n_original_SPOC_sectors_processed']>=1,'No original source actually processed; report failure with artifact, not a scientific result'
+          assert all(r['source_status'] in ('processed','not_evaluable') for r in d['sector_records'])
+          print('SOURCE CHECK PASSED: authentic TESS SPOC FITS source comparison, no NASA classifier changes')
+          PY
+      - name: Archive authentic source file SHA256, same-event measurements, WCS geometry and graphs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TOI4255-original-SPOC-real-event-NEB-centroid-WCS-posthoc-NOT-exominer-accuracy
+          path: results/TOI4255_verified_original_SPOC/
+          retention-days: 90
+          if-no-files-found: warn
