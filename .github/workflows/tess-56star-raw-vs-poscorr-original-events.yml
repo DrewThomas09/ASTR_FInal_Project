@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml'
       - 'tess_56star_paired_pointing_motion_robustness_nov12.py'
+      - 'tests/test_tess_56star_pointing_original_event_pairing.py'
 permissions:
   contents: read
   actions: read
