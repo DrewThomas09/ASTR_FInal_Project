@@ -1,0 +1,43 @@
+name: Original ExoFOP five host uploaded ground source shortlist
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-five-ground-file-meta-shortlist.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  print-original-followup-attachment-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect already preserved ExoFOP attached-file metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/ground_original
+          gh run download 43330747316 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth \
+            --dir evidence/ground_original
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/ground_original/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json').read_text())
+          assert d['five_host_unique_TICs']==5
+          for s in d['all_hosts_with_full_file_and_tseries_evidence']:
+              print('TARGET',s['TIC_ID'],s['TOI'],'NEIGHBOR',s['named_neighbor_candidate_TIC_ID'])
+              ranked=sorted(s['original_user_file_evidence_queue'],key=lambda x:(
+                  'candidate_numeric_ground_photometry'!=x['evidence_category_for_review_NOT_verified'],
+                  not x['mentions_reported_neighbor_in_file_metadata'],
+                  x['original_exofop_file_ID']))
+              for f in ranked[:20]:
+                  print('ORIGINAL_FILE',f['original_exofop_file_ID'],
+                        f['evidence_category_for_review_NOT_verified'],
+                        f['original_file_name'],
+                        'DESCRIPTION',str(f['original_observer_supplied_description'])[:130],
+                        'NEIGHBOR_IN_DESC',f['mentions_reported_neighbor_in_file_metadata'])
+          print('Source files were not read, eclipse-neighbor physical truth remains unverified')
+          PY
