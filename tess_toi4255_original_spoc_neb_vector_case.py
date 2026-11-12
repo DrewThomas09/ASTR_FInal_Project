@@ -92,7 +92,14 @@ def neighbor_catalog_row(csv_bytes):
     for row in reader:
         try:
             if int(row["TIC ID"])!=NEIGHBOR:continue
-            ra=float(row["RA"]);dec=float(row["Dec"])
+            ra_raw=str(row["RA"]).strip()
+            dec_raw=str(row["Dec"]).strip()
+            if ":" in ra_raw or "h" in ra_raw.lower():
+                sky=SkyCoord(ra=ra_raw,dec=dec_raw,unit=(u.hourangle,u.deg),frame="icrs")
+            else:
+                sky=SkyCoord(ra=ra_raw,dec=dec_raw,unit=(u.deg,u.deg),frame="icrs")
+            ra=float(sky.ra.deg)
+            dec=float(sky.dec.deg)
             sep=float(row["Separation (arcsec)"])
             pa=float(row["Position Angle (deg E. of N.)"])
         except (TypeError,ValueError) as e:
