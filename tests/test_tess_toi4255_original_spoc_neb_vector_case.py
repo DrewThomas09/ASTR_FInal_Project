@@ -52,6 +52,16 @@ def test_original_neighbor_row_and_duplicate_fail_closed():
         neighbor_catalog_row(original_neighbor_csv(duplicates=True))
 
 
+def test_original_exofop_sexagesimal_RA_and_DEC_are_not_misread_as_degrees():
+    blob=(
+        "TIC ID,TOI,RA,Dec,Separation (arcsec),Position Angle (deg E. of N.)\n"
+        "82302236,4255.01,08:17:24.6,-35:15:12.1,5.10,31.21\n"
+    ).encode()
+    x=neighbor_catalog_row(blob)
+    assert x["neighbor_RA_deg"]==pytest.approx(124.3525,abs=.00001)
+    assert x["neighbor_Dec_deg"]==pytest.approx(-35.2533611111,abs=.00001)
+
+
 def test_moment_centroid_offtarget_neighbor_physically_points_away_not_toward():
     assert physical_away_alignment([-1,0],[1,0])==pytest.approx(0.)
     assert physical_away_alignment([1,0],[1,0])==pytest.approx(180.)
