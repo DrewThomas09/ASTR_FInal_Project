@@ -7,6 +7,8 @@ on:
       - 'tess_56star_paired_pointing_motion_robustness_nov12.py'
       - 'tess_56star_pointing_tradeoff_sensitivity_nov12.py'
       - 'tests/test_tess_56star_pointing_tradeoff_sensitivity.py'
+      - 'tess_56star_signed_event_coherence_nov12.py'
+      - 'tests/test_tess_56star_signed_event_coherence.py'
       - 'tests/test_tess_56star_pointing_original_event_pairing.py'
 permissions:
   contents: read
@@ -97,6 +99,32 @@ jobs:
               "neither_reduced"))==56
           assert d["leave_one_STAR_out_sensitivity"]["number_of_recomputations"]==56
           print("PASSED: original-source paired trend / potential signal-suppression sensitivity, not model accuracy")
+          PY
+      - name: Audit matched original NASA/TESS signed centroid vectors for repeated-event direction consistency
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_56star_signed_event_coherence_nov12.py \
+            --source-root data --out results/original_56star_pointing_robustness \
+            2>&1 | tee results/original_56star_pointing_robustness/original_signed_centroid_coherence_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('results/original_56star_pointing_robustness/TESS_56star_signed_centroid_coherence_summary.json')
+          d=json.loads(path.read_text())
+          assert d["source_stars"] == 56
+          assert d["original_source_event_windows"] == 248
+          assert d["sources_at_least_three_events"] == 40
+          assert (d["sources_with_valid_nonzero_signed_vectors"]+
+                  d["source_with_zero_denominator"]) == 40
+          assert (d["directional_concentration_increased_stars"]+
+                  d["directional_concentration_decreased_stars"]+
+                  d["directional_concentration_tied_stars"]) == d["sources_with_valid_nonzero_signed_vectors"]
+          print("PASSED: original 56-star signed-event source-vector repeatability; NOT astronomical source localization")
           PY
       - name: Archive original source-paired event and star CSVs, figure, all source hashes and reproducibility status
         if: always()
