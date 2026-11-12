@@ -1,0 +1,57 @@
+name: ExoFOP archived NEB and EB observing note review
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-note-review-archived.yml'
+      - 'exofop_neb_note_review_extract.py'
+      - 'tests/test_exofop_neb_note_review_extract.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pytest
+        run: python -m pip install 'pytest>=8,<10'
+      - name: Source-note parsing tests
+        run: python -m pytest -q tests/test_exofop_neb_note_review_extract.py
+      - name: Fetch pinned prior public ExoFOP ground-based note evidence artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence results/archived_exofop_note_review
+          gh run download 43302814103 --repo "${{ github.repository }}" \
+            -n public-original-exofop-candidate-NEB-EB-screen-NOT-ground-truth-or-NASA-accuracy \
+            --dir evidence
+          test -s evidence/first_public_FP_observing_note_triage.json
+      - name: Create traceable human NEB/EB observation-note review queue from original source text
+        run: |
+          set -euo pipefail
+          python -u exofop_neb_note_review_extract.py \
+            --source evidence/first_public_FP_observing_note_triage.json \
+            --out results/archived_exofop_note_review \
+            2>&1 | tee results/archived_exofop_note_review/source_note_excerpts_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('results/archived_exofop_note_review/NEB_EB_public_note_excerpt_review_queue.json').read_text())
+          assert all(not r['offtarget_physical_source_localized'] and
+                     not r['astrometry_verified'] for r in j['review_notes'])
+          print('PASS: archived public observation notes converted to human-review queue; no ground truth fabricated')
+          PY
+      - name: Archive reviewable note snippets with original source URLs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: archived-public-ExoFOP-phot-disp-note-evidence-review-NOT-source-truth
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/archived_exofop_note_review/
