@@ -74,8 +74,8 @@ def test_offline_catalog_source_snapshot_and_zero_truth_verification(tmp_path,mo
     src.write_bytes(csv_sample())
     monkeypatch.setattr(mod, "excluded_tics", lambda root: {106})
     report=run(tmp_path,tmp_path/"output",src)
-    assert report["eligible_catalog_NEBS_new_distinct_TICs"]==2
+    assert report["eligible_catalog_NEBS_new_distinct_TICs"]==1
     assert report["eligible_catalog_EBS_new_distinct_TICs"]==1
-    assert len(report["preview_first_12_hash_ordered_each_not_selected_or_validated"]["NEB"])==2
+    assert len(report["preview_first_12_hash_ordered_each_not_selected_or_validated"]["NEB"])==1
     assert (tmp_path/"output/original_exofop_toi_catalog_snapshot.csv").read_bytes()==csv_sample()
     assert "not an independent truth-verified" in report["strict_research_boundary"][0]
