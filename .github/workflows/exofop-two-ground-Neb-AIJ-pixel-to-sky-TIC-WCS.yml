@@ -1,0 +1,76 @@
+name: Original ground T6 T11 plate solved WCS source TIC ID verification
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-two-ground-Neb-AIJ-pixel-to-sky-TIC-WCS.yml'
+      - 'exofop_two_ground_NEBS_actual_aperture_sky_WCS_ID.py'
+      - 'tests/test_exofop_two_ground_NEBS_actual_aperture_sky_WCS_ID.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify-ground-original-pixel-aperture-identity-against-independent-sky-TIC:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original observation FITS and complete science test dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'matplotlib>=3.7,<4' 'scipy>=1.11,<2' 'scikit-learn>=1.3,<2' 'astropy>=6,<9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run full regression suite, including original FITS WCS identity and no coordinate origin errors
+        run: python -m pytest -q tests
+      - name: Load original source-SHA ground FITS WCS and AIJ, separate ExoFOP neighbor astrometry, and original TESS source position
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/groundwcs evidence/aij evidence/neighbors evidence/tess results/original_ground_sky_aperture_identity
+          gh run download 43332689126 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-ground-T6-T11-plate-solved-WCS-source-and-AIJ-xy-NOT-eclipse-truth \
+            --dir evidence/groundwcs
+          gh run download 43331725492 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-T6-T11-neighbor-AstroImageJ-ground-lightcurve-data-before-independent-depth-test \
+            --dir evidence/aij
+          gh run download 43318756858 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-ten-new-SPOC-NEB-named-neighbors-NOT-verified-physical-labels \
+            --dir evidence/neighbors
+          gh run download 43319506539 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n five-original-TESS-SPOC-new-hosts-source-blind-centroid-WCS-exploratory-NOT-verified-NEB-truth \
+            --dir evidence/tess
+          test -s evidence/groundwcs/two_original_ExoFOP_ground_image_WCS_and_aperture_pixel_source_inventory.json
+          test -s evidence/aij/two_ground_reported_NEB_numeric_AIJ_tseries_original_source_profile.json
+          test -s evidence/neighbors/original_ExoFOP_TIC_382437043_nearby_astrometry.csv
+          test -s evidence/neighbors/original_ExoFOP_TIC_264303333_nearby_astrometry.csv
+          test -s evidence/tess/five_frozen_NEB_new_TESS_SPOC_host_original_WCS_centroid_results.json
+      - name: Project original AIJ measured T1 T6 and T11 FITS pixel positions via original separate sky WCS to ExoFOP independently cataloged neighbor TICs
+        env:
+          PYTHONUNBUFFERED: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u exofop_two_ground_NEBS_actual_aperture_sky_WCS_ID.py \
+            --original-ground-WCS evidence/groundwcs \
+            --original-ground-AIJ evidence/aij \
+            --original-neighbor-catalogs evidence/neighbors \
+            --original-TESS-source-results evidence/tess/five_frozen_NEB_new_TESS_SPOC_host_original_WCS_centroid_results.json \
+            --out results/original_ground_sky_aperture_identity \
+            2>&1 | tee results/original_ground_sky_aperture_identity/original_ground_image_WCS_to_true_AIJ_aperture_source_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/original_ground_sky_aperture_identity/two_ground_NEBS_actual_AIJ_aperture_WCS_to_external_TIC_sky_identity.json').read_text())
+          assert d['original_two_TICs']==2
+          assert {r['host_TIC_ID'] for r in d['original_sky_source_records']}=={382437043,264303333}
+          print('SOURCE ASTROMETRY DONE: preserved all negative and missing original FITS results; no exoplanet accuracy claim')
+          PY
+      - name: Archive original source SHA256 WCS to aperture sky map and error/uncertainty limits
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-two-NEB-ground-AIJ-T6-T11-plate-solved-WCS-sky-TIC-identity
+          path: results/original_ground_sky_aperture_identity/
+          retention-days: 90
+          if-no-files-found: warn
