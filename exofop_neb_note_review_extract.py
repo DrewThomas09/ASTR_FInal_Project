@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 SEP = re.compile(
-    r"(?<![0-9])([0-9]+(?:\.[0-9]+)?)\s*(?:\"|''|arcsec(?:onds)?|as)\b?", re.I
+    r"(?<![0-9])([0-9]+(?:\.[0-9]+)?)\s*(?:\"|''|arcsec(?:onds)?|as)(?![A-Za-z])", re.I
 )
 TIC = re.compile(r"\bTIC\s*[:#-]?\s*([0-9]{6,11})\b",re.I)
 
