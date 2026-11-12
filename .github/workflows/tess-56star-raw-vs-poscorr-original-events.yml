@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml'
       - 'tess_56star_paired_pointing_motion_robustness_nov12.py'
+      - 'tess_56star_pointing_tradeoff_sensitivity_nov12.py'
+      - 'tests/test_tess_56star_pointing_tradeoff_sensitivity.py'
       - 'tests/test_tess_56star_pointing_original_event_pairing.py'
 permissions:
   contents: read
@@ -67,6 +69,34 @@ jobs:
               'paired_median_reduction_pixels':d['at_least_3event_sensitivity']['paired_median_reduction_pixels'],
               'exploratory_two_sided_source_sign_test_p':d['at_least_3event_sensitivity']['exploratory_two_sided_source_sign_test_p']}
           print('PASSED: authentic 56-star original NASA/TESS raw-vs-corrected moment-centroid engineering stability replication')
+          PY
+      - name: Audit original source-level pointing stability versus potentially suppressed in-event shifts
+        shell: bash
+        env:
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_56star_pointing_tradeoff_sensitivity_nov12.py \
+            --event-pairs results/original_56star_pointing_robustness/248_original_TESS_raw_and_corrected_centroid_event_pairs.csv \
+            --out results/original_56star_pointing_robustness \
+            2>&1 | tee results/original_56star_pointing_robustness/original_tradeoff_sensitivity_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("results/original_56star_pointing_robustness/56star_pointing_event_tradeoff_sensitivity.json")
+          d=json.loads(p.read_text())
+          assert d["n_star_units"]==56 and d["n_observed_source_event_windows"]==248
+          assert d["pointing_proxy_reduced_stars"]==44
+          assert d["event_shift_reduced_stars"]==38
+          c=d["joint_star_outcome_counts"]
+          assert sum(c[k] for k in (
+              "both_pointing_proxy_and_event_shift_reduced",
+              "pointing_proxy_reduced_event_shift_not_reduced",
+              "pointing_proxy_not_reduced_event_shift_reduced",
+              "neither_reduced"))==56
+          assert d["leave_one_STAR_out_sensitivity"]["number_of_recomputations"]==56
+          print("PASSED: original-source paired trend / potential signal-suppression sensitivity, not model accuracy")
           PY
       - name: Archive original source-paired event and star CSVs, figure, all source hashes and reproducibility status
         if: always()
