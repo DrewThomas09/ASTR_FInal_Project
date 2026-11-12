@@ -1,0 +1,67 @@
+name: New posthoc-NEB leads source-only TESS SPOC two-minute availability screen
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-neb-newhost-precentroid-availability.yml'
+      - 'tess_neb_new_host_precentroid_original_spoc_coverage.py'
+      - 'tests/test_tess_neb_new_host_precentroid_original_spoc_coverage.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  discover-new-TIC-source-only-availability-without-centroids:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original MAST query and test dependencies
+        run: python -m pip install 'astroquery>=0.4.8,<1' 'astropy>=6,<9' 'numpy>=1.26,<3' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Validate source-only NEB candidate filtering and truth safeguards
+        run: python -m pytest -q tests/test_tess_neb_new_host_precentroid_original_spoc_coverage.py
+      - name: Read original immutable public ExoFOP source catalog and first 30 historic note observations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/catalog evidence/notes results/precentroid_NEBS_new_TICs
+          gh run download 43302487226 --repo "${{ github.repository }}" \
+            -n public-original-exofop-candidate-NEB-EB-screen-NOT-ground-truth-or-NASA-accuracy \
+            --dir evidence/catalog
+          gh run download 43302814103 --repo "${{ github.repository }}" \
+            -n public-original-exofop-candidate-NEB-EB-screen-NOT-ground-truth-or-NASA-accuracy \
+            --dir evidence/notes
+          test -s evidence/catalog/original_exofop_toi_catalog_snapshot.csv
+          test -s evidence/notes/first_public_FP_observing_note_triage.json
+      - name: Screen all historical explicit NEB-disposition note hosts for genuine original SPOC 2-minute LC and TPF without inspecting centroid outcomes
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_neb_new_host_precentroid_original_spoc_coverage.py \
+            --original-notes evidence/notes/first_public_FP_observing_note_triage.json \
+            --original-catalog evidence/catalog/original_exofop_toi_catalog_snapshot.csv \
+            --repo-root . \
+            --out results/precentroid_NEBS_new_TICs \
+            2>&1 | tee results/precentroid_NEBS_new_TICs/official_MAST_source_only_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('results/precentroid_NEBS_new_TICs/new_neb_ground_report_leads_MAST_2min_precentroid_coverage.json')
+          d=json.loads(p.read_text())
+          assert d['source_selection_before_new_TESS_centroid_inspection'] is True
+          assert all(not x['original_TESS_centroids_inspected'] and not x['reported_onsky_neighbor_truth_verified'] for x in d['candidate_list_all_not_reselected'])
+          assert all(x['TIC_ID'] not in (54364414,82302240) for x in d['candidate_list_all_not_reselected'])
+          print('SOURCE-ONLY CATALOG CHECK PASSED: no centroid inspection or invented independent NEB truth')
+          PY
+      - name: Archive original research lead denominator, exact source product rows, and all lookup failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-new-NEB-host-source-only-MAST-2min-coverage-NOT-a-validated-sample
+          path: results/precentroid_NEBS_new_TICs/
+          retention-days: 90
+          if-no-files-found: warn
