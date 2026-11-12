@@ -1,0 +1,61 @@
+name: Inspect authentic ExoFOP ground-photometry uploads for five source-frozen TESS NEB leads
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-five-source-ground-photometry-inventory.yml'
+      - 'exofop_five_frozen_hosts_original_ground_evidence_inventory.py'
+      - 'tests/test_exofop_five_frozen_hosts_original_ground_evidence_inventory.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate-original-ground-observation-availability-without-upgrading-source-label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install genuine ExoFOP public evidence and test dependencies
+        run: python -m pip install 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Check parser, source notes, and no fake eclipse-truth classification
+        run: python -m pytest -q tests/test_exofop_five_frozen_hosts_original_ground_evidence_inventory.py
+      - name: Restore exact five-source prior frozen pre-centroid manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/frozen results/original_five_host_ExoFOP_ground_observations
+          gh run download 43319246311 --repo "${{ github.repository }}" \
+            -n original-ExoFOP-five-new-TESS-SPOC-source-FROZEN-before-any-centroids \
+            --dir evidence/frozen
+          test -s evidence/frozen/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json
+      - name: Download official per-TIC ExoFOP file lists and actual ground time-series summary rows
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u exofop_five_frozen_hosts_original_ground_evidence_inventory.py \
+            --frozen-source-manifest evidence/frozen/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json \
+            --out results/original_five_host_ExoFOP_ground_observations \
+            2>&1 | tee results/original_five_host_ExoFOP_ground_observations/original_public_ground_evidence_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/original_five_host_ExoFOP_ground_observations/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json').read_text())
+          assert d['five_host_unique_TICs']==5
+          assert len(d['all_hosts_with_full_file_and_tseries_evidence'])==5
+          assert d['ground_eclipse_source_truth_verified_count']==0
+          assert all(z['TESS_new_source_centroid_result_not_consulted'] for z in d['all_hosts_with_full_file_and_tseries_evidence'])
+          print('PASS: Original ExoFOP ground evidence inventory archived with all missing file coverage and zero ungrounded physical labels')
+          PY
+      - name: Archive exact ExoFOP file listings, ground observation summaries, notes, raw-source SHA and missingness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth
+          path: results/original_five_host_ExoFOP_ground_observations/
+          retention-days: 90
+          if-no-files-found: warn
