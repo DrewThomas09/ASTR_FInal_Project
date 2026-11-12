@@ -1,0 +1,77 @@
+name: Original TESS 56-star Paired Pointing Motion Correction Audit (Nov 12)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml'
+      - 'tess_56star_paired_pointing_motion_robustness_nov12.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evaluate-genuine-NASA-TESS-source-paired-centroids:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source verification statistical and plotting packages
+        run: |
+          set -euo pipefail
+          python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'matplotlib>=3.7,<4' 'pytest>=8,<10' 'scikit-learn>=1.3,<2' 'astropy>=6,<9' 'requests>=2.31,<3'
+      - name: Run all existing scientific software regression tests
+        run: python -m pytest -q tests
+      - name: Fetch original NASA v2.4.0 / SPOC 2-minute source event measurement artifacts without reselecting stars
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/prior32 data/new24 results/original_56star_pointing_robustness
+          gh run download 42526063290 --repo "${{ github.repository }}" \
+            -n real-original-NASA-TESS-32star-centroid-with-fixed-manual-review-gate-NOT-neural-improvement --dir data/prior32
+          gh run download 42526495887 --repo "${{ github.repository }}" \
+            -n original-NASA-24-new-to-project-TESS-stars-untuned-centroid-rule-test-NOT-independent-NASA-training-holdout --dir data/new24
+          test -s data/prior32/centroid_physics_analysis/all_32_original_TESS_stars_unchanged_NASA_scores_and_centroid_windows.csv
+          test -s data/new24/24star_original_TESS_centroid_analysis/all_24_UNSEEN_TO_OUR_CENTROID_RULE_source_TICs_with_NASA_original_scores.csv
+      - name: Pair all original 248 real TESS event source vectors and compare source-level drift
+        shell: bash
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MPLBACKEND: Agg
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_56star_paired_pointing_motion_robustness_nov12.py \
+            --source-root data --out results/original_56star_pointing_robustness \
+            2>&1 | tee results/original_56star_pointing_robustness/full_original_source_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('results/original_56star_pointing_robustness/TESS_pointing_adjustment_source_robustness_summary.json')
+          d=json.loads(p.read_text())
+          a=d['prepost_pointing_stability_PROXY_not_ground_truth']
+          b=d['event_related_shift_not_classification_accuracy']
+          assert d['n_original_source_TICs']==56 and d['n_original_matched_observed_event_windows']==248
+          assert a['n_source_stars_with_less_drift_after_adjustment']==44
+          assert a['n_source_stars_with_more_drift_after_adjustment']==12
+          assert abs(a['median_paired_star_difference_pixels']-.00103517485643705)<1e-11
+          assert abs(a['original_raw_median_of_star_medians_pixels']-.0031390638221918)<1e-11
+          assert abs(a['corrected_median_of_star_medians_pixels']-.0013999069463394)<1e-11
+          assert b['n_source_stars_with_less_drift_after_adjustment']==38
+          assert d['at_least_3event_sensitivity']=={
+              'sources':40,'reduced':30,'increased':10,
+              'paired_median_reduction_pixels':d['at_least_3event_sensitivity']['paired_median_reduction_pixels'],
+              'exploratory_two_sided_source_sign_test_p':d['at_least_3event_sensitivity']['exploratory_two_sided_source_sign_test_p']}
+          print('PASSED: authentic 56-star original NASA/TESS raw-vs-corrected moment-centroid engineering stability replication')
+          PY
+      - name: Archive original source-paired event and star CSVs, figure, all source hashes and reproducibility status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-TESS-56star-248-event-POSCORR-raw-versus-adjusted-moment-centroid-not-model-accuracy
+          retention-days: 90
+          if-no-files-found: warn
+          path: results/original_56star_pointing_robustness/
