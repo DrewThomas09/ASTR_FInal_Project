@@ -1,0 +1,74 @@
+name: Actual TOI4255 SPOC same-source quarter-phase and bootstrap robustness
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-toi4255-quarter-phase-source-controls.yml'
+      - 'tess_toi4255_source_pinned_quarter_phase_controls.py'
+      - 'tests/test_tess_toi4255_source_pinned_quarter_phase_controls.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  reproduce-pinned-real-TESS-NEB-source-and-test-quarter-phase-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source-provenance astronomy uncertainty and test dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'matplotlib>=3.7,<4' 'astropy>=6,<9' 'scikit-learn>=1.3,<2' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run whole project regression suite, including source-locked phase-control tests
+        run: python -m pytest -q tests
+      - name: Download exact previously published source results, ExoFOP astrometry, and MAST metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/first evidence/exofop evidence/mast results/TOI4255_original_source_phase_controls
+          gh run download 43317149942 --repo "${{ github.repository }}" \
+            -n TOI4255-original-SPOC-real-event-NEB-centroid-WCS-posthoc-NOT-exominer-accuracy \
+            --dir evidence/first
+          gh run download 43303521905 --repo "${{ github.repository }}" \
+            -n original-ExoFOP-two-reported-NEB-neighbor-astrometry-posthoc-NOT-blind \
+            --dir evidence/exofop
+          gh run download 43316442840 --repo "${{ github.repository }}" \
+            -n original-MAST-TESS-SPOC-two-NEB-LC-TP-product-discovery-NOT-science-accuracy \
+            --dir evidence/mast
+          test -s evidence/first/TOI4255_original_TESS_SPOC_WCS_offtarget_vector_case_study.json
+          test -s evidence/exofop/TIC_82302240_original_nearby_targets.csv
+          test -s evidence/mast/two_NEB_TESS_SPOC_original_MAST_product_discovery.json
+      - name: Reproduce true original 8 and 10 event windows with SHA pinned FITS and quarter-period controls
+        env:
+          PYTHONUNBUFFERED: '1'
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_toi4255_source_pinned_quarter_phase_controls.py \
+            --prior-results evidence/first \
+            --mast-discovery evidence/mast/two_NEB_TESS_SPOC_original_MAST_product_discovery.json \
+            --exofop-neighbors evidence/exofop/TIC_82302240_original_nearby_targets.csv \
+            --out results/TOI4255_original_source_phase_controls \
+            --working data/TOI4255_original_source_immutable_files \
+            2>&1 | tee results/TOI4255_original_source_phase_controls/source_sha_unchanged_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('results/TOI4255_original_source_phase_controls/TOI4255_same_original_source_quarter_phase_control_and_angle_bootstrap.json')
+          d=json.loads(p.read_text())
+          assert d['number_of_distinct_TIC_host_stars']==1
+          assert [r['frozen_original_eclipse_events_reproduced'] for r in d['source_sector_sensitivity']]==[8,10]
+          assert all(len(r['quarter_phase_shifted_source_controls'])==2 for r in d['source_sector_sensitivity'])
+          print('PASS: true original source FITS SHA stable; phase controls and bootstrap do not create independent sources')
+          PY
+      - name: Archive original-source-checked control measurements and descriptive uncertainty
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-SPOC-TOI4255-same-source-quarter-phase-controls-NOT-independent-NASA-accuracy
+          path: results/TOI4255_original_source_phase_controls/
+          retention-days: 90
+          if-no-files-found: warn
