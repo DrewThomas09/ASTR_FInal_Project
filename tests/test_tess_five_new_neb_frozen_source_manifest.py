@@ -44,7 +44,7 @@ def test_freezes_five_unique_original_hosts_and_earliest_sector_without_centroid
     assert all(s["moment_centroid_vectors_extracted"] is False for s in r)
     assert all(s["ground_based_eclipse_in_named_neighbor_independently_verified"] is False for s in r)
 
-def test_prior_source_or_centroid-exposed_target_rejected():
+def test_prior_source_or_centroid_exposed_target_rejected():
     a,b=inputs()
     b["not_yet_truth_validated_single_named_neighbor_source_candidates"][0]["pointing_corrected_centroid_seen"]=True
     with pytest.raises(ValueError,match="Ambiguous external neighbor"):
