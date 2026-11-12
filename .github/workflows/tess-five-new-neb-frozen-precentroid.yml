@@ -1,0 +1,65 @@
+name: Freeze five new ExoFOP named-neighbor SPOC host sources BEFORE centroid analysis
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-five-new-neb-frozen-precentroid.yml'
+      - 'tess_five_new_neb_frozen_source_manifest.py'
+      - 'tests/test_tess_five_new_neb_frozen_source_manifest.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  freeze-source-identities-original-neighbor-evidence-and-earliest-sectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline source-selection testing
+        run: python -m pip install 'pytest>=8,<10'
+      - name: Validate five-source lock and original first-sector selection
+        run: python -m pytest -q tests/test_tess_five_new_neb_frozen_source_manifest.py
+      - name: Recover ten original public source-available hosts and externally named neighbor evidence without new centroid observations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/available evidence/nearby results/frozen_five_new_NEBs
+          gh run download 43318451723 --repo "${{ github.repository }}" \
+            -n original-ExoFOP-new-NEB-host-source-only-MAST-2min-coverage-NOT-a-validated-sample \
+            --dir evidence/available
+          gh run download 43318756858 --repo "${{ github.repository }}" \
+            -n original-ExoFOP-ten-new-SPOC-NEB-named-neighbors-NOT-verified-physical-labels \
+            --dir evidence/nearby
+          test -s evidence/available/new_neb_ground_report_leads_MAST_2min_precentroid_coverage.json
+          test -s evidence/nearby/ten_new_SPOC_host_original_ExoFOP_named_neighbor_candidate_audit.json
+      - name: Lock actual five source IDs and original MAST LC/TP sectors before reading physical centroid results
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_five_new_neb_frozen_source_manifest.py \
+            --source-screen evidence/available/new_neb_ground_report_leads_MAST_2min_precentroid_coverage.json \
+            --neighbor-review evidence/nearby/ten_new_SPOC_host_original_ExoFOP_named_neighbor_candidate_audit.json \
+            --out results/frozen_five_new_NEBs \
+            2>&1 | tee results/frozen_five_new_NEBs/five_host_precentroid_freeze_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/frozen_five_new_NEBs/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json').read_text())
+          assert d['fixed_new_source_host_count']==5
+          assert all(not s['moment_centroid_vectors_extracted'] and
+                     not s['ground_based_eclipse_in_named_neighbor_independently_verified'] for s in d['source_records'])
+          print('FROZEN: exactly five new source TIC/neighbor/sector events before observing centroid outputs')
+          PY
+      - name: Preserve immutable pre-centroid scientific selection and original evidence digests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-five-new-TESS-SPOC-source-FROZEN-before-any-centroids
+          path: results/frozen_five_new_NEBs/
+          retention-days: 90
+          if-no-files-found: warn
