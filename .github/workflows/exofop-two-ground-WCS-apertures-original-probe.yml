@@ -1,0 +1,37 @@
+name: Original ExoFOP ground image WCS and AIJ aperture pixel-coordinate file discovery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-two-ground-WCS-apertures-original-probe.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect-prearchived-original-ground-WCS-and-aperture-filenames:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load original ExoFOP ground observer file IDs fixed in snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/original
+          gh run download 43330747316 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth \
+            --dir evidence/original
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/original/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json').read_text())
+          for h in d['all_hosts_with_full_file_and_tseries_evidence']:
+              if int(h['TIC_ID']) not in (382437043,264303333):
+                  continue
+              print('HOST',h['TIC_ID'])
+              for f in h['original_user_file_evidence_queue']:
+                  name=f['original_file_name']
+                  if name.lower().endswith(('.apertures','.fits','.fits.gz')):
+                      print('ORIGINAL_GROUND_SOURCE_FILE',f['original_exofop_file_ID'],name,f['original_observer_supplied_description'])
+          PY
