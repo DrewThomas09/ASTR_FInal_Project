@@ -1,0 +1,53 @@
+name: Source-audited ExoFOP ground AIJ aperture/TIC mapping and numeric file ID probe
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-ground-AIJ-source-tic-aperture-probe.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-ground-source-apertures-and-numeric-original-file-identities:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download original frozen file lists and already SHA-audited observer source text
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/inventory evidence/uploads
+          gh run download 43330747316 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth \
+            --dir evidence/inventory
+          gh run download 43331123345 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-23-ground-NEBcheck-and-photometry-uploads-NOT-proof-of-eclipse \
+            --dir evidence/uploads
+      - name: Print all original AIJ measurement table file IDs and original T6 T11 NEBcheck header/rows
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/inventory/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json').read_text())
+          for item in d['all_hosts_with_full_file_and_tseries_evidence']:
+              print('TARGET',item['TIC_ID'],item['TOI'],'NEIGHBOR',item['named_neighbor_candidate_TIC_ID'])
+              for f in item['original_user_file_evidence_queue']:
+                  name=str(f['original_file_name'])
+                  if name.lower().endswith('.tbl'):
+                      print('ORIGINAL_AIJ_TABLE_FILE_ID',f['original_exofop_file_ID'],name)
+          cases=[(382437043,906269,'T6'),(264303333,222160,'T11'),(357457104,77441,'T4'),(66151343,248978,'T1')]
+          audit=json.loads(Path('evidence/uploads/23_frozen_original_ExoFOP_ground_uploads_NEBcheck_and_photometry_text_audit.json').read_text())
+          lookup={int(x['original_file_ID']):x for x in audit['original_observer_source_file_details']}
+          for tic,fid,ap in cases:
+              info=lookup[fid]
+              path=Path('evidence/uploads')/f'TIC{tic}_file{fid}_{info["original_file_name"]}'
+              import hashlib
+              assert hashlib.sha256(path.read_bytes()).hexdigest()==info['original_uploaded_file_source_SHA256']
+              lines=path.read_text(errors='replace').splitlines()
+              print('ORIGINAL_NEB_TABLE',tic,fid,ap,'LINE_COUNT',len(lines))
+              for i,line in enumerate(lines):
+                  if i<20 or (ap.lower() in line.lower() and len(line)>0):
+                      print('NEB_LINE',tic,fid,i+1,line[:320])
+          PY
