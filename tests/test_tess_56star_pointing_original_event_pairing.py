@@ -53,7 +53,7 @@ def test_mismatched_nasa_transit_epochs_rejected(tmp_path):
     df=pd.read_csv(raw)
     df.loc[0,"predicted_NASA_TCE_center_BTJD"]+=.12
     df.to_csv(raw,index=False)
-    with pytest.raises(ValueError,match="original same-source orbit alignment"):
+    with pytest.raises(ValueError,match="Original same-source orbit alignment"):
         read_original_events(tmp_path)
 
 def test_nonfinite_centroid_input_cannot_be_imputed_with_zero(tmp_path):
