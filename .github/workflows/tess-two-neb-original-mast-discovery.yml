@@ -1,0 +1,61 @@
+name: Two post-hoc reported NEBs exact original TESS SPOC 2-min LC and TP MAST discovery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-two-neb-original-mast-discovery.yml'
+      - 'tess_two_neb_original_mast_discovery.py'
+      - 'tests/test_tess_two_neb_original_mast_discovery.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify-original-SPOC-cadence-product-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install official MAST/TESS catalog and parsing dependencies
+        run: python -m pip install 'astroquery>=0.4.8,<1' 'astropy>=6,<9' 'requests>=2.31,<3' 'numpy>=1.26,<3' 'pytest>=8,<10'
+      - name: Verify strict TIC/TOI and real-SPOC discovery gates
+        run: python -m pytest -q tests/test_tess_two_neb_original_mast_discovery.py
+      - name: Restore exact original public ExoFOP snapshot from successful archived run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence results/tess_two_neb_original_mast
+          gh run download 43302487226 --repo "${{ github.repository }}" \
+            -n public-original-exofop-candidate-NEB-EB-screen-NOT-ground-truth-or-NASA-accuracy \
+            --dir evidence
+          test -s evidence/original_exofop_toi_catalog_snapshot.csv
+          echo 'Original ExoFOP full-source snapshot recovered; no catalog reselection'
+      - name: Discover original exact-TIC SPOC 2-minute LC and target-pixel products without substitutes
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_two_neb_original_mast_discovery.py \
+            --original-exofop-csv evidence/original_exofop_toi_catalog_snapshot.csv \
+            --out results/tess_two_neb_original_mast \
+            2>&1 | tee results/tess_two_neb_original_mast/mast_source_discovery_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/tess_two_neb_original_mast/two_NEB_TESS_SPOC_original_MAST_product_discovery.json').read_text())
+          assert d['target_count']==2
+          assert {int(t) for t in d['cases']}=={54364414,82302240}
+          assert all(r['TOI'] in ('2041.01','4255.01') for r in d['cases'].values())
+          print('SOURCE DISCOVERY ARCHIVED: verified target identity, preserve all missing original-SPOC cases')
+          PY
+      - name: Archive all original MAST products metadata and missing-source denominators
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-MAST-TESS-SPOC-two-NEB-LC-TP-product-discovery-NOT-science-accuracy
+          path: results/tess_two_neb_original_mast/
+          retention-days: 90
+          if-no-files-found: warn
