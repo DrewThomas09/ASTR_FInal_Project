@@ -1,0 +1,57 @@
+name: Review original ExoFOP ground NEBcheck tables and observer narratives for five TICs
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-five-ground-original-notes-and-neb-tables.yml'
+      - 'exofop_original_five_ground_NEBcheck_notes_review.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-original-ground-followup-content-not-just-file-count:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore 23 original ExoFOP uploaded source files and original inventory without redownloading
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/uploads evidence/inventory results/original_ground_NEBcheck_notes
+          gh run download 43331123345 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-23-ground-NEBcheck-and-photometry-uploads-NOT-proof-of-eclipse \
+            --dir evidence/uploads
+          gh run download 43330747316 --repo "__REPO__" \
+            -n original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth \
+            --dir evidence/inventory
+          test -s evidence/uploads/23_frozen_original_ExoFOP_ground_uploads_NEBcheck_and_photometry_text_audit.json
+          test -s evidence/inventory/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json
+      - name: Verify source SHA256 and preserve original notes, NEBcheck tables, and available photometry filenames
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u exofop_original_five_ground_NEBcheck_notes_review.py \
+            --original-23-audit evidence/uploads/23_frozen_original_ExoFOP_ground_uploads_NEBcheck_and_photometry_text_audit.json \
+            --original-files-dir evidence/uploads \
+            --original-inventory evidence/inventory/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json \
+            --out results/original_ground_NEBcheck_notes \
+            2>&1 | tee results/original_ground_NEBcheck_notes/review_source_integrity_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('results/original_ground_NEBcheck_notes/original_five_TIC_ground_observer_notes_and_NEBcheck_review.json').read_text())
+          assert len(x['all_five_untouched_source_review_records'])==5
+          assert all(all(not z['physical_eclipse_source_verified'] for z in y['observer_notes']+y['original_NEBcheck_tables']) for y in x['all_five_untouched_source_review_records'])
+          print('PASSED: original ground observer notes and NEBcheck original source hashes verified; physical eclipse labels remain to validate')
+          PY
+      - name: Archive original evidence interpretation queue with SHA-pinned note context
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-five-TIC-source-verified-ground-notes-NEBcheck-table-evidence-NOT-complete-truth
+          path: results/original_ground_NEBcheck_notes/
+          retention-days: 90
+          if-no-files-found: warn
