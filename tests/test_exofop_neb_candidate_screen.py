@@ -21,6 +21,7 @@ def csv_sample():
        ["105","14.01","NEB","2459004","-3","2.0","2","FP","7"],
        ["101","10.02","NEB","2459000","3.0","2.0","4","FP","6"],
        ["106","15.01","NEB","2459005","3.0","2.0","4","FP","8"],
+       ["107","16.01","FP","2459006","4.0","2.0","5","FP","7"],
     ]
     s=io.StringIO()
     w=csv.writer(s)
@@ -32,6 +33,8 @@ def csv_sample():
 def test_only_neb_eb_screened_and_prior_tic_excluded():
     candidates, totals=candidate_rows(csv_sample(),{106})
     assert [x["TOI"] for x in candidates["EB"]]==["11.01"]
+    assert [x["TOI"] for x in candidates["FP"]]==["16.01"]
+    assert "NOT a verified" in candidates["FP"][0]["candidate_evidence_status"]
     # Multiple TOIs from the same host appear once in deterministic host preview.
     assert len(candidates["NEB"])==1
     assert candidates["NEB"][0]["TIC_ID"]==101
@@ -76,6 +79,7 @@ def test_offline_catalog_source_snapshot_and_zero_truth_verification(tmp_path,mo
     report=run(tmp_path,tmp_path/"output",src)
     assert report["eligible_catalog_NEBS_new_distinct_TICs"]==1
     assert report["eligible_catalog_EBS_new_distinct_TICs"]==1
+    assert report["broad_FP_status_followup_review_distinct_TICs"]==1
     assert len(report["preview_first_12_hash_ordered_each_not_selected_or_validated"]["NEB"])==1
     assert (tmp_path/"output/original_exofop_toi_catalog_snapshot.csv").read_bytes()==csv_sample()
     assert "not an independent truth-verified" in report["strict_research_boundary"][0]
