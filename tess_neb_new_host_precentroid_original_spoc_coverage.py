@@ -13,7 +13,6 @@ import json
 import re
 from datetime import datetime,timezone
 from pathlib import Path
-from astroquery.mast import Observations
 
 from tess_two_neb_original_mast_discovery import (
     tablerows,filter_original_products,compatible_target
@@ -93,6 +92,7 @@ def prospective_source_screen_leads(note_json,exofop_catalog,old):
 
 def original_mast_coverage(tic):
     """Require original TESS SPOC target-name match, not nearby aperture source."""
+    from astroquery.mast import Observations
     table=Observations.query_criteria(obs_collection="TESS",target_name=str(tic))
     obs=tablerows(table)
     strict=[r for r in obs if compatible_target(r.get("target_name"),tic)
