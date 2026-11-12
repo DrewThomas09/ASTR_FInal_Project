@@ -1,0 +1,61 @@
+name: Download original ExoFOP 23 preselected ground NEBcheck and photometry files
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-23-original-ground-NEBcheck-uploads.yml'
+      - 'exofop_original_23_ground_NEBcheck_text_files.py'
+      - 'tests/test_exofop_original_23_ground_NEBcheck_text_files.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  get-original-ground-photometry-and-neb-source-evidence-not-just-note-labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source-download and regression dependencies
+        run: python -m pip install 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Validate all original selected file identifiers and non-truth labels
+        run: python -m pytest -q tests/test_exofop_original_23_ground_NEBcheck_text_files.py
+      - name: Get exact original five-host ground-observing file inventory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/original results/ExoFOP_23_ground_NEBcheck_uploaded_source
+          gh run download 43330747316 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth \
+            --dir evidence/original
+          test -s evidence/original/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json
+      - name: Retrieve 23 original ExoFOP observer-uploaded NEBcheck files and photometry tables
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u exofop_original_23_ground_NEBcheck_text_files.py \
+            --original-ground-inventory evidence/original/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json \
+            --out results/ExoFOP_23_ground_NEBcheck_uploaded_source \
+            2>&1 | tee results/ExoFOP_23_ground_NEBcheck_uploaded_source/original_source_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/ExoFOP_23_ground_NEBcheck_uploaded_source/23_frozen_original_ExoFOP_ground_uploads_NEBcheck_and_photometry_text_audit.json').read_text())
+          assert d['fixed_original_file_ids_attempted']==23
+          assert len(d['original_observer_source_file_details'])==23
+          assert d['new_true_ground_based_NEB_physical_source_labels_verified']==0
+          assert d['original_text_files_downloaded_and_verified']+d['original_upload_download_failures']==23
+          print('PASS: direct original ExoFOP public uploaded evidence archived, including all original retrieval failures and no invented labels')
+          PY
+      - name: Archive original ExoFOP NEBcheck observer files, source bytes, SHA256, all source results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-23-ground-NEBcheck-and-photometry-uploads-NOT-proof-of-eclipse
+          path: results/ExoFOP_23_ground_NEBcheck_uploaded_source/
+          retention-days: 90
+          if-no-files-found: warn
