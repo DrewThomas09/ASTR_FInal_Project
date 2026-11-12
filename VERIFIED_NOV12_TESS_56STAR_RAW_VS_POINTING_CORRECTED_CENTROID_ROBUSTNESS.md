@@ -38,8 +38,8 @@ The strongest conclusion is a methodological distinction important for the final
 
 ## Reproducibility
 
-- **Verified successful GitHub Actions run:** [run 43290976819](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43290976819); **249 existing scientific regression tests passed**, source SHA pins and same-event comparisons succeeded, original source-level sample size rechecked.
-- **Complete original event-aligned source results and figure:** [GitHub Actions artifact 13975484787](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43290976819/artifacts/13975484787)
+- **Verified successful GitHub Actions run:** [run 43291965755](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43290976819); **254 scientific regression tests passed**, including five additional strict source-pairing and invalid-data failure-mode tests, source SHA pins and same-event comparisons succeeded, original source-level sample size rechecked.
+- **Complete original event-aligned source results and figure:** [GitHub Actions artifact 13975484787](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43291965755/artifacts/13978490345)
 - **Executable primary source reproducibility script:** [`tess_56star_paired_pointing_motion_robustness_nov12.py`](tess_56star_paired_pointing_motion_robustness_nov12.py)
 - **Pinned official GitHub workflow:** [`.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml`](.github/workflows/tess-56star-raw-vs-poscorr-original-events.yml)
 - The 16-page editable **Times New Roman student research paper** (including the completed course checklist), single-page status update, seven earlier figures and new **Figure 8** were generated as ChatGPT downloadable artifacts, **not automatically submitted to Canvas**.
