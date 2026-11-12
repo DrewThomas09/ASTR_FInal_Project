@@ -13,7 +13,7 @@ from exofop_two_ground_NEBS_actual_aperture_sky_WCS_ID import (
 
 def test_predefined_named_aperture_pixel_coordinates_not_any_pixel():
     data=pd.DataFrame({
-       "X(FITS)_T1":np.array([500.,501.,499.]),
+       "X(FITS)_T1":np.array([500.,501.,499.]+[np.nan]*15),
        "Y(FITS)_T1":np.array([500.,501.,499.]),
        "X(FITS)_T6":np.full(18,600.),
        "Y(FITS)_T6":np.full(18,550.)
