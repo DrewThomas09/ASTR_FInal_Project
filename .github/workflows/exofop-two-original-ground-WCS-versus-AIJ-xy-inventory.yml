@@ -1,0 +1,62 @@
+name: Source audit original ExoFOP ground plate-solved WCS FITS versus AIJ aperture positions
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/exofop-two-original-ground-WCS-versus-AIJ-xy-inventory.yml'
+      - 'exofop_two_ground_original_AIJ_aperture_WCS_inventory.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-ground-physical-sky-position-evidence-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original FITS and measurement table parsing tools
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'astropy>=6,<9' 'requests>=2.31,<3'
+      - name: Restore two SHA-pinned original ground full tables and immutable original ExoFOP file inventory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/numeric evidence/inventory results/two_original_ground_WCS_AIJ_positions
+          gh run download 43331725492 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-T6-T11-neighbor-AstroImageJ-ground-lightcurve-data-before-independent-depth-test \
+            --dir evidence/numeric
+          gh run download 43330747316 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-SPOC-NEB-ground-photometry-file-and-observation-inventory-NOT-truth \
+            --dir evidence/inventory
+          test -s evidence/numeric/two_ground_reported_NEB_numeric_AIJ_tseries_original_source_profile.json
+          test -s evidence/inventory/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json
+      - name: Get exactly pre-identified ground plate-solved FITS 906276 and 222164 and inspect fixed T6/T11 pixel aperture fields
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u exofop_two_ground_original_AIJ_aperture_WCS_inventory.py \
+            --numeric-source evidence/numeric \
+            --original-file-inventory evidence/inventory/five_new_original_ExoFOP_ground_photometry_FILELIST_AND_TSERIES_inventory.json \
+            --out results/two_original_ground_WCS_AIJ_positions \
+            2>&1 | tee results/two_original_ground_WCS_AIJ_positions/original_ground_sky_WCS_source.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/two_original_ground_WCS_AIJ_positions/two_original_ExoFOP_ground_image_WCS_and_aperture_pixel_source_inventory.json').read_text())
+          assert d['source_file_count']==2
+          assert {x['TIC_ID'] for x in d['cases']}=={382437043,264303333}
+          assert d['physical_neighbor_mapping_test_performed'] is False
+          print('PASS: original source-specific ground sky WCS inspected; no invented full-sky mapping')
+          PY
+      - name: Archive original ground source WCS bytes, hash, shapes, and ground aperture coordinates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-ground-T6-T11-plate-solved-WCS-source-and-AIJ-xy-NOT-eclipse-truth
+          path: results/two_original_ground_WCS_AIJ_positions/
+          retention-days: 90
+          if-no-files-found: warn
