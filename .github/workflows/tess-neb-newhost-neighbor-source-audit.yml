@@ -1,0 +1,65 @@
+name: New SPOC-available NEB hosts external near-TIC source candidate verification
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-neb-newhost-neighbor-source-audit.yml'
+      - 'tess_neb_newhost_external_neighbor_candidate_audit.py'
+      - 'tests/test_tess_neb_newhost_external_neighbor_candidate_audit.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  identify-source-catalog-neighbors-without-centroid-inspection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent source astrometry and test dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'astropy>=6,<9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Validate original named-neighbor and sexagesimal astrometry source parsing
+        run: python -m pytest -q tests/test_tess_neb_newhost_external_neighbor_candidate_audit.py
+      - name: Get immutable prior 10-host authentic SPOC availability and original observation-note snapshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/hosts evidence/notes results/new_TESS_SPOC_neb_neighbor_sources
+          gh run download 43318451723 --repo "${{ github.repository }}" \
+            -n original-ExoFOP-new-NEB-host-source-only-MAST-2min-coverage-NOT-a-validated-sample \
+            --dir evidence/hosts
+          gh run download 43302814103 --repo "${{ github.repository }}" \
+            -n public-original-exofop-candidate-NEB-EB-screen-NOT-ground-truth-or-NASA-accuracy \
+            --dir evidence/notes
+          test -s evidence/hosts/new_neb_ground_report_leads_MAST_2min_precentroid_coverage.json
+          test -s evidence/notes/first_public_FP_observing_note_triage.json
+      - name: Compare original source notes and independent exact TIC neighbor astrometry for all ten eligible new host stars
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_neb_newhost_external_neighbor_candidate_audit.py \
+            --source-screen evidence/hosts/new_neb_ground_report_leads_MAST_2min_precentroid_coverage.json \
+            --original-notes evidence/notes/first_public_FP_observing_note_triage.json \
+            --out results/new_TESS_SPOC_neb_neighbor_sources \
+            2>&1 | tee results/new_TESS_SPOC_neb_neighbor_sources/official_neighbor_source_evidence_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('results/new_TESS_SPOC_neb_neighbor_sources/ten_new_SPOC_host_original_ExoFOP_named_neighbor_candidate_audit.json').read_text())
+          assert x['source_host_count']==10
+          assert all(not p['pointing_corrected_centroid_seen'] and
+                     not p['neighbor_physical_eclipse_identity_verified'] for p in x['all_ten_sources_including_ambiguous_and_missing'])
+          print('SOURCE-ONLY OK: no original TESS centroid inspection and no fabricated physical NEB truth')
+          PY
+      - name: Preserve original ten external nearby-star catalog source CSVs and candidate evidence review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-ExoFOP-ten-new-SPOC-NEB-named-neighbors-NOT-verified-physical-labels
+          path: results/new_TESS_SPOC_neb_neighbor_sources/
+          retention-days: 90
+          if-no-files-found: warn
