@@ -18,7 +18,7 @@ DISP_RE = re.compile(
     r"\s*[:=]\s*(PNEB|NEB|BEB|SEB|EB|NPC|VPC|PC|CPC|FA)\b",
     flags=re.I,
 )
-NEB_TEXT = re.compile(r"\bNEB\b|nearby eclipsing binar", flags=re.I)
+NEB_TEXT = re.compile(r"\bNEBS?\b|nearby eclipsing binar", flags=re.I)
 
 
 def parse_observing_notes_csv(blob):
