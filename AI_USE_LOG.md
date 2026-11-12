@@ -1,5 +1,17 @@
 # AI contribution and verification log
 
+## 2026-11-12 | Original NASA/TESS source-level centroid trade-off follow-up (AI-assisted)
+
+**Research direction:** Following the original 56-star raw-versus-POS_CORR same-event stability audit, test whether an apparent reduction in pre/post moment-centroid drift accompanies a lower in-event centroid displacement, and check whether the stability finding depends on a single star or the star's event aggregation rule. This is an exploratory secondary analysis, not a preregistered performance gain.
+
+**AI work:** GPT-6 authored `tess_56star_pointing_tradeoff_sensitivity_nov12.py`, seven synthetic regression tests, a new GitHub Actions original-NASA-source analysis step, a source-level 2x2 paired outcome table, leave-one-star-out and alternative-mean aggregation calculations, and an explanatory scatter figure. GPT-6 inspected the official completed GitHub workflow logs and drafted `VERIFIED_NOV12_TESS_56STAR_POINTING_VS_EVENT_SHIFT_TRADEOFF.md` and the updated November 20 student-review report. Also corrected a broken previous-run URL and outdated 249-vs-254 test reference.
+
+**Reproducible source verification:** [GitHub Actions run 43294890871](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43294890871) completed successfully with **261 tests**; [artifact 13977873521](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43294890871/artifacts/13977873521) contains original-event source-aligned CSVs, new per-star trade-off results, JSON summary and figure. The data are the existing 56 observed original NASA/TESS stars and 248 real original windows. All source-summary hashes remain pinned upstream; no new simulated events are reported as observations.
+
+**Verified descriptive result:** **32/56** stars showed both reduced pre/post centroid drift proxy and reduced in-event centroid shift, **12** only drift reduced, **6** only in-event shift reduced, **6** neither. All 56 leave-one-star-out group medians remain positive. Both original within-star median and alternative mean aggregation produce 44/56 reduced pre/post drift stars.
+
+**Limitations and student responsibilities:** This is post-hoc, source-selected, and unable to establish whether reduced in-event movement represents removal of noise or suppression of a true off-target eclipse. It provides **zero new evidence of better planet classification**, no modified NASA ExoMiner weights or scores and no new exoplanets. Student must independently review scientific interpretations, check course academic-integrity requirements and disclose the AI code/statistics/writing assistance in the final submission.
+
 ## 2026-11-04 | Initial detector design (AI-assisted)
 
 **Task specified by researcher:** test whether generative AI can write a transit-search program and whether the program recovers known orbital periods. **AI work:** generated `exoplanet_detector.py` and synthetic injection test, with Astropy Box Least Squares as primary algorithm and a NumPy phase-folded fallback. AI generated plotting, CSV handling, and code-level explanations. **External method:** BLS originates from Kovacs, Zucker & Mazeh (2002); Astropy software is not an AI invention. **Verification:** synthetic known-period and noise-only runs. **Limitation:** the fallback search statistic does not provide a calibrated probability that a planet exists.
