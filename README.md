@@ -11,7 +11,7 @@
 - [**Visual: real Kepler DR25 candidate screening trade-offs**](figures/kepler_dr25_results.svg): the same 1,619 held-out NASA-labeled signals with accuracy, candidate recovery and false-positive rate.
 
 
-- [**Main course report — plain-language proposal-aligned draft**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md): explains what a transit is, how AI wrote the search code, what data were split for classification, what numbers were measured, and how the small TESS follow-up did and did not help.
+- [**Main course report — main research report**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md): explains what a transit is, how AI wrote the search code, what data were split for classification, what numbers were measured, and how the small TESS follow-up did and did not help.
 - [**November 20 concise status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md): 678 words, one–two-page intended draft, not yet submitted.
 - [**Original real Kepler-69 b BLS science results**](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md): measured period **13.713 days** vs published **13.722 days**, only **0.066%** difference.
 - [**Actual NASA Kepler DR25 classifier comparison**](REAL_NASA_DR25_RESULTS_2026_11_06.md): **81.6%** historical label agreement for random forest vs **52.3%** for simple signal-strength screening, with more candidate-label dismissals by the forest.
@@ -116,7 +116,7 @@ Scientific interpretation: longer periods naturally provide fewer observed repea
 
 ## Latest completed original-data TESS model-development experiment: centroid review adds no reliable benefit
 
-**[Verified full 56-source TESS centroid study, including original per-event measurements and the negative result](VERIFIED_NASA_EXOMINER_56_TESS_STARS_CENTROID_ANALYSIS_2026_11_08.md)** · [updated student-voice final report](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md).
+**[Verified full 56-source TESS centroid study, including original per-event measurements and the negative result](VERIFIED_NASA_EXOMINER_56_TESS_STARS_CENTROID_ANALYSIS_2026_11_08.md)** · [updated  final report](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md).
 
 **Real NASA original pretrained ExoMiner++ v2.4.0 was run**, unchanged, on two separate experimental source cohorts: **32 prior physically inspected stars** ([successful **235-test** original-data run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42526063290), [full verified source-event artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42526063290/artifacts/13636045410)) and **24 genuinely new-to-this-project stars** preselected **without model scores** ([successful **240-test** run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42526495887), [full original-source artifacts](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42526495887/artifacts/13635273257), [frozen 24 source manifest](TESS_NEW_24STAR_CENTROID_RULE_HOLDOUT_FROZEN_2026_11_08.json)). All **56 requested exact original TCE UIDs**, **56 authentic original TESS SPOC moment-centroid FITS**, and **248 source-observed individual event windows** were accounted for. Only **23 + 17 = 40** stars had ≥3 full source windows for a testable signed-centroid event bootstrap; missing observations remain explicitly missing. The original precommitted illustrative **0.05-pixel moment-centroid shift review gate flagged zero** on **both** samples, so **no gain**.
 
@@ -156,7 +156,7 @@ Also [**185-test** verified real Kepler Q6+Q7 event-recovery development](https:
 
 ## Final report introduction: history of calibration, transit photometry and ExoMiner replication
 
-**[Read/edit the full student-voice opening report draft](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md).** Connects course Lesson 2 (flux versus luminosity and inverse-square law), Lesson 3 (timing), Lessons 5–6 (orbital physics), and Lesson 7 (light) to the history of exoplanet discovery, transit depth, Kepler/TESS methods and ExoMiner's multi-view neural vetting. Explains original MAST and Exoplanet Archive sources, the actual Zenodo 57,162 labeled/147,567 unlabeled TESS records, the still-undownloaded ~19 GB training archive, and **what is genuinely replicated versus still planned**. The text acknowledges the AI-assisted code/data work and does not claim the current prototype outperforms NASA.
+**[Read the main research report](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md).** Connects course Lesson 2 (flux versus luminosity and inverse-square law), Lesson 3 (timing), Lessons 5–6 (orbital physics), and Lesson 7 (light) to the history of exoplanet discovery, transit depth, Kepler/TESS methods and ExoMiner's multi-view neural vetting. Explains original MAST and Exoplanet Archive sources, the actual Zenodo 57,162 labeled/147,567 unlabeled TESS records, the still-undownloaded ~19 GB training archive, and **what is genuinely replicated versus still planned**. The text acknowledges the AI-assisted code/data work and does not claim the current prototype outperforms NASA.
 
 # Kepler exoplanet detection and model evaluation | ASTR 12600
 
@@ -228,7 +228,7 @@ The Kepler-1647 SAP warning occurred **3.468 hours before an independently publi
 
 **Research question:** Can generative AI reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
-**[Concise November 20 submission draft](NOV_20_STATUS_UPDATE_CONCISE_DRAFT.md)** and the [full project status draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md) are ready for student review, citation verification, and submission-format editing. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
+**[Concise November 20 submission draft](NOV_20_STATUS_UPDATE_CONCISE_DRAFT.md)** and the [full project status draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md) contain the project status and intermediate results. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
 
 ## Real, NASA-labeled instrument defect: physical case study
 

@@ -49,7 +49,7 @@ The program also found five sufficiently observed dimming events within that tel
 
 ### How this experiment actually worked, and the small checks added
 
-The original method comes from **Kovács, Zucker and Mazeh (2002)**, *A box-fitting algorithm in the search for periodic transits*. Their idea was to compare a mostly flat brightness curve with a short, repeating box-shaped dip. This directly informed our use of Astropy's documented **Box Least Squares** implementation: we did **not** invent BLS, and the AI-supported program calls a validated numerical implementation rather than replacing the underlying mathematics.
+The original method comes from **Kovács, Zucker and Mazeh (2002)**, *A box-fitting algorithm in the search for periodic transits*. Their idea was to compare a mostly flat brightness curve with a short, repeating box-shaped dip. This directly informed our use of Astropy's documented **Box Least Squares** implementation: we did **not** invent BLS, and the  program calls a validated numerical implementation rather than replacing the underlying mathematics.
 
 We used Kepler target **KIC 8692861, Quarter 8**. The NASA MAST FITS file contained measured observation times, **PDC-SAP flux**, and data-quality flags. The Python script retained observations with `SAP_QUALITY == 0`, normalized the flux using a fixed **301-cadence running median**, and searched periods from **1.5 to 20 days**. The star was chosen because it already has a known planet; the *exact* published period was not used to select the numerical peak. The fitted **13.7133429855 days** compared with NASA's **13.7223682 days**:
 
@@ -271,7 +271,7 @@ The larger lesson is that AI can make sophisticated research techniques more acc
 
 
 
-## Draft project elements checklist (complete and append the official form before submission)
+## Project elements checklist summary
 
 | Lecture | Concept | Where used in this paper |
 |---|---|---|

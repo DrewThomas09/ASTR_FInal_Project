@@ -2,13 +2,13 @@
 **ASTR/PHSC 12600 | Working research companion | November 13, 2026**
 
 ## Submitted proposal is controlling
-The uploaded one-page proposal, `Drew Thomas - Testing AI's impact in Exoplanet Research`, signed November 5, 2026, asks whether AI can **replicate/improve established exoplanet techniques**, using original NASA Kepler observations, AI-supported Python, a conventional transit search, and a simple ML classifier. It promises an SNR screening comparison using accuracy, false-positive rate, candidate recovery, source code, figures, quantified evidence and reflection about AI versus human scientific judgment. The proposal itself **does not promise TESS, ExoMiner replication, or discovery of a new planet**. Do not rewrite the submitted proposal or retrospectively suggest those were initial commitments.
+The uploaded one-page proposal, `Drew Thomas - Testing AI's impact in Exoplanet Research`, signed November 5, 2026, asks whether AI can **replicate/improve established exoplanet techniques**, using original NASA Kepler observations,  Python, a conventional transit search, and a simple ML classifier. It promises an SNR screening comparison using accuracy, false-positive rate, candidate recovery, source code, figures, quantified evidence and reflection about AI versus human scientific judgment. The proposal itself **does not promise TESS, ExoMiner replication, or discovery of a new planet**. Do not rewrite the submitted proposal or retrospectively suggest those were initial commitments.
 
 ## What was actually done, and where to reproduce it
 
 | Original commitment or optional extension | Original evidence | Source code | Main report |
 |---|---|---|---|
-| AI-supported transit search from Kepler flux | [Kepler Q8 original FITS summary and artifact](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md), period 13.71334 d vs 13.72237 d | [real_kepler_lightcurve.py](real_kepler_lightcurve.py), [blind_transit_benchmark.py](blind_transit_benchmark.py) | Section 2 |
+| Kepler transit search from original stellar flux | [Kepler Q8 original FITS summary and artifact](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md), period 13.71334 d vs 13.72237 d | [real_kepler_lightcurve.py](real_kepler_lightcurve.py), [blind_transit_benchmark.py](blind_transit_benchmark.py) | Section 2 |
 | Quantitative comparison vs simple screening | [Held-out DR25 metrics](REAL_NASA_DR25_RESULTS_2026_11_06.md), 1,619 test signals | [ml_screening.py](ml_screening.py), [dr25_paired_statistical_validation.py](dr25_paired_statistical_validation.py) | Section 3 |
 | Evaluate robustness and missed candidates | [Paired host-level report](VERIFIED_DR25_PAIRED_SIGNIFICANCE_2026_11_08.md), long-period 44/71 forest retained vs 66/71 logistic | Same model code; frozen original predictions in workflow artifact | Section 3 |
 | Document original data sources | NASA MAST and Exoplanet Archive records, recorded source hashes | Python and frozen protocol files in root | Methods and References |
