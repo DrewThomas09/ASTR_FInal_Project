@@ -257,7 +257,7 @@ def source_DV_TCEs(root,source,ground=None):
     }
 
 
-def run(DV_source_json,nebs_frozen_json,planets_frozen_json,out):
+def run(DV_source_json,nebs_frozen_json,planets_frozen_json,prior_ground_TESS_source_json,out):
     source_path=Path(DV_source_json)
     original_bytes=source_path.read_bytes()
     old=json.loads(original_bytes)
@@ -268,7 +268,13 @@ def run(DV_source_json,nebs_frozen_json,planets_frozen_json,out):
     pp=json.loads(Path(planets_frozen_json).read_text())
     ground={int(x["TIC_ID"]):x for x in nep["source_records"]}
     planets={int(x["TIC_ID"]):x for x in pp["source_records"]}
-    if set(TWO_OFFTARGET)-set(ground) or set(FIVE_PLANETS)-set(planets):
+    historical_TESS_bytes=Path(prior_ground_TESS_source_json).read_bytes()
+    historical_TESS=json.loads(historical_TESS_bytes)
+    if historical_TESS.get("exact_new_host_star_count_attempted")!=5:
+        raise ValueError("Original ground-host TESS first-sector source record absent")
+    historical={int(x["TIC_ID"]):x for x in historical_TESS["all_original_source_results"]}
+    if (set(TWO_OFFTARGET)-set(ground) or set(FIVE_PLANETS)-set(planets) or
+        set(TWO_OFFTARGET)-set(historical)):
         raise ValueError("Original source manifests no longer contain prior fixed host TICs")
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     rows=[]
@@ -298,26 +304,23 @@ def run(DV_source_json,nebs_frozen_json,planets_frozen_json,out):
                 raise ValueError("Original independent NASA SPOC report bytes changed; source SHAs do not match")
             if tic in ground:
                 source=dict(source)
-                # Ground TIC sky positions were previously matched to genuine
-                # original sector-specific TPF WCS to 8"/5" tolerances.
-                # Original ExoFOP nearby catalog neighbor SkyCoord is frozen.
-                from astropy.coordinates import SkyCoord
-                # Original MAST target RA is published in ExoFOP; use
-                # independent original official DV TIC reference as host
-                # and original ground-neighbor sky position for separation.
-                # For source comparison with historical original target,
-                # retrieve original target TPF WCS source RA/Dec only when
-                # original source manifest includes RA/Dec. Otherwise derive
-                # an independent original TIC host sky position from
-                # the original ExoFOP catalog/TIC reference provided below.
-                difftarget=next(
-                    (r for x in root.iter() if local(x.tag)=="differenceImageResults"
-                     for r in x if local(r.tag)=="ticReferenceCentroid"),None)
-                hostcoord=coord_from_xml(difftarget)
-                if hostcoord is None:raise ValueError("Official original DVR TIC reference sky coordinates absent")
-                source["original_primary_NASA_ra"]=float(hostcoord.ra.deg)
-                source["original_primary_NASA_dec"]=float(hostcoord.dec.deg)
-                response["host_TIC_sky_position_source"]="official_original_DV_first_available_TIC_reference_centroid; external target coordinate verification with frozen TPF WCS remains needed"
+                original_TESS_host=historical[tic]
+                fixed_sector=int(source["selected_first_original_SPOC_2min_sector"])
+                if (int(original_TESS_host["original_SPOC_sector"])!=fixed_sector or
+                    original_TESS_host.get("source_processing_status")!="processed"):
+                    raise ValueError("Original independently archived TESS target header not same frozen first sector")
+                original_header=original_TESS_host["original_SPOC_TPF_WCS_header"]
+                source["original_primary_NASA_ra"]=float(
+                    original_header["original_TPF_header_target_RA_deg"])
+                source["original_primary_NASA_dec"]=float(
+                    original_header["original_TPF_header_target_Dec_deg"])
+                response["host_TIC_sky_position_source"]=(
+                    "previously independently archived original SPOC TPF first-sector target header "
+                    "from same original ground-host TESS data, NOT current DV XML")
+                response["independent_original_TESS_TPF_target_header_sky_RA_deg"]=source[
+                    "original_primary_NASA_ra"]
+                response["independent_original_TESS_TPF_target_header_sky_Dec_deg"]=source[
+                    "original_primary_NASA_dec"]
             x=source_DV_TCEs(root,{
                 **source,"source_frozen_first_SPOC_2min_sector":original_first_sector
             },ground=source if tic in ground else None)
@@ -352,6 +355,7 @@ def run(DV_source_json,nebs_frozen_json,planets_frozen_json,out):
     report={
         "research_question":"Do the unchanged, authenticated original NASA mission SPOC DV TCEs match the same published ExoFOP TOI periods/epochs, and do NASA PRF-fitted difference-image sky positions in the original frozen source sector fall nearer the independently ground-aperture sky-identified off-target TIC versus the primary host?",
         "original_prior_DV_XML_all_seven_source_SHA256":hashlib.sha256(original_bytes).hexdigest(),
+        "prior_independent_ground_source_TESS_TPF_header_source_SHA256":hashlib.sha256(historical_TESS_bytes).hexdigest(),
         "source_fixed_before_centroid_observation":True,
         "original_sources_attempted":len(rows),
         "original_independently_ExoFOP_TOI_ephemeris_matched_official_TCE_host_count":len(valid),
@@ -366,7 +370,7 @@ def run(DV_source_json,nebs_frozen_json,planets_frozen_json,out):
             "A multisection DV report's robust centroid offsets use all included sectors; only per-differenceImageResults entries with the actual frozen first original SPOC sector are comparable to our original single-sector TPF image.",
             "Official SPOC PRF sky position can still have large uncertainties and invalid quality due to faint binary eclipses, systematics, blending, multiple neighbors and TCE aliases.",
             "Ground candidate neighbor sky was independently projected from real ground aperture FITS WCS to a TIC, but this is previously inspected case selection, NOT new blinded validation; the ground source itself may have multiple/background components.",
-            "For ground NEB hosts, host sky position from NASA DVR TIC reference image is used as an official internal reference, not independent matched target TIC coordinate; preserve this caveat when interpreting target vs neighbor proximity.",
+            "For ground NEB hosts, host target sky coordinates are independently recovered from the prior source-sha-locked original SPOC first-sector TPF header, not from the official DVR itself; historic target proper motion and reference-frame differences remain possible.",
             "Mission fitted PRF source position differs from our simple positive-only pixel centroid and difference image; disagreement does not prove the TESS official source is the planet host or invalidate independently ground-sky matched eclipse.",
             "This is not a NASA ExoMiner++ network classification accuracy audit and it did not change official pretrained scores or any source labels."
         ]
@@ -381,7 +385,9 @@ if __name__=="__main__":
     p.add_argument("--official-seven-original-DV-XML-structure",required=True)
     p.add_argument("--original-five-NEB-frozen",required=True)
     p.add_argument("--original-five-known-planets-frozen",required=True)
+    p.add_argument("--original-five-ground-TESS-source-results",required=True)
     p.add_argument("--out",required=True)
     a=p.parse_args()
     run(a.official_seven_original_DV_XML_structure,
-        a.original_five_NEB_frozen,a.original_five_known_planets_frozen,a.out)
+        a.original_five_NEB_frozen,a.original_five_known_planets_frozen,
+        a.original_five_ground_TESS_source_results,a.out)
