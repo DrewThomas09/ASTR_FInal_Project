@@ -1,0 +1,60 @@
+name: Inspect authentic NASA SPOC DVR XML PRF centroid and TCE schema on unchanged seven first-sector sources
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-seven-SPOC-official-firstsector-DVR-XML-source-inventory.yml'
+      - 'tess_seven_official_SPOC_original_DVR_XML_structure_inspection_nov13.py'
+      - 'tests/test_tess_seven_official_SPOC_original_DVR_XML_structure_inspection_nov13.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-MAST-DVR-XML-seven-source-unmatched-TCE-PRF-tag-source-only-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install immutable NASA source XML audit and scientific tests
+        run: python -m pip install 'numpy>=1.26,<3' 'astropy>=6,<9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Verify exact original source lock and deterministic first-sector report selection before downloaded official centroid results
+        run: python -m pytest -q tests/test_tess_seven_original_SPOC_official_DV_product_discovery_nov13.py tests/test_tess_seven_official_SPOC_original_DVR_XML_structure_inspection_nov13.py
+      - name: Restore previously archived exact original seven hosts and every official NASA SPOC DV URI from source-only discovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/dv results/original_SPOC_seven_host_firstsector_DVR_XML_structure
+          gh run download 43454273725 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-SPOC-seven-fixed-source-hosts-official-NASA-DV-DVR-XML-PDF-DVS-DVT-DVM-availability-NO-source-outcomes \
+            --dir evidence/dv
+          test -s evidence/dv/ORIGINAL_SEVEN_TIC_NASA_SPOC_DV_UNCHANGED_SOURCE_PRODUCT_AVAILABILITY.json
+      - name: Download all seven original source-exact smallest range official mission SPOC DVR XML and preserve unmatched TCE centroid schema and file SHA
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_seven_official_SPOC_original_DVR_XML_structure_inspection_nov13.py \
+            --original-seven-DV-availability evidence/dv/ORIGINAL_SEVEN_TIC_NASA_SPOC_DV_UNCHANGED_SOURCE_PRODUCT_AVAILABILITY.json \
+            --out results/original_SPOC_seven_host_firstsector_DVR_XML_structure \
+            2>&1 | tee results/original_SPOC_seven_host_firstsector_DVR_XML_structure/original_mission_DV_XML_science_source_structure.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/original_SPOC_seven_host_firstsector_DVR_XML_structure/seven_official_SPOC_firstsector_DVR_XML_original_TCE_source_structure_UNMATCHED.json').read_text())
+          assert d['source_lock_count']==7
+          assert {x['host_TIC_ID'] for x in d['exact_all_seven_selected_original_NASA_DV_source_and_unmatched_TCE_structure']}=={382437043,264303333,134537478,36352297,232038798,455135327,452808876}
+          assert d['not_a_TCE_source_location_validation_yet'] is True
+          print('ORIGINAL DV STRUCTURAL SCAN: seven source identities and all actual missing/TCE cardinalities preserved; no false TOI association')
+          PY
+      - name: Archive original NASA DV XML SHA, source URI, full redacted per-TCE semantic fields and source-selection evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-SPOC-seven-DVR-XML-real-TCE-and-centroid-structure-NOT-yet-matched-to-TOI
+          path: results/original_SPOC_seven_host_firstsector_DVR_XML_structure/
+          retention-days: 90
+          if-no-files-found: warn
