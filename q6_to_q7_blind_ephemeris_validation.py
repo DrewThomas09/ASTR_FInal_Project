@@ -8,6 +8,7 @@ how strong that effect is relative to pre-specified alternative Q7 phases.
 A binary also shows coherent eclipses: this is a periodic astrophysical
 signal-replication check, NOT planet validation or a mission false alarm rate.
 """
+# Re-execution marker, November 13 2026: use the original frozen Q6/Q7 protocol unchanged.
 from __future__ import annotations
 import argparse
 import json
