@@ -18,6 +18,8 @@ The primary holdout included 851 historical NASA CANDIDATE labels and 768 histor
 | 30 to under 100 | 361 | 227 | 134 | 62.88% | 556.1 ppm |
 | 100 or above | 391 | 79 | 312 | 20.20% | 31,525.9 ppm |
 
+![Original NASA DR25 historical candidate-label shares by SNR band](figures/kepler_v8_snr_vetting_source.svg)
+
 The share historically labeled as candidates was **45.89 percentage points lower** at SNR 100+ than at SNR 10-30. Using 2,000 whole-star bootstrap resamples (all KOIs from each sampled host retained), the approximate 95% interval for the moderate-minus-high share was **[40.50, 51.22] percentage points**.
 
 Many strong transit-like signals are extremely deep. A stellar binary eclipse can produce a high signal-to-noise event while not being a planetary transit. The original Kepler-35 stellar-binary measurements are a separate physical example of this distinction. We do not claim that every historically false-positive-labeled signal is a binary or that an SNR bin estimates planet occurrence in the sky.
