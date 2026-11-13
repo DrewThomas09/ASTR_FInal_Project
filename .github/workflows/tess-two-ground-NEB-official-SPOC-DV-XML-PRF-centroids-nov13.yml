@@ -1,0 +1,68 @@
+name: Original NASA SPOC DV XML matched TCE PRF source localization vs two actual ground-eclipsing TICs
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-two-ground-NEB-official-SPOC-DV-XML-PRF-centroids-nov13.yml'
+      - 'tess_two_ground_neb_official_NASA_SPOC_DV_XML_PRF_centroid_nov13.py'
+      - 'tests/test_tess_two_ground_neb_official_NASA_SPOC_DV_XML_PRF_centroid_nov13.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-frozen-authentic-NASA-DV-PRF-first-sector-only-if-same-original-TOI-TCE:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install full repository science, authentic original MAST and XML PRF source readers
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'scikit-learn>=1.3,<2' 'matplotlib>=3.7,<4' 'astropy>=6,<9' 'astroquery>=0.4.9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run all repo scientific integrity tests including official NASA TCE period-phase-before-PRF source check
+        run: python -m pytest -q tests
+      - name: Recover the actual NASA DV immutable source-only inventory and independent pre-centroid TIC/TOI source list
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/original_DV_source_inventory evidence/frozen results/original_NASA_SPOC_DV_matched_TCE_official_PRF
+          gh run download 43434174139 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-SPOC-two-ground-NEB-DV-PRF-source-only-inventory-NOT-matched-TCE-or-truth \
+            --dir evidence/original_DV_source_inventory
+          gh run download 43319246311 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-new-TESS-SPOC-source-FROZEN-before-any-centroids \
+            --dir evidence/frozen
+          test -s evidence/original_DV_source_inventory/original_two_ground_NEBS_MAST_SPOC_DV_product_availability_SOURCE_ONLY.json
+          test -s evidence/frozen/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json
+      - name: Download original MAST NASA DVR XML of all two host 6 source-frozen mission runs; match actual ExoFOP TOI P and phase BEFORE interpreting any NASA PRF centroid values
+        env:
+          PYTHONUNBUFFERED: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_two_ground_neb_official_NASA_SPOC_DV_XML_PRF_centroid_nov13.py \
+            --original-DV-source-inventory evidence/original_DV_source_inventory/original_two_ground_NEBS_MAST_SPOC_DV_product_availability_SOURCE_ONLY.json \
+            --frozen-five-source-manifest evidence/frozen/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json \
+            --out results/original_NASA_SPOC_DV_matched_TCE_official_PRF \
+            --working data/original_12_NASA_SPOC_DVR_XML_source_bytes \
+            2>&1 | tee results/original_NASA_SPOC_DV_matched_TCE_official_PRF/original_official_NASA_SPOC_DV_PRF_TCE_and_source_report.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('results/original_NASA_SPOC_DV_matched_TCE_official_PRF/two_ground_NEBS_official_NASA_DV_XML_original_PRF_centroid_source_comparison.json')
+          d=json.loads(p.read_text())
+          assert d['exact_physical_ground_NEBS_attempted']==2
+          assert {x['TIC_ID'] for x in d['all_original_host_source_DV_XML_TCE_and_PRF_results']}=={382437043,264303333}
+          assert d['authentic_original_SPOC_DV_XML_products_queried']==12
+          print('OFFICIAL NASA DV AUDIT: preserved all 12 original mission-run XML sources; no TCE chosen by PRF angular match')
+          PY
+      - name: Archive all NASA run TCE ephemeris matches, exact original XML source SHA and PRF quality flags, and both host success or missingness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-SPOC-two-ground-NEB-DVR-XML-TCE-phase-matched-official-PRF-centroid-NOT-false-positive-accuracy
+          path: results/original_NASA_SPOC_DV_matched_TCE_official_PRF/
+          retention-days: 90
+          if-no-files-found: warn
