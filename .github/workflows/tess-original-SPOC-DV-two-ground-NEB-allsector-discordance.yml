@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p evidence/mission_DV results/original_NASA_SPOC_allsector_PRF_disagreement
-          gh run download 43456121187 --repo "DrewThomas09/ASTR_FInal_Project" \
+          gh run download 43457364968 --repo "DrewThomas09/ASTR_FInal_Project" \
             -n original-NASA-SPOC-seven-host-TCE-ephemeris-checked-DV-PRF-firstsector-vs-external-ground-neb-NOT-classification \
             --dir evidence/mission_DV
           test -s evidence/mission_DV/seven_original_SPOC_NASA_DV_TCE_ephemeris_matched_firstsector_PRF_source_sky_comparison.json
