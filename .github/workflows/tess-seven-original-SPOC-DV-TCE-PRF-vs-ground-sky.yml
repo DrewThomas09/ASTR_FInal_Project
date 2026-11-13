@@ -1,0 +1,76 @@
+name: NASA SPOC official PRF source localization vs ground-neighbor sky for seven original TOI ephemerides
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-seven-original-SPOC-DV-TCE-PRF-vs-ground-sky.yml'
+      - 'tess_seven_original_SPOC_DV_ephemeris_PRF_localization_nov13.py'
+      - 'tests/test_tess_seven_original_SPOC_DV_ephemeris_PRF_localization_nov13.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-proven-original-NASA-SPOC-PRF-difference-centroid-vs-ground-NEB-and-confirmed-planets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install official mission original source astronomical WCS and complete science regression dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'scikit-learn>=1.3,<2' 'matplotlib>=3.7,<4' 'astropy>=6,<9' 'astroquery>=0.4.9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run complete repository tests including exact NASA DV first-sector true TOI period/epoch and sky-position guards
+        run: python -m pytest -q tests
+      - name: Restore exact original source-only frozen two NEBs/five confirmed hosts, prior real first-sector TPF target headers and prior original official NASA DVR XML source SHA inventory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/ground evidence/known evidence/prior_ground_TESS evidence/official_DV_XML results/original_seven_NASA_SPOC_DV_PRF_vs_ground_neighbor
+          gh run download 43319246311 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-new-TESS-SPOC-source-FROZEN-before-any-centroids \
+            --dir evidence/ground
+          gh run download 43346848609 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-archive-exofop-KP-five-host-FIRST-SECTOR-frozen-BEFORE-centroid \
+            --dir evidence/known
+          gh run download 43319506539 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n five-original-TESS-SPOC-new-hosts-source-blind-centroid-WCS-exploratory-NOT-verified-NEB-truth \
+            --dir evidence/prior_ground_TESS
+          gh run download 43454963430 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-SPOC-seven-DVR-XML-real-TCE-and-centroid-structure-NOT-yet-matched-to-TOI \
+            --dir evidence/official_DV_XML
+          test -s evidence/ground/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json
+          test -s evidence/known/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json
+          test -s evidence/prior_ground_TESS/five_frozen_NEB_new_TESS_SPOC_host_original_WCS_centroid_results.json
+          test -s evidence/official_DV_XML/seven_official_SPOC_firstsector_DVR_XML_original_TCE_source_structure_UNMATCHED.json
+      - name: Read seven source-SHA-verified original mission DVR XML files, match official TCE periods and epochs before comparing original first-sector PRF positions to independent ground neighbor TICs
+        env:
+          PYTHONUNBUFFERED: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_seven_original_SPOC_DV_ephemeris_PRF_localization_nov13.py \
+            --official-seven-original-DV-XML-structure evidence/official_DV_XML/seven_official_SPOC_firstsector_DVR_XML_original_TCE_source_structure_UNMATCHED.json \
+            --original-five-NEB-frozen evidence/ground/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json \
+            --original-five-known-planets-frozen evidence/known/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json \
+            --original-five-ground-TESS-source-results evidence/prior_ground_TESS/five_frozen_NEB_new_TESS_SPOC_host_original_WCS_centroid_results.json \
+            --out results/original_seven_NASA_SPOC_DV_PRF_vs_ground_neighbor \
+            2>&1 | tee results/original_seven_NASA_SPOC_DV_PRF_vs_ground_neighbor/official_NASA_tess_SPOC_source_TCE_ephemeris_and_PRF_results.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/original_seven_NASA_SPOC_DV_PRF_vs_ground_neighbor/seven_original_SPOC_NASA_DV_TCE_ephemeris_matched_firstsector_PRF_source_sky_comparison.json').read_text())
+          assert d['original_sources_attempted']==7
+          assert {r['original_source_host_TIC'] for r in d['all_original_NASA_DV_host_TCE_and_per_sector_PRF_source_records']}=={382437043,264303333,134537478,36352297,232038798,455135327,452808876}
+          assert d['diagnostic_only_not_new_ground_truth'] and d['NASA_ExoMiner_model_weights_or_scores_changed'] is False
+          print('OFFICIAL ORIGINAL NASA PRF AUDIT PASS: 7 original host identities, no old or nonmatching TCE silently assigned to TOI')
+          PY
+      - name: Archive all original NASA DVR XML fits, TOI phase mismatches, exact first-sector official PRF RA/Dec vs reported neighbor TIC and five planet controls
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-SPOC-seven-host-TCE-ephemeris-checked-DV-PRF-firstsector-vs-external-ground-neb-NOT-classification
+          path: results/original_seven_NASA_SPOC_DV_PRF_vs_ground_neighbor/
+          retention-days: 90
+          if-no-files-found: warn
