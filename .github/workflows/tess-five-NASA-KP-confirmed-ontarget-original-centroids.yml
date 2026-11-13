@@ -1,0 +1,66 @@
+name: Original TESS five independently confirmed planet hosts raw-vs-pointing-corrected centroid source-control experiment
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-five-NASA-KP-confirmed-ontarget-original-centroids.yml'
+      - 'tess_five_nasa_KP_confirmed_ontarget_original_SPOC_centroid_controls.py'
+      - 'tests/test_tess_five_nasa_KP_confirmed_ontarget_original_SPOC_centroid_controls.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-frozen-NASA-known-planet-hosts-SPOC-source-vectors-and-quarter-phase-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original TESS public astronomical source, graphics, and full regression dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'matplotlib>=3.7,<4' 'scipy>=1.11,<2' 'scikit-learn>=1.3,<2' 'astropy>=6,<9' 'astroquery>=0.4.9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run full repository regression suite including source-frozen planet controls and fixed pseudo-transit controls
+        run: python -m pytest -q tests
+      - name: Restore exact previously frozen new five known planet TIC hosts and original SPOC LC TP source files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/precentroid results/confirmed_NASA_KP_five_original_TESS_centroid_physics
+          gh run download 43346848609 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-archive-exofop-KP-five-host-FIRST-SECTOR-frozen-BEFORE-centroid \
+            --dir evidence/precentroid
+          test -s evidence/precentroid/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json
+      - name: Download exact authentic SPOC LC+TP original observed source files and compare raw vs POS_CORR transit centroids with fixed quarter-period controls
+        env:
+          PYTHONUNBUFFERED: '1'
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_five_nasa_KP_confirmed_ontarget_original_SPOC_centroid_controls.py \
+            --source-frozen-before-centroids evidence/precentroid/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json \
+            --out results/confirmed_NASA_KP_five_original_TESS_centroid_physics \
+            --working data/confirmed_NASA_KP_five_original_TESS_SPOC_FITS \
+            2>&1 | tee results/confirmed_NASA_KP_five_original_TESS_centroid_physics/original_confirmed_planet_centroid_source_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('results/confirmed_NASA_KP_five_original_TESS_centroid_physics/five_new_NASA_confirmed_on_target_source_original_TESS_raw_corrected_event_and_phase_control_results.json')
+          d=json.loads(p.read_text())
+          assert d['exact_five_catalogue_confirmed_host_stars_attempted']==5
+          assert len(d['all_host_source_results'])==5
+          assert {r['TIC_ID'] for r in d['all_host_source_results']}=={134537478,36352297,232038798,455135327,452808876}
+          assert d['source_level_original_outcome_descriptive_statistics']['all_five_preserved'] is True
+          assert d['original_NASA_ExoMiner_model_scores_or_weights_changed'] is False
+          print('SOURCE-LOCK PASSED: all 5 confirmed planet host IDs and original SPOC sectors preserved; no model accuracy claim')
+          PY
+      - name: Archive all actual NASA planet source SHA FITS provenance, original complete event denominators, quarter-phase controls and exact host-level uncertainty
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-SPOC-5-NASA-Archive-CONFIRMED-planet-KP-host-centroid-true-vs-fixed-quarter-phase-NOT-model-accuracy
+          path: results/confirmed_NASA_KP_five_original_TESS_centroid_physics/
+          retention-days: 90
+          if-no-files-found: warn
