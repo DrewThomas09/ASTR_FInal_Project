@@ -1,3 +1,5 @@
+**V8 Kepler source analysis:** [Why very strong detected dips are not necessarily planets, with original DR25 data and host-level uncertainty](NOV13_SNR_STRENGTH_VS_PHYSICAL_VETTING_RESEARCH_V8.md) | [Reproduce the numbers](kepler_v8_snr_vetting_audit.py).
+
 **New v7 research:** [Same-recall Kepler model audit, 95% host-star intervals, and Q6/Q7 event-depth uncertainty](NOV13_MATCHED_RECALL_AND_EVENT_UNCERTAINTY_V7.md).
 
 # Testing AI's Impact in Exoplanet Research — ASTR 12600
