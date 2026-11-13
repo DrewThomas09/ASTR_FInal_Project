@@ -4,6 +4,9 @@
 
 **Start here for the easy-to-follow report and actual results:**
 
+- [**New model-level audit and review-priority analysis**](NOV13_MODEL_EXPLANATION_REVIEW_PRIORITY_AND_CAUTION.md): same original 1,619 held-out Kepler predictions, additional ROC/PR and period-error explanation, a reproducible 30% confidence-review comparison and careful scientific limitations.
+
+
 - [**Research articles, precise classroom slide connections, and the small methods we tested**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md): source-by-source account tied strictly to the submitted November 5 proposal, including verified period and screening calculations.
 - [**Visual: real Kepler DR25 candidate screening trade-offs**](figures/kepler_dr25_results.svg): the same 1,619 held-out NASA-labeled signals with accuracy, candidate recovery and false-positive rate.
 

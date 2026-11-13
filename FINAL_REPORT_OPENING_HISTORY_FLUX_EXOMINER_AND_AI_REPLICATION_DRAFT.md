@@ -130,6 +130,18 @@ A revealing exploratory check focused on signals with periods of **at least 100 
 
 The complete frozen prediction file and statistical analysis are retained in the [original paired-evaluation artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42513638366/artifacts/13630680897), with methods in [the verification report](VERIFIED_DR25_PAIRED_SIGNIFICANCE_2026_11_08.md).
 
+### Added model audit: explaining a decision and prioritizing human review
+
+The stronger, final-paper presentation includes the *actual* historical-label confusion matrices, ROC and precision-recall curves, and error rates by estimated orbital-period group. These all come from the same **1,619 original held-out Kepler signals**, not a generated example or a fresh independent test. The forest's continuous scores had **AUROC 0.8857** against NASA's historical dispositions, compared with **0.7803** for four-feature logistic regression and **0.3466** for the SNR-only score. The class labels here are the original DR25 Robovetter decisions, **not a list of physically confirmed planets**. The chosen operating threshold is a trade-off between accepting historical false positives and losing promising historical candidates.
+
+The largest scientific weakness becomes clearer when performance is separated by period: among signals with estimated periods **100 days or longer**, the forest retained only **44/71 historical candidate labels (62.0%)** and wrongly accepted **16/69 historical false positives (23.2%)**. A logistic model with the same four features retained **66/71 candidate labels (93.0%)**, but wrongly accepted **58/69 false positives (84.1%)**. The forest is selective; it does not win every scientific objective. This is an exploratory subgroup analysis, not an independent validation of any new model.
+
+As a modest **human-in-the-loop extension** of the *same frozen random forest*, I ranked review candidates by the distance between their score and the previously validation-selected decision threshold. This does not change classifier predictions, require an additional model fit, or pretend that reviewed cases were corrected. In the already-examined primary test set, the forest made **298** decisions disagreeing with historical NASA labels. Reviewing the **486 signals (30%)** closest to its decision threshold *would flag* **175** of these disagreements and leave **123** among the remaining 1,133. Random review of 486 would be expected to leave **208.5** disagreements unreviewed. These are retrospective **review-priority diagnostics**, not actual time savings, corrected discoveries or verified planet probabilities.
+
+![Figure: candidate reviewer-priority analysis using the frozen heldout predictions](figures/model_review_priority_verified.svg)
+
+The analysis is reproducible from the saved [original held-out prediction CSV](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42513638366/artifacts/13630680897) with [the supplemental score-review script](model_review_priority_analysis.py) and [full model extension record](NOV13_MODEL_EXPLANATION_REVIEW_PRIORITY_AND_CAUTION.md). The independent source data and fitted models were **not** modified. The official research-paper draft shared separately as DOCX/PDF includes more carefully formatted figures, the scientific formulas, full article bibliography, and the professor's classroom connections.
+
 ## 4. After researching existing methods, what could we try to improve?
 
 This was the part I found most interesting. By this point, I had shown that AI could help implement an existing search method and build a machine-learning model that performed better than a simple screen on the available labels.
