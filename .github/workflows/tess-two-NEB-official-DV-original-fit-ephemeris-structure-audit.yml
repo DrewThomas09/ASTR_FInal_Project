@@ -1,0 +1,56 @@
+name: Inspect real original NASA DVR XML trapezoidal and all-transit-fit ephemeris fields only
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-two-NEB-official-DV-original-fit-ephemeris-structure-audit.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-NASA-first-two-XML-fit-parameter-source-metadata-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install original source requests
+        run: python -m pip install 'requests>=2.31,<3'
+      - name: Restore frozen original MAST official DV product inventory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          gh run download 43434174139 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-SPOC-two-ground-NEB-DV-PRF-source-only-inventory-NOT-matched-TCE-or-truth \
+            --dir evidence
+      - name: Inspect two source-exact original NASA XML TCE trapezoidal/all-transits fit period/epoch node structures without viewing any PRF centroid
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          python - <<'PY'
+          import json,requests,xml.etree.ElementTree as E
+          from pathlib import Path
+          d=json.loads(Path('evidence/original_two_ground_NEBS_MAST_SPOC_DV_product_availability_SOURCE_ONLY.json').read_text())
+          def local(x):return x.tag.rsplit('}',1)[-1]
+          for h in d['source_results_all_no_selection_on_centroid_outcomes']:
+              p=h['original_DV_frozen_first_sector_search_covering_XML_products'][0]
+              r=requests.get('https://mast.stsci.edu/api/v0.1/Download/file',
+                             params={'uri':p['original_MAST_product_URI']},timeout=(25,100))
+              r.raise_for_status()
+              root=E.fromstring(r.content)
+              print('ORIGINAL_SOURCE_TIC',h['TIC_ID'],'EXPECTED_P',h['original_ExoFOP_period_days'],
+                    'EXPECTED_E_BTJD',h['original_ExoFOP_epoch_BTJD'],
+                    'original_xml_filename',p['product_filename'])
+              for planet in [x for x in root if local(x)=='planetResults']:
+                  print('PLANET_RESULT',planet.attrib)
+                  for elm in list(planet):
+                      if local(elm) not in ('allTransitsFit','trapezoidalFit','planetCandidate','reducedParameterFits'):
+                          continue
+                      print('OFFICIAL_FIT_ELEMENT',local(elm),'ATTRS',json.dumps(elm.attrib))
+                      for x in list(elm)[:15]:
+                          print('FIT_CHILD',local(x),'ATTRS',json.dumps(x.attrib))
+                          if local(x) in ('modelParameters','modelParameter','planetCandidate','transitEpoch','orbitalPeriod'):
+                              for a in list(x)[:40]:
+                                  print('PARAM_CHILD',local(a),'ATTRS',json.dumps(a.attrib))
+          PY
