@@ -43,8 +43,11 @@ def physical_fit_quality(original_row,require_neighbor):
     offsets=original_row.get("original_official_SPOC_DV_TIC_reference_offsets",{})
     sky=offsets.get("skyOffset",{})
     uncertainty=sky.get("uncertainty")
+    original_quality=original_row.get("original_mission_PRF_qualityMetric",{})
     return bool(
-        original_row.get("original_PRF_ra_dec_uncertainties_valid")
+        original_quality.get("attempted") is True
+        and original_quality.get("valid") is True
+        and original_row.get("original_PRF_ra_dec_uncertainties_valid")
         and host is not None and np.isfinite(host)
         and (not require_neighbor or (near is not None and np.isfinite(near)))
         and target is not None and np.isfinite(target)
@@ -82,6 +85,7 @@ def source_all_sector_audit(original_record,with_neighbor):
             "real_original_DV_TCE_transits_used_this_sector":x["original_DV_numberOfTransits"],
             "this_is_preselected_original_first_SPOC_two_min_sector":int(x["original_DV_sector"])==first,
             "original_PRF_position_valid_and_independent_target_header_consistent":valid,
+            "original_NASA_SPOC_PRF_attempted_and_quality_valid_flags":x.get("original_mission_PRF_qualityMetric"),
             "original_DV_tic_source_SKY_offset_arcsec":x["original_official_SPOC_DV_TIC_reference_offsets"]["skyOffset"]["value"],
             "original_DV_tic_source_SKY_offset_uncertainty_arcsec":x["original_official_SPOC_DV_TIC_reference_offsets"]["skyOffset"]["uncertainty"],
             "original_DV_PRF_source_sep_from_independent_TESS_host_arcsec":host if valid else None,
@@ -191,7 +195,7 @@ def run(verified_prf_json,out):
             "Original NASA SPOC official fitted difference-image PRF coordinates are from an independently mission-produced DV XML, unlike our simple positive-only pixel difference center. Both can fail at faint blended sources.",
             "The two previously ground-aperture-sky corroborated off-target neighbors are fixed before the report: later DV sectors are displayed as exploratory instrument/geometry stability checks, NOT first-sector source replacements.",
             "Each source's official TCE is matched to the original independent ExoFOP TOI period and epoch before centroid use. The XML can lack TOI ID labels in old reports, and matching does not independently confirm ground eclipse identity.",
-            "A missing official PRF position reported as value=0,uncertainty=-1 is invalid; never interpret as sky origin.",
+            "A missing official PRF position reported as value=0,uncertainty=-1 is invalid; the original NASA difference-image qualityMetric attempted=true and valid=true are mandatory before assigning a source position.",
             "Sectors are repeated observations of the same host and of a blended TESS pixel response, so do not perform a sector-level sign test or claim independent planet/false-positive localization accuracy.",
             "A fitted PRF source position nearer the original TIC primary does NOT refute separate original ground observer aperture dimming in a named neighbor; conversely, closer-to-neighbor sectors do not validate a universal correction.",
             "Large confirmed-planet source offsets can arise from blending, uncertainties, PRF assumptions and catalog astrometric/centroid reference mismatch. This source control sample is not independently ground-imaged.",
