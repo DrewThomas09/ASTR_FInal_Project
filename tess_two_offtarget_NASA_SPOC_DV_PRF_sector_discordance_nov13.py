@@ -161,7 +161,7 @@ def run(verified_prf_json,out):
                 fig,ax=plt.subplots(figsize=(9.3,5))
                 ax.scatter(xs,host,marker="o",label="NASA PRF source → original primary TIC")
                 ax.scatter(xs,near,marker="x",label="NASA PRF source → independently ground-matched neighbor TIC")
-                for x,y in zip(xs,host):ax.plot([x,x],[y,near[xs.index(x)]],color="gray",alpha=.3)
+                for x,y,z in zip(xs,host,near):ax.plot([x,x],[y,z],color="gray",alpha=.3)
                 ax.axvline(row["original_source_frozen_first_sector"],linestyle="--",color="gray",
                            label="Original frozen first SPOC 2-minute sector")
                 ax.set(xlabel="Original NASA SPOC DV observing sector",
