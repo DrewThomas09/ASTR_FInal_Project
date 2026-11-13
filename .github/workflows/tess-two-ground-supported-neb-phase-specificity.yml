@@ -1,0 +1,72 @@
+name: Two original ground-sky-supported NEB true-vs-quarter-phase signed TESS centroid specificity
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-two-ground-supported-neb-phase-specificity.yml'
+      - 'tess_two_ground_supported_neb_phase_specificity_nov12.py'
+      - 'tests/test_tess_two_ground_supported_neb_phase_specificity_nov12.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-sha-proven-neighbor-TIC-signed-away-direction-versus-original-phase-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original source scientific calculation and synthetic test requirements
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'matplotlib>=3.7,<4' 'astropy>=6,<9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run all repository scientific integrity and fixed-phase test fixtures
+        run: python -m pytest -q tests
+      - name: Restore original five-TIC SPOC exact source observation JSON and independently ground-matched two NEB source records
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/tess evidence/groundsky evidence/groundflux results/ground_NEB_TESS_original_quarter_phase_specificity
+          gh run download 43319506539 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n five-original-TESS-SPOC-new-hosts-source-blind-centroid-WCS-exploratory-NOT-verified-NEB-truth \
+            --dir evidence/tess
+          gh run download 43333211789 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-two-NEB-ground-AIJ-T6-T11-plate-solved-WCS-sky-TIC-identity \
+            --dir evidence/groundsky
+          gh run download 43332062967 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n ExoFOP-original-ground-T6-T11-observer-predicted-window-AIJ-photometry-NOT-full-sky-localization \
+            --dir evidence/groundflux
+          test -s evidence/tess/five_frozen_NEB_new_TESS_SPOC_host_original_WCS_centroid_results.json
+          test -s evidence/groundsky/two_ground_NEBS_actual_AIJ_aperture_WCS_to_external_TIC_sky_identity.json
+          test -s evidence/groundflux/two_ground_NEB_original_AIJ_fixed_reported_ingress_egress_aperture_flux_results.json
+      - name: Recompute signed away-neighbor raw vs corrected vectors in actual eclipse and +/- quarter phase pseudo-events from identical SHA source
+        env:
+          PYTHONUNBUFFERED: '1'
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_two_ground_supported_neb_phase_specificity_nov12.py \
+            --original-five-TESS evidence/tess/five_frozen_NEB_new_TESS_SPOC_host_original_WCS_centroid_results.json \
+            --original-ground-sky evidence/groundsky/two_ground_NEBS_actual_AIJ_aperture_WCS_to_external_TIC_sky_identity.json \
+            --original-ground-flux evidence/groundflux/two_ground_NEB_original_AIJ_fixed_reported_ingress_egress_aperture_flux_results.json \
+            --out results/ground_NEB_TESS_original_quarter_phase_specificity \
+            2>&1 | tee results/ground_NEB_TESS_original_quarter_phase_specificity/source_true_minus_null_signed_geometry_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/ground_NEB_TESS_original_quarter_phase_specificity/two_ground_sky_corroborrated_neb_original_TESS_phase_specific_signed_away_projected_vectors.json').read_text())
+          assert d['n_physically_ground_aperture_sky_corroborrated_original_NEBS']==2
+          assert len(d['original_two_ground_source_records'])==2
+          assert all(x['ground_source_aperture_original_image_catalog_consistent'] for x in d['original_two_ground_source_records'])
+          print('SOURCE PHYSICS PASS: original raw/corrected signed sky vectors and both ground aperture TIC labels preserved')
+          PY
+      - name: Archive original signed source-verified TESS phase controls and independent ground WCS provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: two-original-ground-verified-NEB-TESS-signed-away-true-vs-quarter-phase-controls-NOT-classifier-accuracy
+          path: results/ground_NEB_TESS_original_quarter_phase_specificity/
+          retention-days: 90
+          if-no-files-found: warn
