@@ -1,0 +1,64 @@
+name: FREEZE confirmed transiting planet matched on-target controls before TESS centroid inspection
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-confirmed-ontarget-five-precentroid-source-freeze.yml'
+      - 'tess_nasa_confirmed_KP_ontarget_controls_source_freeze_nov12.py'
+      - 'tests/test_tess_nasa_confirmed_KP_ontarget_controls_source_freeze_nov12.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-NASA-confirmed-exofop-KP-controls-before-original-TESS-centroids:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original ExoFOP NASA MAST source readers and regression tests
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scipy>=1.11,<2' 'astropy>=6,<9' 'astroquery>=0.4.9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Run tests ensuring independent NASA confirmed host, fixed MAST source pairing and no centroid-informed source selection
+        run: python -m pytest -q tests/test_tess_nasa_confirmed_KP_ontarget_controls_source_freeze_nov12.py
+      - name: Restore unchanged original ExoFOP 8175-row snapshot from pinned previous screen artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/exofop results/confirmed_KP_five_precentroid_source_freeze
+          gh run download 43302487226 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n public-original-exofop-candidate-NEB-EB-screen-NOT-ground-truth-or-NASA-accuracy \
+            --dir evidence/exofop
+          test -s evidence/exofop/original_exofop_toi_catalog_snapshot.csv
+      - name: Download official NASA Exoplanet Archive original confirmed transit catalog and freeze five exact original SPOC first-sector LC TP host pairs
+        env:
+          PYTHONUNBUFFERED: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_nasa_confirmed_KP_ontarget_controls_source_freeze_nov12.py \
+            --repo-root . \
+            --original-exofop-catalog evidence/exofop/original_exofop_toi_catalog_snapshot.csv \
+            --out results/confirmed_KP_five_precentroid_source_freeze \
+            2>&1 | tee results/confirmed_KP_five_precentroid_source_freeze/original_NASA_confirmed_on_target_MAST_source_only_execution.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('results/confirmed_KP_five_precentroid_source_freeze/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json')
+          d=json.loads(p.read_text())
+          assert d['source_manifest_frozen_before_any_control_TESS_centroid_measurements'] is True
+          assert d['original_TESS_centroids_viewed']==0
+          assert d['independent_ground_based_on_target_image_photometry_verified_hosts']==0
+          assert len({int(x['TIC_ID']) for x in d['source_records']})==len(d['source_records'])
+          print('FROZEN SOURCE-ONLY COMPLETED, nonzero confirmed control candidates:',len(d['source_records']))
+          PY
+      - name: Archive immutable original NASA archive CSV, independent PSCompPars ExoFOP source hashes, full MAST exclusions and first-sector target products
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-NASA-archive-exofop-KP-five-host-FIRST-SECTOR-frozen-BEFORE-centroid
+          path: results/confirmed_KP_five_precentroid_source_freeze/
+          retention-days: 90
+          if-no-files-found: warn
