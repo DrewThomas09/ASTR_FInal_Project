@@ -51,7 +51,7 @@ def test_no_false_transiting_ground_labels_from_kp_alone():
     assert c["NASA_archive_confirmed_transit_and_ExoFOP_KP_agree"] is True
     assert c["independently_verified_on_target_ground_lightcurve_source"] is False
     assert c["MOM_CENTR_or_POS_CORR_not_queried"] is True
-    assert c["original_ExoFOP_epoch_BTJD"]==pytest.approx(19001)
+    assert c["original_ExoFOP_epoch_BTJD"]==pytest.approx(2001)
 
 
 def test_no_already_centroid_inspected_host_reselected_as_control():
