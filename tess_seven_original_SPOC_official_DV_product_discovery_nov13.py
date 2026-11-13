@@ -47,7 +47,7 @@ def validate_fixed_manifests(frozen_neb,frozen_planets):
         raise ValueError("Planet source selected after viewing original centroid outcomes")
     rows_neb={int(x["TIC_ID"]):x for x in frozen_neb["source_records"]}
     rows_planets={int(x["TIC_ID"]):x for x in frozen_planets["source_records"]}
-    if len(rows_neb)!=5 or len(rows_planets)!=5 or len(rows_neb)&len(rows_planets):
+    if len(rows_neb)!=5 or len(rows_planets)!=5 or bool(set(rows_neb)&set(rows_planets)):
         raise ValueError("Original locked source cohorts changed")
     output={}
     for tic,(toi,neighbor,sector) in TWO_OFFTARGET.items():
