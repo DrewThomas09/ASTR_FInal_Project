@@ -1,0 +1,65 @@
+name: NASA official SPOC DV exact-source seven-host product discovery before PRF results
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-seven-SPOC-official-DV-product-discovery.yml'
+      - 'tess_seven_original_SPOC_official_DV_product_discovery_nov13.py'
+      - 'tests/test_tess_seven_original_SPOC_official_DV_product_discovery_nov13.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  official-MAST-DV-source-products-for-unchanged-two-ground-NEB-plus-five-planets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install official NASA MAST source discovery and regression tools
+        run: python -m pip install 'numpy>=1.26,<3' 'astropy>=6,<9' 'astroquery>=0.4.9' 'requests>=2.31,<3' 'pytest>=8,<10'
+      - name: Verify source-unit freeze, NASA SPOC provenance and correct DV filename/sector parsing without celestial source outputs
+        run: python -m pytest -q tests/test_tess_seven_original_SPOC_official_DV_product_discovery_nov13.py
+      - name: Restore actual frozen five-neighbor hosts and five independently NASA confirmed planet hosts from original source-only artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/frozen_ground evidence/frozen_planets results/original_SPOC_DV_all_seven_original_source_availability
+          gh run download 43319246311 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-five-new-TESS-SPOC-source-FROZEN-before-any-centroids \
+            --dir evidence/frozen_ground
+          gh run download 43346848609 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-archive-exofop-KP-five-host-FIRST-SECTOR-frozen-BEFORE-centroid \
+            --dir evidence/frozen_planets
+          test -s evidence/frozen_ground/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json
+          test -s evidence/frozen_planets/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json
+      - name: Query exact original NASA SPOC target TIC parent observations and all DVR DVS DVM DVT public MAST products without DV outcome selection
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -euo pipefail
+          python -u tess_seven_original_SPOC_official_DV_product_discovery_nov13.py \
+            --original-five-neb-source-manifest evidence/frozen_ground/FROZEN_FIVE_NEW_NEB_SPOC_PRE_CENTROID_SOURCE_MANIFEST.json \
+            --original-five-known-planet-source-manifest evidence/frozen_planets/FROZEN_NASA_KP_on_target_five_original_SPOC_source_manifest_BEFORE_centroids.json \
+            --out results/original_SPOC_DV_all_seven_original_source_availability \
+            2>&1 | tee results/original_SPOC_DV_all_seven_original_source_availability/MAST_official_DV_product_source_existence.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('results/original_SPOC_DV_all_seven_original_source_availability/ORIGINAL_SEVEN_TIC_NASA_SPOC_DV_UNCHANGED_SOURCE_PRODUCT_AVAILABILITY.json').read_text())
+          assert d['exact_source_hosts_attempted']==7
+          assert {x['TIC_ID'] for x in d['all_seven_original_source_host_and_official_DV_product_records']}=={382437043,264303333,134537478,36352297,232038798,455135327,452808876}
+          assert d['no_Raw_or_POS_CORR_or_DV_PRF_centroid_values_read'] is True
+          print('PASS: all 7 unchanged original source TICs and missing DV products recorded, no DV outcome selection')
+          PY
+      - name: Archive exact original NASA SPOC DV URI, sector ranges, TIC identities, product evidence and missingness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-SPOC-seven-fixed-source-hosts-official-NASA-DV-DVR-XML-PDF-DVS-DVT-DVM-availability-NO-source-outcomes
+          path: results/original_SPOC_DV_all_seven_original_source_availability/
+          retention-days: 90
+          if-no-files-found: warn
