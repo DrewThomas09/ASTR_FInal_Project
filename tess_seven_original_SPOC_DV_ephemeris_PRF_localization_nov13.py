@@ -105,7 +105,11 @@ def correct_TCE_period_and_epoch(candidate,original_period,original_epoch,origin
 def coord_from_xml(node):
     ra=value_record(node,"raDegrees")
     dec=value_record(node,"decDegrees")
-    if ra["value"] is None or dec["value"] is None:
+    # SPOC uses value=0.0, uncertainty=-1.0 as invalid/no PRF fit.
+    # Never turn the missing (RA,Dec)=(0,0) sentinel into a real sky source.
+    if (ra["value"] is None or dec["value"] is None or
+        ra["uncertainty"] is None or dec["uncertainty"] is None or
+        ra["uncertainty"]<0 or dec["uncertainty"]<0):
         return None
     if not (0<=ra["value"]<360 and -90<=dec["value"]<=90):
         return None
@@ -189,8 +193,8 @@ def source_DV_TCEs(root,source,ground=None):
                       float(ground["original_primary_NASA_dec"])*u.deg)
     else:
         near=None
-        host=SkyCoord(float(source["original_NASA_host_catalog_RA_deg"])*u.deg,
-                      float(source["original_NASA_host_catalog_Dec_deg"])*u.deg)
+        host=SkyCoord(float(source["NASA_confirmed_host_catalog_RA_deg"])*u.deg,
+                      float(source["NASA_confirmed_host_catalog_Dec_deg"])*u.deg)
     planet_nodes=[r for r in root.iter() if local(r.tag)=="planetResults"]
     tces=[]
     for pp in planet_nodes:
@@ -368,7 +372,7 @@ def run(DV_source_json,nebs_frozen_json,planets_frozen_json,prior_ground_TESS_so
             "DV ephemeris TJD uses nominal JD-2457000 day count; ExoFOP epoch BTJD is likewise nominal BJD-2457000, but the different time convention must be explicitly considered for fine transit timing.",
             "When no unique ephemeris-compatible TCE exists, do not treat the first report TCE as that TOI or infer absence of a real eclipse.",
             "A multisection DV report's robust centroid offsets use all included sectors; only per-differenceImageResults entries with the actual frozen first original SPOC sector are comparable to our original single-sector TPF image.",
-            "Official SPOC PRF sky position can still have large uncertainties and invalid quality due to faint binary eclipses, systematics, blending, multiple neighbors and TCE aliases.",
+            "Official SPOC PRF sky position can still have large uncertainties and invalid quality due to faint binary eclipses, systematics, blending, multiple neighbors and TCE aliases. Missing PRF fits with value=0 and uncertainty=-1 are treated as unavailable, never as RA/Dec=(0,0).",
             "Ground candidate neighbor sky was independently projected from real ground aperture FITS WCS to a TIC, but this is previously inspected case selection, NOT new blinded validation; the ground source itself may have multiple/background components.",
             "For ground NEB hosts, host target sky coordinates are independently recovered from the prior source-sha-locked original SPOC first-sector TPF header, not from the official DVR itself; historic target proper motion and reference-frame differences remain possible.",
             "Mission fitted PRF source position differs from our simple positive-only pixel centroid and difference image; disagreement does not prove the TESS official source is the planet host or invalidate independently ground-sky matched eclipse.",
