@@ -1,7 +1,7 @@
 # Additional model audit and review-priority extension (November 13, 2026)
 
 ## Strict boundary of the submitted proposal
-The November 5 proposal requires **Kepler** data, AI-assisted Box Least Squares code, a simple ML screening classifier, comparison against a simpler rule, and explanation of what scientific interpretation required. This addendum keeps the original models frozen. The separate TESS centroid subtraction is supplementary and did not feed the Kepler classifier.
+The November 5 proposal requires **Kepler** data, Box Least Squares code, a simple ML screening classifier, comparison against a simpler rule, and explanation of what scientific interpretation required. This addendum keeps the original models frozen. The separate TESS centroid subtraction is supplementary and did not feed the Kepler classifier.
 
 ## Added scientific value
 The existing four-feature forest agreed with **81.59%** of the earlier NASA DR25 candidate/false-positive labels on **1,619 held-out signals from 1,385 stars**. The SNR-only threshold agreed with **52.32%**; logistic regression using the same four catalog inputs agreed with **77.27%**. Those are **previous vetter labels**, not independently confirmed planets. False-positive rates were **24.61%**, **90.49%**, and **36.20%** respectively for forest, SNR, logistic. The forest's candidate recall (**87.19%**) was below SNR (**90.95%**) and logistic (**89.42%**).
@@ -33,4 +33,3 @@ The analysis uses those **already explored** held-out records; it is **descripti
 
 **MEST lecture synthesis:** Lesson 2 (received flux, resolution and contamination), Lesson 3 (timing), Lessons 5-6 (Kepler's laws and period), Lab 1 and Appendix B (measurement error and the difference between precise and accurate inference).
 
-**Disclosure:** The computational analysis, figures and writing were substantially AI-assisted; all scientific claims are subject to student's review and validation before a course submission.

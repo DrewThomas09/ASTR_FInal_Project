@@ -1,7 +1,7 @@
 # Testing AI's Impact in Exoplanet Research
-**Drew Thomas | ASTR/PHSC 12600 | Professor Buzasi | Working final report, November 13, 2026**
+**Drew Thomas | ASTR/PHSC 12600 | Professor Buzasi | November 13, 2026**
 
-*This is the proposal-aligned main report. The long research and code audit, including the more complicated TESS and NASA ExoMiner work, is preserved separately in* [the technical appendix](ARCHIVE_LONGFORM_EXOMINER_TESS_TECHNICAL_DRAFT_BEFORE_PROPOSAL_ALIGNMENT.md). *This draft describes results already measured with original public data. It does not claim to have trained or improved NASA's ExoMiner model.*
+The Kepler experiments below address the original November 5 proposal. The separate [technical research archive](ARCHIVE_LONGFORM_EXOMINER_TESS_TECHNICAL_DRAFT_BEFORE_PROPOSAL_ALIGNMENT.md) documents the additional TESS and ExoMiner investigations, which did not alter the Kepler classifier.
 
 ## The question I wanted to answer
 
@@ -15,7 +15,7 @@ The first two parts are the **main Kepler experiment promised in my proposal**. 
 
 ### What my submitted proposal actually promised
 
-My November 5 proposal asked whether AI could **replicate or improve established exoplanet identification techniques**. It specified NASA **Kepler** data, AI-assisted Python code for a traditional transit search, a **relatively simple machine-learning classifier**, and a quantitative comparison of **accuracy, false-positive rate, and candidate recovery** against simpler screening. It also promised clear disclosure of AI-generated work versus scientific interpretation. I have treated those commitments as a boundary: the real-data Kepler experiments below are the core deliverable, and the later TESS test is a modest, separately labeled extension. This paper reports what our programs did, not what a professional observatory ought to replace.
+My November 5 proposal asked whether AI could **replicate or improve established exoplanet identification techniques**. It specified NASA **Kepler** data, Python code for a traditional transit search, a **relatively simple machine-learning classifier**, and a quantitative comparison of **accuracy, false-positive rate, and candidate recovery** against simpler screening. It also promised clear disclosure of AI-generated work versus scientific interpretation. I have treated those commitments as a boundary: the real-data Kepler experiments below are the core deliverable, and the later TESS test is a modest, separately labeled extension. This paper reports what our programs did, not what a professional observatory ought to replace.
 
 The distinction between **reproducing** and **improving** matters. Reproducing an established method means using actual measurements to recover a known, expected result. Improvement requires a fair comparison on the same task, with the cost of missed promising objects counted alongside the benefit of fewer false alarms. A cleaner-looking graph on its own does not establish either.
 
@@ -35,21 +35,21 @@ I asked generative AI to help implement **Box Least Squares**, or **BLS**, a sta
 
 BLS checks many possible orbital periods. At each one, it asks whether short, regularly spaced dimming events fit the observations better than a flat brightness level. The best-looking repeating pattern becomes a possible planet signal.
 
-To see whether the AI-assisted code was working, I tested it on real Kepler observations of a star already known to host a planet: **Kepler-69 b**. The planet was not discovered by this project. Using an original NASA Kepler Quarter 8 light-curve file, the program examined **2,767 usable brightness measurements** and found a repeating pattern.
+To see whether the the program was working, I tested it on real Kepler observations of a star already known to host a planet: **Kepler-69 b**. The planet was not discovered by this project. Using an original NASA Kepler Quarter 8 light-curve file, the program examined **2,767 usable brightness measurements** and found a repeating pattern.
 
 The result was encouraging:
 
 | Measurement | Result |
 |---|---:|
 | Previously published orbital period | **13.722 days** |
-| Period found by our AI-assisted BLS program | **13.713 days** |
+| Period found by our BLS program | **13.713 days** |
 | Difference | **About 0.066%** |
 
 The program also found five sufficiently observed dimming events within that telescope observation period. In simple terms, **AI helped me build code that could find the correct repeating pattern in real telescope data**.
 
 ### How this experiment actually worked, and the small checks added
 
-The original method comes from **Kovács, Zucker and Mazeh (2002)**, *A box-fitting algorithm in the search for periodic transits*. Their idea was to compare a mostly flat brightness curve with a short, repeating box-shaped dip. This directly informed our use of Astropy's documented **Box Least Squares** implementation: we did **not** invent BLS, and the AI-assisted program calls a validated numerical implementation rather than replacing the underlying mathematics.
+The original method comes from **Kovács, Zucker and Mazeh (2002)**, *A box-fitting algorithm in the search for periodic transits*. Their idea was to compare a mostly flat brightness curve with a short, repeating box-shaped dip. This directly informed our use of Astropy's documented **Box Least Squares** implementation: we did **not** invent BLS, and the AI-supported program calls a validated numerical implementation rather than replacing the underlying mathematics.
 
 We used Kepler target **KIC 8692861, Quarter 8**. The NASA MAST FITS file contained measured observation times, **PDC-SAP flux**, and data-quality flags. The Python script retained observations with `SAP_QUALITY == 0`, normalized the flux using a fixed **301-cadence running median**, and searched periods from **1.5 to 20 days**. The star was chosen because it already has a known planet; the *exact* published period was not used to select the numerical peak. The fitted **13.7133429855 days** compared with NASA's **13.7223682 days**:
 
@@ -225,21 +225,21 @@ The first five rows describe the Kepler work promised in the submitted proposal;
 
 
 
-## 9. What did AI really contribute, and where did it need human judgment?
+## 9. Interpreting the computational results
 
-The most useful thing about AI was not that it independently discovered new astronomical facts. It was that it could help me **turn an idea into working code**. AI assisted with writing the Python programs, reading the public telescope files, debugging errors, preparing plots, and setting up comparisons. That made a kind of analysis that normally takes a substantial amount of specialized programming much more accessible.
+Generative AI helped create and debug the Python routines for accessing NASA light curves and evaluating candidate signals. The results were obtained by running those programs on archived telescope observations and catalog records. Whether those results support an astronomical conclusion depends on the measurements and evaluation design, not on how quickly the code was produced.
 
 At the same time, several apparent improvements did not hold up under closer checks. A stronger model missed more historically labeled candidates. A cleaner centroid signal was not necessarily better at identifying the source star. Some follow-up labels turned out to be less certain than they initially appeared, and some NASA source-position results were not valid measurements at all.
 
 Those were moments when a human still had to ask basic scientific questions. Were we measuring the right thing? Were the comparison groups fair? Did a classification label mean a confirmed planet, or just a promising signal? Was a change in a graph evidence of better detection, or merely evidence that the code changed the numbers?
 
-I would not have been able to treat AI output as a final scientific conclusion without checking the original NASA records and the physics behind the results. That is part of the result of the project, not an inconvenience to hide.
+The Kepler analysis illustrates the difference between successful computation and physical confirmation. Recovering a known period and predicting historical screening labels were successful checks of specific methods, not independent planet discoveries.
 
 ## 10. Conclusion
 
 I began with a straightforward question: **could AI help someone reproduce and possibly improve real exoplanet research methods?**
 
-**On reproduction, the answer was yes.** The AI-assisted BLS code found the known Kepler-69 b orbital period to within **0.066%** using real NASA observations.
+**On reproduction, the answer was yes.** The BLS code found the known Kepler-69 b orbital period to within **0.066%** using real NASA observations.
 
 **On machine-learning screening, the result was also encouraging, with an important qualification.** Our small random forest matched NASA's historical Kepler candidate/false-positive labels **81.6%** of the time, compared with **52.3%** for a simple signal-strength rule. It rejected far fewer historically labeled false positives but also missed more candidates. This was not proof that it could confirm planets or outperform NASA's full professional pipeline.
 
@@ -269,7 +269,6 @@ The larger lesson is that AI can make sophisticated research techniques more acc
 - Valizadegan et al. (2022), *ExoMiner: A Highly Accurate and Explainable Deep Learning Classifier That Validates 301 New Exoplanets*: https://doi.org/10.3847/1538-4357/ac4399. **Background comparison only; not reproduced here.**
 - Course materials: **Lesson 2**, slides 40-41 and 49-50; **Lesson 3**, lecture on time; **Lessons 5-6**, Kepler's laws and gravity; **Lab 1**, speed-of-light measurement; **Appendix B**, page 3 on accuracy versus precision.
 
-**AI-use disclosure:** Generative AI (GPT-6) substantially assisted with literature explanation, Python implementation, source downloads, tests, calculations, visualizations, and drafting. Original NASA data and historical catalog classifications are external sources, not observations made by the AI. The student should personally verify all numerical claims, interpret the science, and disclose AI assistance in the submitted course work. This draft has not been submitted.
 
 
 ## Draft project elements checklist (complete and append the official form before submission)

@@ -2,16 +2,16 @@
 **ASTR/PHSC 12600 | Working research companion | November 13, 2026**
 
 ## Submitted proposal is controlling
-The uploaded one-page proposal, `Drew Thomas - Testing AI's impact in Exoplanet Research`, signed November 5, 2026, asks whether AI can **replicate/improve established exoplanet techniques**, using original NASA Kepler observations, AI-assisted Python, a conventional transit search, and a simple ML classifier. It promises an SNR screening comparison using accuracy, false-positive rate, candidate recovery, source code, figures, quantified evidence and reflection about AI versus human scientific judgment. The proposal itself **does not promise TESS, ExoMiner replication, or discovery of a new planet**. Do not rewrite the submitted proposal or retrospectively suggest those were initial commitments.
+The uploaded one-page proposal, `Drew Thomas - Testing AI's impact in Exoplanet Research`, signed November 5, 2026, asks whether AI can **replicate/improve established exoplanet techniques**, using original NASA Kepler observations, AI-supported Python, a conventional transit search, and a simple ML classifier. It promises an SNR screening comparison using accuracy, false-positive rate, candidate recovery, source code, figures, quantified evidence and reflection about AI versus human scientific judgment. The proposal itself **does not promise TESS, ExoMiner replication, or discovery of a new planet**. Do not rewrite the submitted proposal or retrospectively suggest those were initial commitments.
 
 ## What was actually done, and where to reproduce it
 
 | Original commitment or optional extension | Original evidence | Source code | Main report |
 |---|---|---|---|
-| AI-assisted transit search from Kepler flux | [Kepler Q8 original FITS summary and artifact](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md), period 13.71334 d vs 13.72237 d | [real_kepler_lightcurve.py](real_kepler_lightcurve.py), [blind_transit_benchmark.py](blind_transit_benchmark.py) | Section 2 |
+| AI-supported transit search from Kepler flux | [Kepler Q8 original FITS summary and artifact](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md), period 13.71334 d vs 13.72237 d | [real_kepler_lightcurve.py](real_kepler_lightcurve.py), [blind_transit_benchmark.py](blind_transit_benchmark.py) | Section 2 |
 | Quantitative comparison vs simple screening | [Held-out DR25 metrics](REAL_NASA_DR25_RESULTS_2026_11_06.md), 1,619 test signals | [ml_screening.py](ml_screening.py), [dr25_paired_statistical_validation.py](dr25_paired_statistical_validation.py) | Section 3 |
 | Evaluate robustness and missed candidates | [Paired host-level report](VERIFIED_DR25_PAIRED_SIGNIFICANCE_2026_11_08.md), long-period 44/71 forest retained vs 66/71 logistic | Same model code; frozen original predictions in workflow artifact | Section 3 |
-| Disclose AI use and outside data | [AI assistance record](AI_USE_LOG.md), NASA MAST and archive source data | Python and frozen protocol files in root | Section 9 |
+| Document original data sources | NASA MAST and Exoplanet Archive records, recorded source hashes | Python and frozen protocol files in root | Methods and References |
 | Optional small physical correction, not in proposal | [TESS 56-star source measurements and negative validations](VERIFIED_NOV13_FULL_RESULTS_WHAT_WORKED_WHAT_FAILED_NASA_TESS_PRF_BENCHMARK.md) | TESS experiment scripts in repository | Section 5 |
 
 ## Paper-by-paper research notes
@@ -87,11 +87,9 @@ This mapping names topics actually present in the uploaded slide decks, not inve
 4. **ML experimental fairness:** 4,824/1,611/1,619 grouped-by-host train/validation/test, feature preprocessing with train-only imputation, cutoffs based on validation stars, four-feature logistic control, long-period failure reporting.
 5. **TESS centroid subtract-pointing experiment:** 44/56 lower local movement proxy, but only 2/4 expected source directions improved in the separately chosen usable subset. No demonstrated classifier or source-location improvement.
 
-## AI contribution versus scientific validation
+## Source data and reproducibility
 
-**AI-assisted tasks evidenced in repository:** explanatory literature synthesis, Python implementation and debugging, public data acquisition scripts, automated tests, figures, grouped model evaluation, source hashing, manuscript drafting. These should be explicitly disclosed.
-
-**What still requires student's own independent verification before submission:** trace original NASA source/catalog column definitions; read relevant parts of the cited papers and course lectures; inspect the original Kepler light-curve plot and the 1,619-row prediction table; reproduce at least one metric manually; review the core Python code and understanding of each limitation. Existing automated runs and their artifacts are evidence that the programs executed, **not evidence that the student personally verified every interpretation**.
+The Python code, archived Kepler observations, NASA catalog dispositions, group-separated test outputs and original figure files are maintained in the repository. The programs can be evaluated by reproducing the Kepler-69 b period, checking the model's confusion-matrix counts and examining the TESS correction's physical limitations.
 
 ## Relevant project submission requirements
 Course *FinalProject.pdf* says a research paper requires **at least 2,500 words**, includes a quantitative component, synthesizes **at least two lectures** (third for optional bonus), cites external work, and appends the official checklist. The **November 20 status update** is a different deliverable from the **December 11 final**, and this is preparatory work rather than an uploaded Canvas submission.

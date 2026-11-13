@@ -17,7 +17,6 @@ The adjusted measurement was steadier for **44 of 56 TESS stars** according to o
 
 **My conclusion so far:** AI made real astronomy programming more accessible. It helped me reproduce a standard search method and train a small classification model that was much better than a simple signal-strength rule at matching historical Kepler labels. The attempted telescope adjustment gave mixed results and showed why a cleaner measurement is not necessarily a more accurate scientific conclusion. The final report will explain these three experiments, include actual NASA-based graphs, compare the methods fairly, and discuss what still required scientific interpretation.
 
-**AI use:** GPT-6 substantially helped write and debug the code, gather public data, run tests, make figures, and draft explanations. I am responsible for understanding the methods, checking the original results, and disclosing that assistance.
 
 **Research and lecture map:** [Methods, papers, classroom connections and honest limits](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md).
 

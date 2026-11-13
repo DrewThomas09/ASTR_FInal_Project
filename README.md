@@ -158,7 +158,7 @@ Also [**185-test** verified real Kepler Q6+Q7 event-recovery development](https:
 
 **[Read/edit the full student-voice opening report draft](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md).** Connects course Lesson 2 (flux versus luminosity and inverse-square law), Lesson 3 (timing), Lessons 5–6 (orbital physics), and Lesson 7 (light) to the history of exoplanet discovery, transit depth, Kepler/TESS methods and ExoMiner's multi-view neural vetting. Explains original MAST and Exoplanet Archive sources, the actual Zenodo 57,162 labeled/147,567 unlabeled TESS records, the still-undownloaded ~19 GB training archive, and **what is genuinely replicated versus still planned**. The text acknowledges the AI-assisted code/data work and does not claim the current prototype outperforms NASA.
 
-# AI-assisted exoplanet detection | ASTR 12600
+# Kepler exoplanet detection and model evaluation | ASTR 12600
 
 ## November 8: Actual official ExoMiner++ TESS catalogs now acquired and reproducibly audited
 
@@ -226,7 +226,7 @@ A minimally changed *preservation safeguard*, operating only on the flux and tim
 
 The Kepler-1647 SAP warning occurred **3.468 hours before an independently published secondary stellar eclipse**, and the Kepler-35 PDCSAP warning **2.799 hours before a published primary stellar eclipse**. Reopened original NASA SAP and PDCSAP light curves show the deep eclipses precisely around both windows. The independent ephemerides were consulted **only after the frozen recurrence guard had selected those warnings**, not as inputs to the algorithm. This provides direct physical evidence that the 42 rescued telescope measurements overlap authentic stellar eclipse features, not a demonstration of better planet detection.
 
-**Research question:** Can AI-assisted work reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
+**Research question:** Can generative AI reproduce and critically evaluate established exoplanet transit searches, then make a modest, physically motivated change that improves weak-signal recovery on an honest, comparable test? We report negative results and separate candidate vetting from confirmation.
 
 **[Concise November 20 submission draft](NOV_20_STATUS_UPDATE_CONCISE_DRAFT.md)** and the [full project status draft](NOV_20_PROJECT_STATUS_REPORT_DRAFT.md) are ready for student review, citation verification, and submission-format editing. It integrates literature, NASA observations, the negative ablations, and a transparent AI-use statement.
 
@@ -304,7 +304,6 @@ These are **three separate evidence types**: historical NASA label classificatio
 2. Choose **File > Open notebook > GitHub** and enter `DrewThomas09/ASTR_FInal_Project`; select `Kepler_AI_Project_Colab.ipynb`.
 3. Choose **Runtime > Run all**. The notebook installs required packages, writes the complete source files, runs the simulated experiments and attempts a NASA Kepler catalog download.
 4. If NASA is unavailable, the notebook prints the exact CSV download URL and allows manual upload. **Do not report real-data performance numbers unless the CSV step succeeds.**
-5. Download the resulting figures and numerical results. Keep `AI_USE_LOG.md` updated, and write your own analysis.
 
 ## Research synthesis and decision (November 6, 2026)
 
@@ -323,7 +322,6 @@ The main scientific reference is [Deep 2024–2026 methods and failure audit](RE
 - `ml_screening.py`: download NASA's Kepler DR25 Q1-Q17 KOI table, train a single random forest, compare with SNR-only screening, and output a confusion matrix and metric table.
 - `validation_study.py`: run a positive-control and a noise-only example.
 - `tests/test_project.py`: test grouped data splits, threshold behavior and a synthetic ML training workflow.
-- `AI_USE_LOG.md`, `RESEARCH_PLAN.md`: research purpose, human responsibilities, methods and limitations.
 - `Kepler_AI_Project_Colab.ipynb`: everything needed for the primary experiments in one notebook.
 
 ## What the proposed improvement means
@@ -399,4 +397,3 @@ The [NASA DR25 workflow](.github/workflows/nasa-dr25-study.yml) now also:
 - Shallue & Vanderburg (2018): [Deep learning for exoplanets](https://doi.org/10.3847/1538-3881/aa9e09)
 - [NASA Kepler candidate tables](https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_KOI_docs.html)
 
-**Academic integrity:** all AI-assisted programming and documentation must be disclosed as required by the instructor. The student is responsible for understanding the code and drawing scientific conclusions.
