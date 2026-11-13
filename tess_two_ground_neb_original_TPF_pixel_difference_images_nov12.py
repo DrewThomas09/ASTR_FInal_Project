@@ -199,6 +199,18 @@ def run(frozen_file,original_mask_file,out,working):
                 mask=np.asarray(h[2].data,dtype=np.int64)
             if cube.shape[1:]!=mask.shape:
                 raise ValueError("Original source LC cube and original TPF bitmask shape differ")
+            # Actual SPOC TPF can include missing-time cadences (NaN TIME) when
+            # spacecraft data are absent. Exclude those original rows; never
+            # impute dates or flux, and preserve the exact exclusion count.
+            original_tpf_rows_before_missing_time_exclusion=len(times)
+            original_finite_time_rows=np.isfinite(times)
+            item["original_TPF_source_rows_all"]=original_tpf_rows_before_missing_time_exclusion
+            item["original_TPF_missing_time_cadences_excluded"]=int((~original_finite_time_rows).sum())
+            times=times[original_finite_time_rows]
+            q=q[original_finite_time_rows]
+            cube=cube[original_finite_time_rows]
+            if len(times)<30 or not np.all(np.diff(times)>0):
+                raise ValueError("Original TPF valid timestamps fewer than 30 or not strictly increasing")
             bit8=(mask&BIT_MOM)!=0
             p=prior["original_TPF_binary_mask_geometry"]
             target=p["original_primary_target_cutout_xy_zero_origin"]
