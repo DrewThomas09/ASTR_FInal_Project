@@ -1,0 +1,47 @@
+name: Inspect original catalog TESS-band brightness fields for two ground-supported NEB companions
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-two-NEB-original-exofop-neighbor-magnitude-probe.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  show-independent-original-source-brightness-and-ground-notes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use original previously preserved ExoFOP neighbor and source-ground evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/neighbor evidence/notes
+          gh run download 43318756858 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-ten-new-SPOC-NEB-named-neighbors-NOT-verified-physical-labels \
+            --dir evidence/neighbor
+          gh run download 43331123345 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-ExoFOP-23-ground-NEBcheck-and-photometry-uploads-NOT-proof-of-eclipse \
+            --dir evidence/notes
+          python - <<'PY'
+          import csv,hashlib,json
+          from pathlib import Path
+          pairs={382437043:382437045,264303333:1884344804}
+          for host,near in pairs.items():
+              path=Path('evidence/neighbor')/f'original_ExoFOP_TIC_{host}_nearby_astrometry.csv'
+              raw=path.read_bytes()
+              parsed=csv.DictReader(raw.decode('utf-8-sig').splitlines())
+              rows=list(parsed)
+              print('TARGET',host,'NEIGHBOR',near,'SOURCE_SHA256',hashlib.sha256(raw).hexdigest())
+              print('EXTERNAL_CATALOG_COLUMN_HEADERS',repr(parsed.fieldnames))
+              for r in rows:
+                  if str(r.get('TIC ID','')).strip()==str(near):
+                      print('EXTERNAL_NEIGHBOR_ORIGINAL_ROW',json.dumps(r,ensure_ascii=False))
+              audit=json.loads(Path('evidence/notes/23_frozen_original_ExoFOP_ground_uploads_NEBcheck_and_photometry_text_audit.json').read_text())
+              notes=[x for x in audit['original_observer_source_file_details'] if int(x['host_TIC_ID'])==host and x['original_file_name'].lower().endswith('_notes.txt')]
+              for note in notes[:3]:
+                  print('OBSERVER_NOTE',host,note['original_file_ID'],
+                         note['original_source_text_evidence']['original_excerpt_first_nonblank_lines'][:7])
+          PY
