@@ -160,6 +160,18 @@ The initial forest rejected many historical Kepler candidates with long periods.
 ![Long period threshold tradeoff](figures/kepler_period_threshold_tradeoff.svg)
 
 
+### What the model was missing, and why the threshold trade-off matters
+
+I returned to the **same frozen 1,619-signal DR25 holdout**, without retraining the forest, to inspect the 71 historical candidate labels with periods at least 100 days. The forest retained 44 and rejected 27. The rejected group had a median catalog period of **359 days** rather than **166**, median model signal-to-noise of **12.3** rather than **18.4**, and median transit depth of **482 ppm** rather than **915 ppm**. This descriptive association is consistent with the difficulty of measuring faint events repeated less often. It does **not** demonstrate which individual feature caused a classifier decision, nor does it establish that every earlier candidate is a real planet. NASA's `koi_pdisposition` is an historical vetting label, as its [official data dictionary](https://exoplanetarchive.ipac.caltech.edu/docs/API_kepcandidate_columns.html) states.
+
+![Original long-period candidate scores split by the model's fixed decision](figures/kepler_long_period_error_scatter.svg)
+
+The tested period-specific cutoff in the *separate 1,605-signal experiment* rescued 15 long-period historical candidate labels but accepted 36 extra historical false positives, worsening long-period balanced accuracy. The result can be understood as a choice of error costs: if a false-positive referral has a hypothetical cost of one, the new long-period policy only has lower weighted errors if dismissing a historical candidate costs **more than 36/15 = 2.40**. Using the first full 1,605-signal split gives **51/12 = 4.25**. These are illustrative trade-offs, not measured telescope resources or improved classification accuracy.
+
+![Illustrative weighted classification costs](figures/kepler_threshold_break_even.svg)
+
+The complete [source-backed analysis and limitations](NOV13_KEPLER_LONG_PERIOD_ERROR_AND_COST_AUDIT.md) retain the two original prediction-file hashes and the link to the frozen NASA records.
+
 ## 4. After researching existing methods, what could we try to improve?
 
 This was the part I found most interesting. By this point, I had shown that AI could help implement an existing search method and build a machine-learning model that performed better than a simple screen on the available labels.
