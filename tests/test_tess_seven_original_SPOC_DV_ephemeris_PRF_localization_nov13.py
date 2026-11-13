@@ -99,3 +99,41 @@ def test_invalid_true_PRF_coords_not_filled_or_treated_as_source():
         "original_DV_first_sector_fit_records_all"][0]
     assert first["original_first_sector_DV_position_quality_guard_passed"] is False
     assert first["official_PRF_fit_closer_to_original_ground_NEb_than_original_host"] is None
+
+
+def test_mission_official_PRF_zero_coordinates_with_negative_uncertainty_are_missing_not_real_sky():
+    invalid=node("differenceImageCentroid")
+    for key in ("raDegrees","decDegrees"):
+        invalid.append(node(key,value=0.0,uncertainty=-1.0))
+    assert coord_from_xml(invalid) is None
+    root=xml_example()
+    for el in root.iter("differenceImageCentroid"):
+        for c in el:
+            if c.tag in ("raDegrees","decDegrees"):
+                c.attrib["value"]="0.0"
+                c.attrib["uncertainty"]="-1.0"
+    s=ground_source()
+    r=source_DV_TCEs(root,s,ground=s)
+    z=r["official_original_NASA_SPOC_TCE_and_sector_PRF_diagnostics_all"][0][
+        "original_DV_first_sector_fit_records_all"][0]
+    assert z["original_mission_PRF_source_to_original_external_host_arcsec"] is None
+    assert z["official_PRF_fit_closer_to_original_ground_NEb_than_original_host"] is None
+    assert z["original_first_sector_DV_position_quality_guard_passed"] is False
+
+
+def test_confirmed_planet_source_uses_independent_NASA_archive_sky_coordinates():
+    planet={
+        "TIC_ID":36352297,"TOI":"547.01",
+        "source_frozen_first_SPOC_2min_sector":14,
+        "original_ExoFOP_period_days":2.,
+        "original_ExoFOP_epoch_BTJD":100.,
+        "original_ExoFOP_duration_days":.1,
+        "NASA_confirmed_host_catalog_RA_deg":100.,
+        "NASA_confirmed_host_catalog_Dec_deg":20.
+    }
+    r=source_DV_TCEs(xml_example(),planet,ground=None)
+    assert r["only_one_TOI_compatible_TCE"] is True
+    z=r["official_original_NASA_SPOC_TCE_and_sector_PRF_diagnostics_all"][0][
+        "original_DV_first_sector_fit_records_all"][0]
+    assert z["original_mission_PRF_source_to_original_external_host_arcsec"]>0.
+    assert z["original_mission_PRF_source_to_original_ground_reported_neighbor_arcsec"] is None
