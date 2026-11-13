@@ -11,6 +11,7 @@ def sector(sec,host,near,valid=True):
       "original_DV_numberOfTransits":3,
       "original_DV_catalog_TIC_reference_to_original_external_NASA_host_arcsec":.2,
       "original_PRF_ra_dec_uncertainties_valid":valid,
+      "original_mission_PRF_qualityMetric":{"attempted":True,"valid":valid,"value":1.},
       "original_mission_PRF_source_to_original_external_host_arcsec":host if valid else None,
       "original_mission_PRF_source_to_original_ground_reported_neighbor_arcsec":near if valid else None,
       "original_official_SPOC_DV_TIC_reference_offsets":{
@@ -77,3 +78,13 @@ def test_all_confirmed_planet_hosts_kept_without_inventing_a_neighbor():
     assert z["first_sector_PRF_separation_from_confirmed_planet_host_arcsec"]==3
     assert set(TWO_GROUND)=={382437043,264303333}
     assert set(KNOWN_CONTROLS)=={36352297,134537478,232038798,452808876,455135327}
+
+
+def test_explicit_NASA_PRF_failed_quality_flag_overrides_finite_sky_coordinates():
+    x=sector(5,15.,2.)
+    assert physical_fit_quality(x,True)
+    x["original_mission_PRF_qualityMetric"]["valid"]=False
+    assert not physical_fit_quality(x,True)
+    x["original_mission_PRF_qualityMetric"]["valid"]=True
+    x["original_mission_PRF_qualityMetric"]["attempted"]=False
+    assert not physical_fit_quality(x,True)
