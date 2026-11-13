@@ -76,8 +76,18 @@ def original_nasa_dv_source_xml(blob,tic):
                 "planet_result_direct_child_tags":[tagname(z) for z in list(item)][:25]})
             continue
         c=candidate[0]
-        period=strict_scalar(c,"orbitalPeriod")
-        epoch=strict_scalar(c,"transitEpoch")
+        # Real official TESS DVR XML planetCandidate stores the TPS detection
+        # ephemeris as ATTRIBUTES, not as nested orbitalPeriod/transitEpoch
+        # elements: orbitalPeriodInDays and epochTjd. These are the original
+        # reported TCE P/E, before any NASA PRF centroid values are opened.
+        try:
+            period=float(c.attrib["orbitalPeriodInDays"])
+            epoch=float(c.attrib["epochTjd"])
+            if not math.isfinite(period) or period<=0 or not math.isfinite(epoch):
+                raise ValueError("nonfinite original TCE ephemeris")
+        except (ValueError,KeyError,TypeError):
+            period=None
+            epoch=None
         rows.append({
             "original_NASA_DV_planet_number":pnum,
             "status":"original_catalog_TCE_only_no_centroid_read",
