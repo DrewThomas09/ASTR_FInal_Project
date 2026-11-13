@@ -1,3 +1,20 @@
+# Testing AI's Impact in Exoplanet Research — ASTR 12600
+
+**Submitted November 5 proposal is the guide to the main report.** The project asks whether generative AI can help replicate and improve established exoplanet-research methods using publicly available **NASA Kepler** data. The central experiments are (1) implementing a real Box Least Squares search on a known Kepler planet and (2) testing whether a small machine-learning classifier can distinguish historical NASA candidate versus false-positive labels better than a simple signal-strength rule. An additional **TESS** telescope-pointing subtraction is a **separate exploratory attempt to improve one physical measurement**, not a replacement of the promised Kepler experiment or a retrained NASA ExoMiner model.
+
+**Start here for the easy-to-follow report and actual results:**
+
+- [**Main course report — plain-language proposal-aligned draft**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md): explains what a transit is, how AI wrote the search code, what data were split for classification, what numbers were measured, and how the small TESS follow-up did and did not help.
+- [**November 20 concise status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md): 678 words, one–two-page intended draft, not yet submitted.
+- [**Original real Kepler-69 b BLS science results**](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md): measured period **13.713 days** vs published **13.722 days**, only **0.066%** difference.
+- [**Actual NASA Kepler DR25 classifier comparison**](REAL_NASA_DR25_RESULTS_2026_11_06.md): **81.6%** historical label agreement for random forest vs **52.3%** for simple signal-strength screening, with more candidate-label dismissals by the forest.
+- [**Detailed original NASA/TESS adjustment audit, negative results and data integrity**](VERIFIED_NOV13_FULL_RESULTS_WHAT_WORKED_WHAT_FAILED_NASA_TESS_PRF_BENCHMARK.md): supplementary scientific evidence; no proven planet-vetting accuracy improvement.
+- [**Previous long, technical TESS/ExoMiner manuscript archived here**](ARCHIVE_LONGFORM_EXOMINER_TESS_TECHNICAL_DRAFT_BEFORE_PROPOSAL_ALIGNMENT.md): preserve all prior technical work without letting it redefine the submitted project.
+
+**Main result:** Generative AI made it possible to implement a functioning real-data Kepler transit search and a small Kepler candidate-screening program; however, more complicated modeling or a cleaner pointing-centroid metric does not automatically mean better exoplanet discovery or physical source identification. NASA's historical candidate labels are not confirmed-planet ground truth; the final report does **not** claim a newly discovered planet, improved NASA ExoMiner++ accuracy, or a superior mission pipeline.
+
+---
+
 ## November 13 latest scientific outcome: why a smaller centroid does not imply better transit-source identification
 
 [Original NASA source-verified results and limitations scorecard](VERIFIED_NOV13_FULL_RESULTS_WHAT_WORKED_WHAT_FAILED_NASA_TESS_PRF_BENCHMARK.md) · [Latest original all-sector NASA mission PRF source and confirmed-planet comparison; **392 tests passed**](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43457578757/artifacts/14054487366) · [Complete prior NASA overlapping-run, same-sector PRF source audit](VERIFIED_NOV13_ORIGINAL_NASA_SPOC_DV_12_XML_TCE_PRF_NEBS_NEGATIVE_LOCALIZATION.md).
