@@ -26,6 +26,7 @@ def xml_example(period=2.,epoch=100.,toi=None,sector=14,source_ra=100.00015):
     pp.append(node("planetCandidate",orbitalPeriodInDays=period,epochTjd=epoch,
                    observedTransitCount=8))
     di=ET.SubElement(pp,"differenceImageResults",sector=sector,numberOfTransits=8)
+    ET.SubElement(di,"qualityMetric",attempted="true",valid="true",value="1.0")
     sky(ET.SubElement(di,"ticReferenceCentroid"),100.,20.)
     sky(ET.SubElement(di,"controlImageCentroid"),100.,20.)
     sky(ET.SubElement(di,"differenceImageCentroid"),source_ra,20.)
@@ -137,3 +138,17 @@ def test_confirmed_planet_source_uses_independent_NASA_archive_sky_coordinates()
         "original_DV_first_sector_fit_records_all"][0]
     assert z["original_mission_PRF_source_to_original_external_host_arcsec"]>0.
     assert z["original_mission_PRF_source_to_original_ground_reported_neighbor_arcsec"] is None
+
+
+def test_original_SPOC_explicit_PRF_quality_invalid_cannot_be_accepted_as_physical_sky_source():
+    original=xml_example()
+    for q in original.iter("qualityMetric"):
+        q.attrib["valid"]="false"
+    s=ground_source()
+    r=source_DV_TCEs(original,s,ground=s)
+    x=r["official_original_NASA_SPOC_TCE_and_sector_PRF_diagnostics_all"][0][
+        "original_DV_first_sector_fit_records_all"][0]
+    assert x["original_PRF_ra_dec_uncertainties_valid"]
+    assert x["original_mission_PRF_qualityMetric"]["attempted"] is True
+    assert x["original_mission_PRF_qualityMetric"]["valid"] is False
+    assert x["original_first_sector_DV_position_quality_guard_passed"] is False
