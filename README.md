@@ -2,6 +2,8 @@
 
 **Submitted November 5 proposal is the guide to the main report.** The project asks whether generative AI can help replicate and improve established exoplanet-research methods using publicly available **NASA Kepler** data. The central experiments are (1) implementing a real Box Least Squares search on a known Kepler planet and (2) testing whether a small machine-learning classifier can distinguish historical NASA candidate versus false-positive labels better than a simple signal-strength rule. An additional **TESS** telescope-pointing subtraction is a **separate exploratory attempt to improve one physical measurement**, not a replacement of the promised Kepler experiment or a retrained NASA ExoMiner model.
 
+**November 13 expanded Kepler findings:** [original 13-target external BLS validation, two-system iterative search and tested period-specific threshold failure](NOV13_PROPOSAL_ALIGNED_EXTERNAL_KEPLER_AND_PERIOD_POLICY_EXPANSION.md). Includes figures, original source artifacts, exact denominators, and a Kepler-law error calculation. These results add depth to the original proposal rather than replacing it with TESS work.
+
 **Start here for the easy-to-follow report and actual results:**
 
 - [**New model-level audit and review-priority analysis**](NOV13_MODEL_EXPLANATION_REVIEW_PRIORITY_AND_CAUTION.md): same original 1,619 held-out Kepler predictions, additional ROC/PR and period-error explanation, a reproducible 30% confidence-review comparison and careful scientific limitations.

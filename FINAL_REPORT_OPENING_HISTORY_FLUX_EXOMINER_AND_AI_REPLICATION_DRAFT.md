@@ -70,6 +70,17 @@ This is a successful reproduction of an established research technique, not a di
 
 *The original figure, downloaded from the successful real-data GitHub Actions run, is linked above and is included in the companion local evidence packet. It is **measured Kepler data**, not an AI-rendered illustration.*
 
+### Rechecking the detector on more original Kepler light curves
+
+A preselected external Quarter 8 test used **13 known Kepler targets** (six published planet-host targets and seven eclipsing binaries). Twelve had usable light curves; one missing target remained recorded. Among the six planet-host targets, the intended listed planet period was recovered for **three**. Four of six usable eclipsing binaries instead produced **half-period aliases**, and **none of six** triggered the unchanged simple binary-warning rule. The additional cases show why a close period match in the single Kepler-69 b test was a useful reproduction but not a general detection-rate measurement. [Complete original 13-target results](FROZEN_REAL_13STAR_VALIDATION_RESULTS.md).
+
+![Recorded external Kepler target results](figures/kepler_external_13star_summary.svg)
+
+If an eclipse period is incorrectly halved, Kepler's third law gives an inferred orbital radius factor of `(1/2)^(2/3) = 0.630` for fixed stellar mass, roughly **37% too small**. This is a direct error in a physical inference, not just a mislabeled graph.
+
+After seeing two initial multi-planet mismatches, a separate *exploratory* iterative BLS run subtracted the first fitted box-shaped signal and searched the residual. In Kepler-20 it recovered the already-known **Kepler-20 c** period (~10.8578 days) first and the previously known **Kepler-20 b** period (~3.6963 days) on the second pass. Kepler-18 yielded matches to c and d but not the originally targeted b after three passes; Kepler-20's third peak was unmatched. The two systems were selected after observing initial failures, so these are development examples, not a new blinded detection-performance estimate. [Original iterative results](ITERATIVE_BLS_REAL_MULTIPLANET_RESULTS.md).
+
+
 ## 3. Second experiment: can machine learning tell better signals from false alarms?
 
 Finding a repeating dip is only the beginning. There is another problem: **some very convincing-looking dips are not planets**. A pair of stars eclipsing one another, for example, can produce a clear repeating pattern. So I wanted to test whether machine learning could do a better job than a simple rule at separating signals NASA had previously marked as possible planets from signals NASA had marked as false positives.
@@ -141,6 +152,13 @@ As a modest **human-in-the-loop extension** of the *same frozen random forest*, 
 ![Figure: candidate reviewer-priority analysis using the frozen heldout predictions](figures/model_review_priority_verified.svg)
 
 The analysis is reproducible from the saved [original held-out prediction CSV](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42513638366/artifacts/13630680897) with [the supplemental score-review script](model_review_priority_analysis.py) and [full model extension record](NOV13_MODEL_EXPLANATION_REVIEW_PRIORITY_AND_CAUTION.md). The independent source data and fitted models were **not** modified. The official research-paper draft shared separately as DOCX/PDF includes more carefully formatted figures, the scientific formulas, full article bibliography, and the professor's classroom connections.
+
+### A tested improvement attempt: period-specific cutoffs
+
+The initial forest rejected many historical Kepler candidates with long periods. A separate saved test therefore tried **three validation-only cutoffs** for periods below 10 days, 10-100 days, and 100 days or longer, while leaving forest scores and input features unchanged. On **145 long-period signals** in the separately grouped first split, candidate recall increased from **42/58 (72.4%)** to **57/58 (98.3%)**, but incorrectly accepted historical false positives rose from **28/87 (32.2%)** to **64/87 (73.6%)**. Long-period balanced accuracy **decreased from 70.1% to 62.4%**. All ten overlapping grouped-star split runs showed worse overall balanced accuracy. This is a genuine tested, negative model result, not a proposal for an experiment that still needs to happen. [Validation policy, original source outputs, and limitations](VERIFIED_DR25_PERIOD_AWARE_THRESHOLD_NEGATIVE_2026_11_08.md).
+
+![Long period threshold tradeoff](figures/kepler_period_threshold_tradeoff.svg)
+
 
 ## 4. After researching existing methods, what could we try to improve?
 
