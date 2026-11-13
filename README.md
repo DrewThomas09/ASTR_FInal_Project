@@ -1,3 +1,5 @@
+**New v7 research:** [Same-recall Kepler model audit, 95% host-star intervals, and Q6/Q7 event-depth uncertainty](NOV13_MATCHED_RECALL_AND_EVENT_UNCERTAINTY_V7.md).
+
 # Testing AI's Impact in Exoplanet Research — ASTR 12600
 
 **Submitted November 5 proposal is the guide to the main report.** The project asks whether generative AI can help replicate and improve established exoplanet-research methods using publicly available **NASA Kepler** data. The central experiments are (1) implementing a real Box Least Squares search on a known Kepler planet and (2) testing whether a small machine-learning classifier can distinguish historical NASA candidate versus false-positive labels better than a simple signal-strength rule. An additional **TESS** telescope-pointing subtraction is a **separate exploratory attempt to improve one physical measurement**, not a replacement of the promised Kepler experiment or a retrained NASA ExoMiner model.
