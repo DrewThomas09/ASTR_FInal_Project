@@ -132,6 +132,16 @@ def extract_first_sector_dv_PRF(difference,first_sector,host_sky,neighbor_sky):
        "original_DV_sector_equal_to_previously_frozen_first_SPOC_sector":str(
            difference.attrib.get("sector"))==str(first_sector),
     }
+    quality=child(difference,"qualityMetric")
+    row["original_mission_PRF_qualityMetric"]={
+        "quality_element_present":quality is not None,
+        "attempted":(str(quality.attrib.get("attempted","")).lower()=="true"
+                     if quality is not None else None),
+        "valid":(str(quality.attrib.get("valid","")).lower()=="true"
+                 if quality is not None else None),
+        "value":safe_float(quality.attrib.get("value")) if quality is not None else None,
+        "all_original_attributes":dict(quality.attrib) if quality is not None else None
+    }
     target=child(difference,"ticReferenceCentroid")
     background=child(difference,"controlImageCentroid")
     signal=child(difference,"differenceImageCentroid")
@@ -170,6 +180,8 @@ def extract_first_sector_dv_PRF(difference,first_sector,host_sky,neighbor_sky):
         all(x is not None and x>=0 for x in sig))
     row["original_first_sector_DV_position_quality_guard_passed"]=bool(
         row["original_DV_sector_equal_to_previously_frozen_first_SPOC_sector"]
+        and row["original_mission_PRF_qualityMetric"]["attempted"] is True
+        and row["original_mission_PRF_qualityMetric"]["valid"] is True
         and row["original_PRF_ra_dec_uncertainties_valid"]
         and signal_pos is not None
         and tic_pos is not None
@@ -372,7 +384,7 @@ def run(DV_source_json,nebs_frozen_json,planets_frozen_json,prior_ground_TESS_so
             "DV ephemeris TJD uses nominal JD-2457000 day count; ExoFOP epoch BTJD is likewise nominal BJD-2457000, but the different time convention must be explicitly considered for fine transit timing.",
             "When no unique ephemeris-compatible TCE exists, do not treat the first report TCE as that TOI or infer absence of a real eclipse.",
             "A multisection DV report's robust centroid offsets use all included sectors; only per-differenceImageResults entries with the actual frozen first original SPOC sector are comparable to our original single-sector TPF image.",
-            "Official SPOC PRF sky position can still have large uncertainties and invalid quality due to faint binary eclipses, systematics, blending, multiple neighbors and TCE aliases. Missing PRF fits with value=0 and uncertainty=-1 are treated as unavailable, never as RA/Dec=(0,0).",
+            "Original NASA SPOC qualityMetric attempted=true AND valid=true is required for interpreting any PRF, together with finite nonnegative RA/Dec coordinate errors and original TIC reference matching; RA=0/Dec=0 with uncertainty=-1 remains missing, not a real sky source.",
             "Ground candidate neighbor sky was independently projected from real ground aperture FITS WCS to a TIC, but this is previously inspected case selection, NOT new blinded validation; the ground source itself may have multiple/background components.",
             "For ground NEB hosts, host target sky coordinates are independently recovered from the prior source-sha-locked original SPOC first-sector TPF header, not from the official DVR itself; historic target proper motion and reference-frame differences remain possible.",
             "Mission fitted PRF source position differs from our simple positive-only pixel centroid and difference image; disagreement does not prove the TESS official source is the planet host or invalidate independently ground-sky matched eclipse.",
