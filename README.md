@@ -6,6 +6,8 @@
 
 - [**Long-period model error and decision-cost audit**](NOV13_KEPLER_LONG_PERIOD_ERROR_AND_COST_AUDIT.md): original 1,619- and 1,605-signal predictions, medians of accepted/rejected candidate labels, and a break-even analysis of the unsuccessful period-aware threshold correction.
 
+- [**Original Kepler Quarter 6/7 event-shape comparison, period repeatability, and small-cohort uncertainty**](NOV13_REAL_KEPLER_Q6_Q7_OBSERVATIONS_AND_SMALL_SAMPLE_UNCERTAINTY.md): two previously examined systems, actual NASA flux-derived metrics and independent quarter fits; distinguishes from the proposed uncompleted blind forecasting trial. [CSV verification script](kepler_q6_q7_archived_audit.py).
+
 **Start here for the easy-to-follow report and actual results:**
 
 - [**New model-level audit and review-priority analysis**](NOV13_MODEL_EXPLANATION_REVIEW_PRIORITY_AND_CAUTION.md): same original 1,619 held-out Kepler predictions, additional ROC/PR and period-error explanation, a reproducible 30% confidence-review comparison and careful scientific limitations.

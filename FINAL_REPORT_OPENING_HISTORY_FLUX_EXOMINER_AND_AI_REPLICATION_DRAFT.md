@@ -81,7 +81,17 @@ If an eclipse period is incorrectly halved, Kepler's third law gives an inferred
 After seeing two initial multi-planet mismatches, a separate *exploratory* iterative BLS run subtracted the first fitted box-shaped signal and searched the residual. In Kepler-20 it recovered the already-known **Kepler-20 c** period (~10.8578 days) first and the previously known **Kepler-20 b** period (~3.6963 days) on the second pass. Kepler-18 yielded matches to c and d but not the originally targeted b after three passes; Kepler-20's third peak was unmatched. The two systems were selected after observing initial failures, so these are development examples, not a new blinded detection-performance estimate. [Original iterative results](ITERATIVE_BLS_REAL_MULTIPLANET_RESULTS.md).
 
 
+### A direct observational comparison between two other Kepler quarters
+
+Two previously analyzed original Kepler targets also have preserved Quarter 6 and Quarter 7 individual-event measurements. With **independent BLS fits in each quarter**, the detected Kepler-12 period changed from 4.438304 to 4.437882 days (**36.5 seconds**) and the Kepler-35 binary's near-half-orbit fit changed from 10.371260 to 10.370247 days (**87.6 seconds**). The previously known Kepler-12 planet host had median locally measured dip depths of **1.551% (20 events)** and **1.566% (18 events)**, while the Kepler-35 eclipsing binary had **19.166% (7 events)** and **21.110% (8 events)**. Strong periodic consistency is therefore observed in both a planet host and a *stellar binary*. These are not period uncertainty intervals or a prospective Q6-trained Q7 forecast.
+
+The [full original Kepler quarter comparison](NOV13_REAL_KEPLER_Q6_Q7_OBSERVATIONS_AND_SMALL_SAMPLE_UNCERTAINTY.md) supplies exact input artifacts, periods, source hashes, event counts, and the distinction from the separately predeclared blind forecasting protocol. A concise [verification script](kepler_q6_q7_archived_audit.py) recomputes the periods and depths from the archived event tables.
+
 ## 3. Second experiment: can machine learning tell better signals from false alarms?
+
+**An important boundary between our two Kepler experiments:** the Box Least Squares code detects periods from original stellar photometry. The random forest screens *NASA's pre-computed DR25 catalog measurements*, not features produced by our own BLS program. Its reported label agreement is thus **not end-to-end accuracy for our planet detector**. The distinction matters when evaluating how much of the professional Kepler pipeline was replicated.
+
+
 
 Finding a repeating dip is only the beginning. There is another problem: **some very convincing-looking dips are not planets**. A pair of stars eclipsing one another, for example, can produce a clear repeating pattern. So I wanted to test whether machine learning could do a better job than a simple rule at separating signals NASA had previously marked as possible planets from signals NASA had marked as false positives.
 
