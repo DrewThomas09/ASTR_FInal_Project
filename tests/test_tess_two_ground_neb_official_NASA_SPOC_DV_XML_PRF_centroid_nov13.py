@@ -53,7 +53,7 @@ def test_actual_official_nasa_sky_prf_direction_no_swap():
     assert r["n_valid_original_NASA_DV_PRF_first_sector_centroids"]==1
     m=r["original_DV_first_frozen_sector_difference_image_result_rows"][0]
     assert m["original_NASA_DV_PRF_nominally_closer_to_externally_ground_reported_neighbor"]
-    assert m["original_DV_PRF_to_ground_observed_neighbor_arcsec"]<m[
+    assert m["original_NASA_DV_PRF_to_ground_observed_neighbor_arcsec"]<m[
         "original_NASA_DV_PRF_to_primary_host_arcsec"]
     assert m["original_DV_first_sector_PRF_physically_interpretable"]
 
