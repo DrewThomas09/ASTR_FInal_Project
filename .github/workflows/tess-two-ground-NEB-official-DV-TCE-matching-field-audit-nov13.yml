@@ -1,0 +1,55 @@
+name: Audit official original SPOC DV XML TCE period/epoch parsing BEFORE any physical no-match claim
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tess-two-ground-NEB-official-DV-TCE-matching-field-audit-nov13.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-only-report-TCE-ephemeris-and-original-node-shapes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore all original NASA official XML source parsed science results, no new centroid selection
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/results
+          gh run download 43435154384 --repo "DrewThomas09/ASTR_FInal_Project" \
+            -n original-NASA-SPOC-two-ground-NEB-DVR-XML-TCE-phase-matched-official-PRF-centroid-NOT-false-positive-accuracy \
+            --dir evidence/results
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('evidence/results/two_ground_NEBS_official_NASA_DV_XML_original_PRF_centroid_source_comparison.json').read_text())
+          print('ARCHIVE_STATUS',d['authentic_original_SPOC_DV_XML_products_queried'],
+                'SUCCESS',d['original_SPOC_DV_XML_sources_successfully_parsed'],
+                'MATCHED',d['unique_original_MAST_DV_runs_matching_TOI_period_and_phase'])
+          for host in d['all_original_host_source_DV_XML_TCE_and_PRF_results']:
+              print('HOST',host['TIC_ID'],'TOI',host['TOI'],
+                'ORIGINAL_P',host['original_ExoFOP_published_P_days'],
+                'ORIGINAL_E',host['original_ExoFOP_published_epoch_BTJD'],
+                'ORIGINAL_D',host['original_ExoFOP_published_duration_days'])
+              for r in host['source_archive_records_all_no_selection_on_offset']:
+                  p=r['original_DV_XML_product']
+                  print('OFFICIAL_XML',p['product_filename'],
+                    'STATUS',r['original_DV_XML_source_processing_status'],
+                    'ROOT',json.dumps(r.get('original_DV_run_root_metadata'),default=str),
+                    'TCE_MATCHES',r.get('original_DV_ephemeris_matched_TCE_count_before_centroid'))
+                  for c in r.get('original_DV_TCE_candidates_not_filtered_by_centroid',[]):
+                      print('TCE_EPHEMERIS_ONLY',json.dumps({
+                        'num':c.get('original_NASA_DV_planet_number'),
+                        'status':c.get('status'),
+                        'P':c.get('original_NASA_DV_candidate_period_days'),
+                        'E':c.get('original_NASA_DV_candidate_epoch_BTJD'),
+                        'match':c.get('matches_published_original_TOI_period_and_phase_before_any_centroid_read'),
+                        'P_fraction':c.get('DV_to_original_TOI_period_fractional_difference'),
+                        'phase_days':c.get('DV_to_original_TOI_wrapped_phase_difference_days'),
+                        'candidate_direct_children':c.get('original_planetCandidate_direct_child_names'),
+                        'result_direct_children':c.get('original_planetResults_direct_child_names'),
+                      },default=str))
+          PY
