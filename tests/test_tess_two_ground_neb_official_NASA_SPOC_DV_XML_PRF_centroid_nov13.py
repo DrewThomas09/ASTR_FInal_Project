@@ -12,9 +12,9 @@ def source(tic=382437043,p=1.5,epoch=1450.,quality=True,planet_id=1):
     return f'''<?xml version="1.0" encoding="UTF-8"?>
     <dv:dvTargetResults xmlns:dv="http://www.nasa.gov/2018/TESS/DV" ticId="{tic}" planetCandidateCount="1" sectorsObserved="001">
       <dv:planetResults planetNumber="{planet_id}">
-        <dv:planetCandidate>
-          <dv:orbitalPeriod value="{p}" uncertainty="0.001"/>
-          <dv:transitEpoch value="{epoch}" uncertainty="0.0005"/>
+        <dv:planetCandidate orbitalPeriodInDays="{p}" epochTjd="{epoch}"
+          observedTransitCount="5" expectedTransitCount="5" planetNumber="{planet_id}">
+          <dv:weakSecondary nValidPhases="5"/>
         </dv:planetCandidate>
         <dv:differenceImageResults sector="1">
           <dv:ticReferenceCentroid>
