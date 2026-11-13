@@ -24,11 +24,7 @@ The two apparently unmatched planet-host cases Kepler-18 b and Kepler-20 b were 
 
 ![Figure: saved 13-target Kepler external validation summary](figures/kepler_external_13star_summary.svg)
 
-**Physics connection to Lessons 5 and 6.** If the actual stellar orbital period is (P) but the algorithm chooses (P/2), then for unchanged system mass Kepler's third law implies
-[
-rac{a_{m fitted}}{a_{m true}}=left(rac{1}{2}ight)^{2/3}simeq0.630.
-]
-Thus a half-period alias would lead to an approximately **37% underestimate of orbital size**, even before the more basic physical mistake of calling a stellar eclipse a planet.
+**Physics connection to Lessons 5 and 6.** If the true binary orbital period is P but the algorithm selects P/2, Kepler's third law gives **a_fitted / a_true = (P_fitted / P_true)^(2/3) = (1/2)^(2/3) ≈ 0.630**, assuming the same system mass. A half-period alias would therefore produce an approximately **37% underestimate of orbital size**, even before the more basic physical mistake of identifying a stellar eclipse as a planet transit.
 
 ### Small follow-up: searching again after the strongest signal
 
