@@ -4,6 +4,10 @@
 
 **Start here for the easy-to-follow report and actual results:**
 
+- [**Research articles, precise classroom slide connections, and the small methods we tested**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md): source-by-source account tied strictly to the submitted November 5 proposal, including verified period and screening calculations.
+- [**Visual: real Kepler DR25 candidate screening trade-offs**](figures/kepler_dr25_results.svg): the same 1,619 held-out NASA-labeled signals with accuracy, candidate recovery and false-positive rate.
+
+
 - [**Main course report — plain-language proposal-aligned draft**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md): explains what a transit is, how AI wrote the search code, what data were split for classification, what numbers were measured, and how the small TESS follow-up did and did not help.
 - [**November 20 concise status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md): 678 words, one–two-page intended draft, not yet submitted.
 - [**Original real Kepler-69 b BLS science results**](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md): measured period **13.713 days** vs published **13.722 days**, only **0.066%** difference.

@@ -1,5 +1,5 @@
 # Testing AI's Impact in Exoplanet Research
-**Drew Thomas · ASTR 12600 · Professor Buzasi · Final report working draft**
+**Drew Thomas | ASTR/PHSC 12600 | Professor Buzasi | Working final report, November 13, 2026**
 
 *This is the proposal-aligned main report. The long research and code audit, including the more complicated TESS and NASA ExoMiner work, is preserved separately in* [the technical appendix](ARCHIVE_LONGFORM_EXOMINER_TESS_TECHNICAL_DRAFT_BEFORE_PROPOSAL_ALIGNMENT.md). *This draft describes results already measured with original public data. It does not claim to have trained or improved NASA's ExoMiner model.*
 
@@ -12,6 +12,12 @@ I chose exoplanets, which are planets orbiting stars outside our solar system. W
 I used generative AI to help write and debug Python code, and I used publicly available observations and catalog records from NASA's **Kepler** mission. The experiment had three parts. First, I tried to reproduce a familiar way of finding possible planets. Second, I tested whether a simple machine-learning model could better sort likely planets from false alarms. Third, after researching the limits of these techniques, I tried one smaller adjustment to a related telescope measurement to see whether cleaner data would actually produce a better scientific answer.
 
 The first two parts are the **main Kepler experiment promised in my proposal**. The third is a separate exploratory follow-up using NASA's **TESS** telescope. It does not replace the Kepler analysis and was not added to the Kepler classifier.
+
+### What my submitted proposal actually promised
+
+My November 5 proposal asked whether AI could **replicate or improve established exoplanet identification techniques**. It specified NASA **Kepler** data, AI-assisted Python code for a traditional transit search, a **relatively simple machine-learning classifier**, and a quantitative comparison of **accuracy, false-positive rate, and candidate recovery** against simpler screening. It also promised clear disclosure of AI-generated work versus scientific interpretation. I have treated those commitments as a boundary: the real-data Kepler experiments below are the core deliverable, and the later TESS test is a modest, separately labeled extension. This paper reports what our programs did, not what a professional observatory ought to replace.
+
+The distinction between **reproducing** and **improving** matters. Reproducing an established method means using actual measurements to recover a known, expected result. Improvement requires a fair comparison on the same task, with the cost of missed promising objects counted alongside the benefit of fewer false alarms. A cleaner-looking graph on its own does not establish either.
 
 ## 1. How does a telescope find a planet it cannot see?
 
@@ -41,9 +47,28 @@ The result was encouraging:
 
 The program also found five sufficiently observed dimming events within that telescope observation period. In simple terms, **AI helped me build code that could find the correct repeating pattern in real telescope data**.
 
+### How this experiment actually worked, and the small checks added
+
+The original method comes from **Kovács, Zucker and Mazeh (2002)**, *A box-fitting algorithm in the search for periodic transits*. Their idea was to compare a mostly flat brightness curve with a short, repeating box-shaped dip. This directly informed our use of Astropy's documented **Box Least Squares** implementation: we did **not** invent BLS, and the AI-assisted program calls a validated numerical implementation rather than replacing the underlying mathematics.
+
+We used Kepler target **KIC 8692861, Quarter 8**. The NASA MAST FITS file contained measured observation times, **PDC-SAP flux**, and data-quality flags. The Python script retained observations with `SAP_QUALITY == 0`, normalized the flux using a fixed **301-cadence running median**, and searched periods from **1.5 to 20 days**. The star was chosen because it already has a known planet; the *exact* published period was not used to select the numerical peak. The fitted **13.7133429855 days** compared with NASA's **13.7223682 days**:
+
+```text
+absolute difference = |13.7223682 - 13.7133429855| = 0.0090252 days
+percentage difference = (0.0090252 / 13.7223682) x 100 = 0.06577%
+```
+
+These are period-error calculations, **not a 0.066% probability of being wrong** and not a measurement of how often the algorithm finds new planets. The fitted dip was approximately **529 parts per million (ppm)** and the fitted duration **0.153 day**. As an approximate physics check, the transit-depth relation `depth ≈ (planet radius / star radius)^2` implies a radius ratio of `sqrt(529/1,000,000) ≈ 0.023` for a simple uniform-brightness transit. It does not give the planet's absolute radius without additional stellar information and a more physical transit model.
+
+After the first period fit, we added a basic **event-consistency check**, rather than trusting a single pooled plot: five adequately sampled dips had positive estimated depths, and the difference between the median odd- and even-event depths was about **24.6 ppm**. This is a useful safeguard against some misleading patterns, **not planet confirmation**. This check was motivated by professional Kepler vetting papers, which examine individual events and alternating eclipses.
+
+One more small, clearly limited test used **real Kepler stellar noise plus injected *simulated* box-shaped transits**. We used Quarter 2 observations of KIC 2436365 after preprocessing and hid the injected periods from the BLS search. The fitted periods were within 2% of the injected periods in **1/3 trials at 500 ppm**, **3/3 at 1,500 ppm**, and **3/3 at 4,000 ppm**. This illustrates that weaker dips are harder to recover. Nine injections are far too few to measure population-wide detection efficiency, and they are **not nine newly observed exoplanets**.
+
+**Original-data Figure 1:** [Open the archived genuine Kepler-69 b flux/time and folded-transit plot](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42319839037/artifacts/13551514247). The upper panel shows actual normalized flux over time; the lower panel folds the same measurements on the period found by BLS, bringing repeated dips together. Source and processing summary: [real light-curve record](REAL_KEPLER_LIGHTCURVE_RESULTS_2026_11_06.md).
+
 This is a successful reproduction of an established research technique, not a discovery of another planet. I deliberately chose a known planetary system to check whether the code behaved sensibly. That made it a useful first test, but it does not tell us how well the program would perform if we pointed it at thousands of unfamiliar stars.
 
-*Suggested Figure 1: the actual Kepler-69 b brightness measurements folded onto the detected period, from the original [real Kepler source experiment](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42319839037/artifacts/13551514247). The figure should show a repeating dip, with a caption explaining that this is a previously known planet, not a new discovery.*
+*The original figure, downloaded from the successful real-data GitHub Actions run, is linked above and is included in the companion local evidence packet. It is **measured Kepler data**, not an AI-rendered illustration.*
 
 ## 3. Second experiment: can machine learning tell better signals from false alarms?
 
@@ -72,7 +97,38 @@ However, there was a trade-off. The random forest also rejected **32 more histor
 
 We also tested a more ordinary statistical model that used the same four measurements. It achieved **77.3%** overall label agreement. The random forest's **81.6%** result was better, suggesting that machine learning could pick up more complicated relationships than a simple statistical cutoff or a straight-line model. This was encouraging, but it was still a comparison to **historical NASA labels**, not a test against independently confirmed planet identities.
 
-*Suggested Figure 2: two simple side-by-side bar charts showing overall historical-label agreement (52.3% versus 81.6%) and the number of labeled false positives incorrectly accepted (695 versus 189). Use the authentic saved model outputs in the [NASA Kepler catalog experiment](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42513638366/artifacts/13630680897).*
+*The actual comparison graphic is now Figure 2 above; its values were taken from the saved original-data model predictions.*
+
+### What the classification percentages actually mean
+
+The test set had **851 historically candidate-labeled signals** and **768 historically false-positive-labeled signals**. The forest correctly retained **742** candidate labels and correctly rejected **579** false-positive labels. It incorrectly rejected **109** candidates and accepted **189** false positives. The one-variable SNR rule retained **774** candidate labels, correctly rejected only **73** false positives, incorrectly rejected **77** candidates, and accepted **695** false positives.
+
+```text
+Forest accuracy = (742 + 579) / 1,619 = 81.59%
+SNR-rule accuracy = (774 + 73) / 1,619 = 52.32%
+
+Forest candidate recall = 742 / 851 = 87.19%
+SNR-rule candidate recall = 774 / 851 = 90.95%
+
+Forest false-positive rate = 189 / 768 = 24.61%
+SNR-rule false-positive rate = 695 / 768 = 90.49%
+```
+
+Here **false-positive rate** means the share of *NASA historically false-positive-labeled KOIs* our method incorrectly called candidates. It is **not** the probability that an accepted signal is actually a nonexistent planet, and **accuracy** is agreement with old screening labels, not agreement with independent astrophysical ground truth.
+
+![Figure 2. Same held-out Kepler signals, three screening metrics. Historical NASA labels, not confirmed planets.](figures/kepler_dr25_results.svg)
+
+*Figure 2. A reproducible visualization of the original held-out NASA DR25 classification counts (N = 1,619), comparing signal-strength screening, four-feature logistic regression, and a four-feature random forest. For false-positive rate, lower is better; for the other two panels, higher is better. All cutoffs were selected on validation data, not on the test records.*
+
+### A stronger baseline, and an important failure case
+
+The **McCauliff et al. (2015)** Kepler random-forest paper showed why combining information from several transit diagnostics can be useful. Unlike their larger professional system, ours used only **four already measured catalog features**: period, duration, depth, and signal-to-noise ratio. To see if the forest was helping beyond a very weak one-variable comparison, we also tested a **four-feature logistic regression** model. It agreed with historical NASA labels **77.27%** of the time, compared with the forest's **81.59%**. The forest's balanced accuracy was **81.29%**, versus **76.61%** for logistic regression and **50.23%** for the SNR rule. A later host-star-resampled analysis estimated a forest-minus-logistic balanced-accuracy advantage of **4.68 percentage points** (approximate 95% interval **+2.28 to +6.92 points**), but this was a retrospective secondary comparison on an already explored data source.
+
+We also took care **not to put signals from the same star on both sides of the train/test split**. A random row split could allow the model to recognize star-specific patterns it had already seen and make the result look better than it was. We used **4,824 training records, 1,611 validation records, and 1,619 test records**, with nonoverlapping host stars; missing values were imputed from the training set rather than using the test set. Thresholds were selected on validation stars with an intended **90% candidate-label recall**. Actual test recall was different across models, so this is **not** a same-recall comparison.
+
+A revealing exploratory check focused on signals with periods of **at least 100 days**. Among **71 historically labeled candidates**, the forest retained only **44**, while logistic regression retained **66**. The forest screened out more historical false positives in that subgroup, but its lost candidate labels are a scientific limitation: a model may perform well on average while missing objects that are important to astronomers. We tested ten preselected group-split seeds; the forest's balanced-accuracy advantage stayed positive, but the test groups overlap and do **not** count as ten independent discoveries. These cautions follow the lesson of **Thompson et al. (2018)**: a scientific vetting pipeline must evaluate **completeness and reliability**, not accuracy alone.
+
+The complete frozen prediction file and statistical analysis are retained in the [original paired-evaluation artifact](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/42513638366/artifacts/13630680897), with methods in [the verification report](VERIFIED_DR25_PAIRED_SIGNIFICANCE_2026_11_08.md).
 
 ## 4. After researching existing methods, what could we try to improve?
 
@@ -110,9 +166,54 @@ Finally, I compared two of the suspected neighboring-eclipse systems with genuin
 
 This is an important distinction: **we measured a change in telescope data, not a verified increase in planetary classification accuracy**. The full, more technical experiments and all the disappointing cases are saved in [the NASA/TESS results scorecard](VERIFIED_NOV13_FULL_RESULTS_WHAT_WORKED_WHAT_FAILED_NASA_TESS_PRF_BENCHMARK.md); they do not need to take over this Kepler-focused paper.
 
-*Optional Figure 3: a simple diagram of two blended stars and the center of light shifting when one star dims. This explains why a smaller centroid shift is not automatically better. A detailed 22-sector NASA PRF table is not necessary in the main report.*
+![Figure 3. Supplemental TESS correction, tested result versus physical source validation.](figures/tess_measurement_vs_science.svg)
 
-## 6. What did AI really contribute, and where did it need human judgment?
+*Figure 3. Diagram and measured counts for the independent TESS extension. The 44/56 result is a local motion-proxy reduction; the 2/4 result concerns directional plausibility in a different small source-frozen evaluation group. The outcomes answer different questions, so the fractions must not be pooled or presented as a single accuracy metric.*
+
+## 6. The scientific articles that shaped the work
+
+I found that the most useful papers were not necessarily the ones with the most complicated AI. Each solved a different problem and helped explain why our simpler program could work yet still fail.
+
+**Kovács, Zucker and Mazeh (2002): why a repeating shallow dip can be found.** Their Box Least Squares method gave us the first testable piece of the proposal. The program searches trial periods and transit windows for a box-like loss of light rather than simply looking for large brightness changes. Their paper helped define the search method; our result tested an **implementation**, not a new theoretical discovery.
+
+**McCauliff et al. (2015): why machine learning can help screen the detections.** They used random forests to classify Kepler transit-like signals from pipeline diagnostic measurements. They also discussed difficulty when a model sees longer-period signals unlike those in training. This motivated our four-feature forest and, after we saw the results, a close look at its **long-period candidate-recall problem**. Their published error rate was obtained on a different training population and label taxonomy; it must **not** be compared numerically as if it were our test-set score.
+
+**Thompson et al. (2018): why classifying a candidate is not confirming a planet.** Their Kepler Data Release 25 Robovetter evaluated transit-event tests and used injected transits and false-alarm experiments to measure catalog completeness and reliability. We used the NASA DR25 catalog that came from this scientific process. This reading showed us why a machine learning program that matches those **previous decisions** is useful but does not independently establish planet identities. It also explains why reducing false alarms at the expense of lost candidates is a genuine trade-off.
+
+**The Kepler team, *Pre-spectroscopic false-positive elimination* (2010): why the apparent center of light matters.** That work explains how alternating eclipse depths, possible secondary eclipses, centroid movement, and difference images reveal some blended eclipsing binary systems. The study helped motivate the narrower TESS pointing experiment. It also warned us that a centroid shift may contain **physical information** about which star actually dimmed. Subtracting motion might reduce noise or accidentally remove signal; the only meaningful test is whether source identification improves.
+
+**Valizadegan et al. (2022), ExoMiner: what a more sophisticated system already does.** NASA's research combines several physically meaningful diagnostic views in a deep-learning classifier and reported validation of 301 planets. Reading it helped us see the limits of our four-number forest, particularly the absence of raw transit shapes and detailed source-location tests. We **did not** retrain ExoMiner, reproduce its complete neural network, or improve its published scores. ExoMiner informed our assessment of the existing field, not the headline experiment.
+
+These readings changed the project's direction from a vague claim of 'better AI' to a series of **small, falsifiable comparisons**: identify an expected period; measure screening errors; and check whether one physical measurement correction improves the decision that matters. The supporting [paper-by-paper reading notes and source map](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md) identify which ideas we implemented and which stayed background.
+
+## 7. What this taught me about the material from MEST
+
+**Lesson 2: measurement of light, luminosity, flux and angular resolution.** In the lecture's *Luminosity and Flux* discussion (slides 40-41), luminosity is what a star emits; **flux** is what a detector receives per area, with `F = L/(4πd²)` for an isotropic source. In Kepler we study a **relative change in recorded flux**, not the star's total luminosity. The lecture's diffraction/resolution slides (49-50) also explain why light from nearby stars can blend in the telescope's detector. That is precisely why an apparent dip or centroid shift might originate from the wrong star.
+
+**Lesson 3: measuring time accurately.** A planet's period is inferred from repeated dips with timestamps. A small timing error can change the estimated period and eventually where we predict the next event. The comparison of **13.7133** and **13.7224 days** is thus a measurement and calibration exercise as much as a coding result. The lesson covered historical clocks and the growing precision of time measurement; NASA's repeated brightness samples turn that idea into a modern astronomical measurement.
+
+**Lessons 5-6: Newtonian gravity and Kepler's third law.** Kepler's third law relates the square of orbital period to the cube of orbital size. In Newtonian form, `P² = 4π² a³/[G(M_star + M_planet)]`; for a small planet mass, `a³ ≈ G M_star P²/(4π²)`. Our BLS program measures **P**, but does not independently measure **a** or stellar mass. This is why a period can be recovered from observed starlight without claiming to know all the planet's physical properties. These ideas appear in the opening Kepler-law slides of **Lesson 6**, which continue the orbital and gravitational discussion from Lesson 5.
+
+**Lab 1 and Appendix B: precision, accuracy and uncertainty.** In the speed-of-light lab, we were taught to compare an experimental result to an accepted value, account for instrumentation and noise, and explain how averaging and calibration affect results. Here we similarly compare a fitted period with NASA's published value, and we distinguish **repeatable or smooth measurements** from **correct physical interpretation**. Appendix B, especially its *Accuracy vs. Precision* section (page 3), is directly relevant to our negative TESS result. A correction can reduce scatter (**precision**) without improving how often we identify the actual dimming source (**accuracy**).
+
+The most meaningful connection to class is therefore not 'AI knows astronomy'. It is that **light, timing, dynamics and uncertainty must all be interpreted correctly before the numerical output becomes a scientific conclusion**.
+
+## 8. Which small changes helped, which did not, and how they were tested
+
+| Adjustment to the work | Why we tried it | What the original data show | What can honestly be concluded |
+|---|---|---|---|
+| Quality flags plus fixed running-median detrending on Kepler flux | Suppress clearly flagged measurements and long slow variations before BLS | Recovered Kepler-69 b's known period to 0.06577% in Q8 | A functioning known-target demonstration; **not** a separately measured improvement over a raw-flux baseline |
+| Examine the five individual dips and odd/even depths | Check that one apparent event is not carrying the whole period fit | Five observed positive-depth events; 24.6 ppm difference of odd/even medians | Useful diagnostic, **not** confirmed planet validity |
+| Inject simulated dips into a real observed-noise curve | Check whether signal depth makes recovery harder | Period recovered in 1/3 shallow versus 3/3 in each stronger group | Suggestive depth-sensitivity check; nine trials cannot establish survey completeness |
+| Use four transit features in a forest instead of a single SNR cutoff | Let the model learn combinations of measurements | 81.6% vs 52.3% historical-label accuracy; lower labeled-FP acceptance, also lower candidate recall | Stronger **historical-label screening** under this test; no proof of better physical planet discovery |
+| Split training and testing by star; tune thresholds on validation only; test logistic comparison | Prevent leakage and test if the extra complexity matters | Forest 81.29% balanced accuracy; logistic 76.61%; long-period candidate recall for forest only 44/71 | Better scientific evaluation, with a clear weakness to report |
+| Subtract TESS recorded pointing correction from measured photocenter | Test one small physically motivated adjustment on a **separate** mission | Local movement proxy reduced for 44/56 stars; source direction improved in only 2/4 usable follow-ups | **Not shown** to improve physical source assignment |
+
+The first five rows describe the Kepler work promised in the submitted proposal; the last is supplementary. We did **not** establish the causal effect of every preprocessing choice separately. The reproducible code, frozen input hashes and saved success/failure cases are in the linked experiment records.
+
+
+
+## 9. What did AI really contribute, and where did it need human judgment?
 
 The most useful thing about AI was not that it independently discovered new astronomical facts. It was that it could help me **turn an idea into working code**. AI assisted with writing the Python programs, reading the public telescope files, debugging errors, preparing plots, and setting up comparisons. That made a kind of analysis that normally takes a substantial amount of specialized programming much more accessible.
 
@@ -122,7 +223,7 @@ Those were moments when a human still had to ask basic scientific questions. Wer
 
 I would not have been able to treat AI output as a final scientific conclusion without checking the original NASA records and the physics behind the results. That is part of the result of the project, not an inconvenience to hide.
 
-## Conclusion
+## 10. Conclusion
 
 I began with a straightforward question: **could AI help someone reproduce and possibly improve real exoplanet research methods?**
 
@@ -134,7 +235,7 @@ I began with a straightforward question: **could AI help someone reproduce and p
 
 The larger lesson is that AI can make sophisticated research techniques more accessible. It can help build tools and test ideas quickly. **But it cannot remove the need to understand the observations, choose fair comparisons, and check whether a numerical improvement answers the actual scientific question.**
 
-## Original research records and references
+## Original research records, articles and course references
 
 **Original code, source measurements and reproducibility**
 
@@ -150,4 +251,22 @@ The larger lesson is that AI can make sophisticated research techniques more acc
 - McCauliff et al. (2015), machine learning in Kepler transit vetting: https://doi.org/10.1088/0004-637X/806/1/6.
 - Thompson et al. (2018), Kepler DR25 automated planet-candidate vetting: https://doi.org/10.3847/1538-4365/aab4f9.
 
+- NASA Exoplanet Archive, [Kepler-69 b system record](https://exoplanetarchive.ipac.caltech.edu/overview/Kepler-69) and [DR25 KOI column definitions](https://exoplanetarchive.ipac.caltech.edu/docs/API_kepcandidate_columns.html). The model uses `koi_pdisposition`, **not** a list of independently confirmed planets.
+- Astropy, [Box Least Squares documentation](https://docs.astropy.org/en/stable/timeseries/bls.html); NASA/STScI [Kepler original light curves](https://archive.stsci.edu/missions-and-data/kepler).
+- Kepler vetting team (2010), *Pre-spectroscopic false-positive elimination of Kepler planet candidates*: https://doi.org/10.1088/2041-8205/713/2/L103.
+- Valizadegan et al. (2022), *ExoMiner: A Highly Accurate and Explainable Deep Learning Classifier That Validates 301 New Exoplanets*: https://doi.org/10.3847/1538-4357/ac4399. **Background comparison only; not reproduced here.**
+- Course materials: **Lesson 2**, slides 40-41 and 49-50; **Lesson 3**, lecture on time; **Lessons 5-6**, Kepler's laws and gravity; **Lab 1**, speed-of-light measurement; **Appendix B**, page 3 on accuracy versus precision.
+
 **AI-use disclosure:** Generative AI (GPT-6) substantially assisted with literature explanation, Python implementation, source downloads, tests, calculations, visualizations, and drafting. Original NASA data and historical catalog classifications are external sources, not observations made by the AI. The student should personally verify all numerical claims, interpret the science, and disclose AI assistance in the submitted course work. This draft has not been submitted.
+
+
+## Draft project elements checklist (complete and append the official form before submission)
+
+| Lecture | Concept | Where used in this paper |
+|---|---|---|
+| Lesson 2: light and distance | Measured flux, inverse-square law, telescope resolution/blended sources | Sections 1, 2, 5, 7 |
+| Lesson 3: time | Transit timing, inferred periods and reference comparison | Sections 1, 2, 7 |
+| Lesson 6: Kepler's laws | Orbital period and Newtonian period-to-orbit relation | Sections 1, 2, 7 |
+| Optional additional connection: Lab 1 / Appendix B | Accuracy, precision, quality of measurements, uncertainty | Sections 2, 5, 7 |
+
+**Quantitative component:** original Kepler period comparison (13.7133429855 vs 13.7223682 days, 0.06577%); Kepler historical screening metrics from a star-held-out 1,619-signal test (accuracy, candidate recall, false-positive rate and stronger logistic baseline); small depth-injection sensitivity test; secondary TESS centroid test with explicit unsuccessful validation. **Locations:** Sections 2, 3, 5, 7 and 8 and Figures 1-3. The official professor-provided DOCX checklist should replace this drafting aid in the final exported submission.
