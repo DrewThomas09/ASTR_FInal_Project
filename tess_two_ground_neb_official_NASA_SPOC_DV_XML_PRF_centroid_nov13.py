@@ -282,8 +282,6 @@ def run(source_inventory,original_frozen,out,working):
         }
         if not candidates:
             star["official_NASA_SPOC_DV_TCE_status"]="no_original_source_frozen_sector_DV_XML"
-        host_coords=(float(src["original_MAST_products"]["TP"].get("RA",0))
-                     if False else None)
         # Primary catalog target position is independently known from original
         # exact TESS FITS first-sector header. Use original near-TIC catalog
         # position and its catalog separation + PA to geometrically derive
@@ -311,7 +309,6 @@ def run(source_inventory,original_frozen,out,working):
                            if tagname(q)=="planetResults" and "planetNumber" in q.attrib}
                 if len(p_by_num)!=head["original_DV_actual_planetResults_count"]:
                     raise ValueError("NASA DV original duplicated/invalid TCE candidate number")
-                matched=0
                 for p in all_planets:
                     ans=source_tce_match(
                         p,float(entry["original_ExoFOP_period_days"]),
@@ -335,8 +332,13 @@ def run(source_inventory,original_frozen,out,working):
                     # NASA XML is the primary coordinate; do not invent it.
                     obj=p_by_num[pnum]
                     diff_results=childs_named(obj,"differenceImageResults")
-                    first_results=[x for x in diff_results
-                        if x.attrib.get("sector")==str(first)]
+                    first_results=[]
+                    for x in diff_results:
+                        try:
+                            if int(x.attrib.get("sector","-1"))==first:
+                                first_results.append(x)
+                        except (TypeError,ValueError):
+                            continue
                     host_sky=None
                     for x in first_results:
                         reference=position_centroid_group(x,"ticReferenceCentroid")
