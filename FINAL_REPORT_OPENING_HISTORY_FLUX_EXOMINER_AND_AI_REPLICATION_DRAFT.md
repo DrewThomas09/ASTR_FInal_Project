@@ -87,6 +87,20 @@ Two previously analyzed original Kepler targets also have preserved Quarter 6 an
 
 The [full original Kepler quarter comparison](NOV13_REAL_KEPLER_Q6_Q7_OBSERVATIONS_AND_SMALL_SAMPLE_UNCERTAINTY.md) supplies exact input artifacts, periods, source hashes, event counts, and the distinction from the separately predeclared blind forecasting protocol. A concise [verification script](kepler_q6_q7_archived_audit.py) recomputes the periods and depths from the archived event tables.
 
+### A genuinely time-separated test on later Kepler observations
+
+The frozen Quarter 6-to-Quarter 7 experiment is now complete. The [predeclared 12-star protocol](Q6_TO_Q7_BLIND_PREDICTIVE_VALIDATION_FROZEN_2026_11_08.json) fitted each BLS period, epoch and duration from **original NASA Quarter 6 only**. Without changing those parameters on Quarter 7, the fixed rule asked whether the later measurements showed at least two covered dips, at least 60% positive local dip depths, and a mean depth stronger than at least 99% of 1,000 alternative within-star phases. All original FITS source hashes and result records are preserved in [the successful November 13 run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43512648584/artifacts/14079785749).
+
+**Six of ten preselected known planet hosts passed**: Kepler-12, Kepler-15, Kepler-19, Kepler-11, Kepler-23 and Kepler-26. Kepler-10, Kepler-30 and Kepler-27 did not meet the complete rule; Kepler-17 lacked a usable later-quarter FITS file and was retained in the denominator. Importantly, **both known stellar eclipsing-binary controls, Kepler-35 and Kepler-47, also passed**. These are 145 original predicted Quarter 7 event windows across 11 usable stars, evaluated against 11,000 alternative phase comparisons; the phase count is **not** a count of independent objects. The experiment supports later-time predictability of dimming, **not** independent confirmation that a planet caused it.
+
+![All 12 originally selected Kepler Q6-to-Q7 predictions](figures/kepler_q6_q7_frozen_v9.svg)
+
+Kepler-12 provides a particularly direct observed example: its Quarter 6 fit was **4.438352 days** and twenty usable Quarter 7 predicted windows all had positive measured local depths (mean **1.5639%**). The original workflow artifact contains the **actual Q6 and Q7 brightness points folded on the same, unretimed Q6 ephemeris**. The failures matter too: Kepler-10 had 43 of 49 positive dips but a phase comparison of 0.05794, while Kepler-30 showed only three of six positive dips. The full [source-backed validation and physical interpretation](NOV13_Q6_Q7_GENUINE_TEMPORAL_VALIDATION_AND_DEPTH_V9.md) lists all twelve original stars and their outcomes.
+
+### Why exceptionally strong signals are often not planets
+
+An additional physical error audit of the **same frozen 1,619 held-out historical NASA Kepler KOI labels** showed that 391 signals had reported SNR at least 100. Of these, 312 carried a NASA historical FALSE POSITIVE label. The forest rejected 291 of those 312 but also missed 24 of 79 historical candidates. In this high-SNR group, only 22 of 260 signals with depth of at least 1% were historically candidate-labeled versus 57 of 131 shallower signals. Deep eclipsing-binary-like signals can be easy to detect while failing planetary vetting; **a true giant planet can also have a deep transit**, so a 1% depth is not an automatic planet-rejection rule. The [full audit](NOV13_Q6_Q7_GENUINE_TEMPORAL_VALIDATION_AND_DEPTH_V9.md) and [replication script](verify_q6_to_q7_and_dr25_v9.py) keep the original labels and source data separate from physical confirmation.
+
 ## 3. Second experiment: can machine learning tell better signals from false alarms?
 
 **An important boundary between our two Kepler experiments:** the Box Least Squares code detects periods from original stellar photometry. The random forest screens *NASA's pre-computed DR25 catalog measurements*, not features produced by our own BLS program. Its reported label agreement is thus **not end-to-end accuracy for our planet detector**. The distinction matters when evaluating how much of the professional Kepler pipeline was replicated.

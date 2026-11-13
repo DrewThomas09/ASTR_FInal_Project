@@ -1,3 +1,5 @@
+**NEW: Verified Kepler time-holdout experiment (Nov. 13, 2026)** — [original Q6-fitted signal predictions tested on untouched Q7 data: 6/10 known planet hosts, 2/2 binary controls, every failed/unavailable star and deep-SNR physical analysis](NOV13_Q6_Q7_GENUINE_TEMPORAL_VALIDATION_AND_DEPTH_V9.md). [Verifier](verify_q6_to_q7_and_dr25_v9.py), [frozen official success run](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/43512648584/artifacts/14079785749). The formatted v9 manuscript uses original unrefitted telescope light curves and includes the course checklist.
+
 **V8 Kepler source analysis:** [Why very strong detected dips are not necessarily planets, with original DR25 data and host-level uncertainty](NOV13_SNR_STRENGTH_VS_PHYSICAL_VETTING_RESEARCH_V8.md) | [Reproduce the numbers](kepler_v8_snr_vetting_audit.py).
 
 **New v7 research:** [Same-recall Kepler model audit, 95% host-star intervals, and Q6/Q7 event-depth uncertainty](NOV13_MATCHED_RECALL_AND_EVENT_UNCERTAINTY_V7.md).
