@@ -1,0 +1,30 @@
+{
+  "label": "ASTR v13 exploratory feature-ablation variants",
+  "date": "2026-11-15",
+  "original_submitted_proposal": "November 5 2026",
+  "source": "NASA Exoplanet Archive q1_q17_dr25_koi, original 8054-row filtered table",
+  "expected_raw_SHA256": "c907e064c7369d4b073ba422283ddfbbf7499d472ec3cc0787254f3407e5e045",
+  "group_split_seed": 12600,
+  "train_validation_test": [
+    4824,
+    1611,
+    1619
+  ],
+  "model": "RandomForestClassifier, n_estimators=120, max_depth=9, min_samples_leaf=3, random_state=12600; training-median imputation, log1p input",
+  "candidate_label": "NASA koi_pdisposition = CANDIDATE",
+  "decision": "validation-only candidate recall threshold 90%",
+  "variants": [
+    "All four",
+    "Without period",
+    "Without duration",
+    "Without depth",
+    "Without SNR",
+    "Period and duration",
+    "Depth only",
+    "SNR only"
+  ],
+  "primary_metric": "balanced accuracy for All four minus Without depth on original 1619 KOIs",
+  "secondary_metric": "AUROC, candidate recall, historical false-positive rate",
+  "group_bootstrap": "1200 whole-host-star resamples for primary contrast, seed 20261115",
+  "inferential_scope": "Exploratory reanalysis of already examined test split; no independent confirmation; raw dataset and full NASA model architecture unchanged."
+}

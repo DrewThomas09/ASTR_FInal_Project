@@ -1,0 +1,45 @@
+name: ASTR v13 Kepler four-feature ablation
+on:
+  push:
+    paths:
+      - 'v13_kepler_feature_ablation.py'
+      - '.github/workflows/kepler-v13-feature-ablation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run-source-frozen-ablation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install research dependencies
+        run: pip install 'numpy>=1.26,<3' 'pandas>=2,<3' 'scikit-learn>=1.4,<2' 'requests>=2,<3' 'matplotlib>=3.8,<4'
+      - name: Fetch original NASA DR25 table
+        run: |
+          mkdir -p data
+          python - <<'PY'
+          import hashlib,pathlib,requests
+          from ml_screening import nasa_url
+          src=requests.get(nasa_url(),timeout=180)
+          src.raise_for_status()
+          d=hashlib.sha256(src.content).hexdigest()
+          original='c907e064c7369d4b073ba422283ddfbbf7499d472ec3cc0787254f3407e5e045'
+          if d!=original: raise RuntimeError("Original NASA source file differs; do not substitute "+d)
+          pathlib.Path("data/kepler_dr25_source_v13.csv").write_bytes(src.content)
+          print("Verified NASA original",d,len(src.content))
+          PY
+      - name: Refit prespecified feature subsets on frozen star-groups
+        run: python v13_kepler_feature_ablation.py --csv data/kepler_dr25_source_v13.csv --out results/feature_ablation_v13
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kepler-v13-frozen-source-feature-ablation
+          path: |
+            results/feature_ablation_v13/
+            data/kepler_dr25_source_v13.csv
+          retention-days: 90
+          if-no-files-found: warn
