@@ -8,11 +8,13 @@ This project follows the [November 5 submitted proposal](PROPOSAL_TO_RESULTS_RES
 
 **Latest quantitative refinement (November 15):** [the two-part Q6-to-Q7 forecast and a retrospective eleven-star Holm correction](NOV15_Q6_Q7_TWO_PART_RULE_AND_MULTIPLE_TESTING_V12.md) | [source-verified numeric script](v12_q6_q7_posthoc_phase_audit.py) | [original-data figure](figures/kepler_q6_q7_two_part_rule_v12.svg). The downloadable **Version 12** research paper is a focused 24-page PDF/DOCX with 14 main scientific figures; the full earlier technical results are preserved.
 
+**Current focus:** [Version 13 focused paper and verified original-source feature-ablation results](NOV15_FOCUSED_PAPER_AND_FEATURE_ABLATION_V13.md). The new model test explains which of the four Kepler catalog measurements the forest benefits from using; the longer analyses remain archived.
+
 ## Start with the research paper
 
 [**Main research report (Markdown)**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md) · [**November 20 status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) · [**Scientific articles and MEST lecture connections**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md)
 
-The formatted **Version 12 paper (Word and PDF)** and its original-data reproduction ZIP are provided as separate project deliverables. The paper includes quantitative results, figures, literature, lessons, references and the professor's project checklist.
+The formatted **Version 13 focused paper (Word and PDF, eight pages and 2,540 main-text words)** and its original-source model-ablation evidence ZIP are provided as separate project deliverables. The paper includes quantitative results, figures, literature, lessons, references and the professor's project checklist.
 
 ## Experimental results, with denominators and limits
 
