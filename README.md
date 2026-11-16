@@ -12,6 +12,8 @@ This project follows the [November 5 submitted proposal](PROPOSAL_TO_RESULTS_RES
 
 **Polished Version 15 final-paper release:** [7-page paper, 2,615 main-body words, four fully labeled figures and document QA](NOV15_POLISHED_FINAL_PAPER_V15_QA.md). The updated Word/PDF files are provided in the project conversation; original source data and scripts remain here.
 
+**Current narrative-first research paper (Version 16):** [documented research process, experimental setbacks, and verified Kepler outcomes](NOV15_RESEARCH_PROCESS_NARRATIVE_V16.md). The revised six-page DOCX/PDF files are available directly in the project conversation. The longer technical studies remain archived.
+
 ## Start with the research paper
 
 [**Main research report (Markdown)**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md) · [**November 20 status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) · [**Scientific articles and MEST lecture connections**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md)
