@@ -10,6 +10,8 @@ This project follows the [November 5 submitted proposal](PROPOSAL_TO_RESULTS_RES
 
 **Current focus:** [Version 13 focused paper and verified original-source feature-ablation results](NOV15_FOCUSED_PAPER_AND_FEATURE_ABLATION_V13.md). The new model test explains which of the four Kepler catalog measurements the forest benefits from using; the longer analyses remain archived.
 
+**Polished Version 15 final-paper release:** [7-page paper, 2,615 main-body words, four fully labeled figures and document QA](NOV15_POLISHED_FINAL_PAPER_V15_QA.md). The updated Word/PDF files are provided in the project conversation; original source data and scripts remain here.
+
 ## Start with the research paper
 
 [**Main research report (Markdown)**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md) · [**November 20 status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) · [**Scientific articles and MEST lecture connections**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md)
