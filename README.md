@@ -14,11 +14,13 @@ This project follows the [November 5 submitted proposal](PROPOSAL_TO_RESULTS_RES
 
 **Current narrative-first research paper (Version 16):** [documented research process, experimental setbacks, and verified Kepler outcomes](NOV15_RESEARCH_PROCESS_NARRATIVE_V16.md). The revised six-page DOCX/PDF files are available directly in the project conversation. The longer technical studies remain archived.
 
+**Current as of November 17, 2026:** The [updated November 20 project status report](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) reflects the **Version 16** six-page, 2,720-word research-process paper. The report documents the actual early simulations, NASA FITS handling, external Kepler failures, frozen Q6-to-Q7 predictions, model comparisons, and the smaller TESS follow-up. The formatted 2-page status report and the current final-paper PDF/DOCX are available in the project conversation. The status report is prepared for Canvas; it has **not been submitted**.
+
 ## Start with the research paper
 
 [**Main research report (Markdown)**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md) · [**November 20 status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) · [**Scientific articles and MEST lecture connections**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md)
 
-The formatted **Version 13 focused paper (Word and PDF, eight pages and 2,540 main-text words)** and its original-source model-ablation evidence ZIP are provided as separate project deliverables. The paper includes quantitative results, figures, literature, lessons, references and the professor's project checklist.
+The current formatted **Version 16 process-first research paper** is six pages with approximately 2,720 main-text words, three main figures, a bibliography and the project checklist. The earlier Version 13 feature-ablation and other technical evidence are preserved as supporting research in this repository. The paper includes quantitative results, figures, literature, lessons, references and the professor's project checklist.
 
 ## Experimental results, with denominators and limits
 
