@@ -1,0 +1,27 @@
+name: Kepler-69 b post-failure fixed period explanation
+on:
+  push:
+    paths:
+      - 'nov18_kepler69b_postfailure_nasa_period_check.py'
+      - '.github/workflows/nov18-kepler69b-postfailure.yml'
+  workflow_dispatch:
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencies
+        run: python -m pip install numpy pandas matplotlib scipy astropy requests
+      - name: Run exploratory original-data fixed-period comparison
+        run: python nov18_kepler69b_postfailure_nasa_period_check.py
+      - name: Preserve plotted comparison and original data hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler69b-postfailure-fixed-period-explanation
+          path: results/kepler69b_post_failure_diagnosis/
+          if-no-files-found: warn
