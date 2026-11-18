@@ -1,0 +1,13 @@
+{
+  "study": "Q8-only original Kepler-69 b model, long-horizon holdout check",
+  "frozen_date": "2026-11-18",
+  "kic": 8692861,
+  "fit_quarter": 8,
+  "test_quarters": [{"quarter":12,"suffix":"2012088054726"},{"quarter":13,"suffix":"2012179063303"}],
+  "rule": "Use the original 2026-11-18 Q9 frozen threshold, no period/epoch/duration refitting, no target replacement",
+  "reason": "Determine whether reduced late-quarter dip depth is consistent with accumulating error in the Q8-only period; keep all failures",
+  "phase_control_seed": 2026110817,
+  "phase_control_key": "kic + 100000*quarter",
+  "prior_Q8_period_days": 13.7133429855,
+  "scientific_limit": "Previously known planet, source-level extrapolation only; no new planet discovery and no general completeness estimate"
+}
