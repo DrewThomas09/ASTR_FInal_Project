@@ -1,0 +1,37 @@
+{
+  "study": "Kepler-69 b single-source Q8-trained Q9-heldout recurring-dip forecast",
+  "frozen_on": "2026-11-18",
+  "prior_evidence": "Original Kepler-69 b Q8 BLS benchmark in real_kepler_lightcurve.py",
+  "planned_target": {"name": "Kepler-69 b", "kic": 8692861},
+  "training_quarter": 8,
+  "heldout_quarter": 9,
+  "q8_long_cadence_suffix": "2011073133259",
+  "q9_long_cadence_suffix": "2011177032512",
+  "source": "Original MAST Kepler PDCSAP_FLUX FITS; require SAP_QUALITY == 0; fixed 301-cadence median normalization",
+  "fixed_bls_search": {
+    "period_min_days": 1.5,
+    "period_max_days": 20.0,
+    "frequency_factor": 5.0,
+    "duration_grid_days": [0.09, 0.15, 0.24],
+    "objective": "snr"
+  },
+  "heldout_check": {
+    "baseline_inner_duration_multipliers": 1.5,
+    "baseline_outer_duration_multipliers": 3.5,
+    "minimum_in_transit_cadences_per_event": 3,
+    "minimum_baseline_cadences_per_event": 6,
+    "minimum_usable_events": 2,
+    "positive_event_fraction_at_least": 0.6,
+    "phase_shift_control_count": 1000,
+    "phase_shift_control_seed": 2026110817,
+    "empirical_fraction_at_most": 0.01
+  },
+  "safeguards": [
+    "Do not view Q9 brightness measurements before fixing Q8 period, epoch, duration and evaluation rule.",
+    "All predicted but insufficiently sampled windows counted as unusable and reported.",
+    "Do not retune to improve outcomes; no target/quarter substitution.",
+    "One known planet host is not survey-wide sensitivity, and repeated dips are not planet validation.",
+    "Catalog period is a post-analysis comparison, not a feature given to BLS.",
+    "If Q9 FITS is missing or unprocessable, report that rather than changing the cohort."
+  ]
+}
