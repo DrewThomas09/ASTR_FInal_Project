@@ -1,0 +1,27 @@
+name: Frozen Kepler-69 b Q8 to Q9 test
+on:
+  push:
+    paths:
+      - 'nov18_kepler69b_q8_to_q9.py'
+      - '.github/workflows/nov18-kepler69b-q8-q9.yml'
+  workflow_dispatch:
+jobs:
+  test-q8-q9:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerical and astronomy dependencies
+        run: python -m pip install numpy pandas matplotlib scipy astropy requests
+      - name: Run original Kepler Q8 training and Q9 independent check
+        run: python nov18_kepler69b_q8_to_q9.py --out results/q8_to_q9_kepler69b
+      - name: Retain source hashes, events, phase controls, and figure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler69b-frozen-q8-to-q9-original-fits-results
+          path: results/q8_to_q9_kepler69b/
+          if-no-files-found: warn
