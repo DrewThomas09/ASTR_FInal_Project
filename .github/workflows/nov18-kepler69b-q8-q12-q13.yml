@@ -1,0 +1,27 @@
+name: Frozen Kepler-69 b Q8 to Q12 Q13 test
+on:
+  push:
+    paths:
+      - 'nov18_kepler69b_q8_to_q12_q13.py'
+      - '.github/workflows/nov18-kepler69b-q8-q12-q13.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scientific dependencies
+        run: python -m pip install numpy pandas matplotlib scipy astropy requests
+      - name: Run untouched historical forecast on two later quarters
+        run: python nov18_kepler69b_q8_to_q12_q13.py
+      - name: Retain original data hashes and event observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kepler69b-frozen-q8-to-q12-q13
+          path: results/q8_to_q12_q13_kepler69b/
+          if-no-files-found: warn
