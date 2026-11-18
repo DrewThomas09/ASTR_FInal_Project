@@ -1,0 +1,55 @@
+name: Build V17 plain-English exoplanet paper
+on:
+  push:
+    paths:
+      - 'NOV18_FINAL_PAPER_V17_PLAIN_ENGLISH_DRAFT.md'
+      - 'scripts/build_v17_plain_english_paper.py'
+      - '.github/workflows/build-v17-plain-english-paper.yml'
+  workflow_dispatch:
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install document and figure tools
+        run: |
+          python -m pip install python-docx matplotlib numpy
+          sudo apt-get update -qq
+          sudo apt-get install -y libreoffice-writer poppler-utils
+      - name: Build editable Word document
+        run: python scripts/build_v17_plain_english_paper.py
+      - name: Export PDF for reading and submission
+        run: |
+          mkdir -p build/pdf
+          libreoffice -env:UserInstallation=file:///tmp/lo_astropaper_v17 --headless --convert-to pdf --outdir build/pdf build/ASTR_V17_Plain_English_Final_Paper.docx
+          cp build/pdf/ASTR_V17_Plain_English_Final_Paper.pdf build/ASTR_V17_Plain_English_Final_Paper.pdf
+      - name: Check PDF pages and paper text
+        run: |
+          pdfinfo build/ASTR_V17_Plain_English_Final_Paper.pdf | grep -E 'Pages:|Page size:'
+          pdftotext build/ASTR_V17_Plain_English_Final_Paper.pdf build/text_extracted.txt
+          python - <<'PY'
+          from pathlib import Path
+          from docx import Document
+          doc=Document('build/ASTR_V17_Plain_English_Final_Paper.docx')
+          txt='\n'.join(x.text for x in doc.paragraphs)
+          for part in ['Quarter 12','Quarter 13','81.6%','0.0658%','Project Elements Checklist Form','References']:
+              assert part in txt,part
+          assert len(doc.inline_shapes)>=3
+          assert len(doc.tables)>=2
+          assert Path('build/ASTR_V17_Plain_English_Final_Paper.pdf').stat().st_size>20000
+          print('DOCX document, figures, tables, bibliography, and checklist verified')
+          PY
+          pdftoppm -f 1 -l 10 -scale-to 700 -png build/ASTR_V17_Plain_English_Final_Paper.pdf build/page >/dev/null 2>&1
+      - name: Upload finished paper and preview pages
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASTR-V17-Plain-English-Paper-DOCX-PDF
+          path: |
+            build/ASTR_V17_Plain_English_Final_Paper.docx
+            build/ASTR_V17_Plain_English_Final_Paper.pdf
+            build/page-*.png
+          if-no-files-found: error
