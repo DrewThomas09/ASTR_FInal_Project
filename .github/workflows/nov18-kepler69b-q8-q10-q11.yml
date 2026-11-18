@@ -1,0 +1,27 @@
+name: Frozen Kepler-69 b Q8 to Q10 Q11 test
+on:
+  push:
+    paths:
+      - 'nov18_kepler69b_q8_to_q10_q11.py'
+      - '.github/workflows/nov18-kepler69b-q8-q10-q11.yml'
+  workflow_dispatch:
+jobs:
+  heldout-forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerical dependencies
+        run: python -m pip install numpy pandas matplotlib scipy astropy requests
+      - name: Run fixed Q8 model on both later quarters
+        run: python nov18_kepler69b_q8_to_q10_q11.py
+      - name: Store logs and source-matched original-data measurements
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kepler69b-frozen-q8-to-q10-q11-data
+          path: results/q8_to_q10_q11_kepler69b/
+          if-no-files-found: warn
