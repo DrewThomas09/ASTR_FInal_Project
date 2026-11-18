@@ -1,0 +1,23 @@
+{
+  "study": "Kepler-69 b constant Q8-fit forecasts in independent Q10 and Q11",
+  "frozen_date": "2026-11-18",
+  "preselected_target_kic": 8692861,
+  "training_quarter": 8,
+  "test_quarters": [
+    {"quarter": 10, "official_filename_suffix": "2011271113734"},
+    {"quarter": 11, "official_filename_suffix": "2012004120508"}
+  ],
+  "same_original_Q8_model": "BLS scan 1.5-20.0 days, 0.09/0.15/0.24-day durations, Astropy objective snr, frequency_factor 5, 301-cadence median-normalized original NASA PDCSAP_FLUX with SAP_QUALITY zero",
+  "same_frozen_Q9_rule": "For every held-out quarter, depth by Q8-fixed predicted windows, 3+ inside samples, 6+ sideband samples, sideband offsets 1.5 to 3.5 durations. Two or more valid windows, positive depth in >=60%, internal 1000 alternate-phase comparisons with empirical fraction <=0.01.",
+  "phase_control_seed_base": 2026110817,
+  "phase_control_star_key_formula": "8692861 + quarter*100000",
+  "evaluate_each_quarter_separately": true,
+  "allow_reoptimization_in_later_quarters": false,
+  "on_unavailable_data": "Record missing quarter, do not substitute another quarter or target",
+  "caveats": [
+    "This is an extension motivated by the already observed Q9 result, not the original Q9 frozen sample.",
+    "Results test timing of recurring dips from one known planet host, not whether dip cause is planetary.",
+    "Alternative phase comparisons are within-star and not calibrated mission-wide false-alarm probabilities.",
+    "No tuning of Q8 period or epoch on Q9, Q10, Q11"
+  ]
+}
