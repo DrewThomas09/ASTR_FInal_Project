@@ -18,6 +18,8 @@ This project follows the [November 5 submitted proposal](PROPOSAL_TO_RESULTS_RES
 
 **Current as of November 17, 2026:** The [updated November 20 project status report](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) reflects the **Version 16** six-page, 2,720-word research-process paper. The report documents the actual early simulations, NASA FITS handling, external Kepler failures, frozen Q6-to-Q7 predictions, model comparisons, and the smaller TESS follow-up. The formatted 2-page status report and the current final-paper PDF/DOCX are available in the project conversation. The status report is prepared for Canvas; it has **not been submitted**.
 
+**Current accessible manuscript (November 18, Version 17):** [Plain-English final-paper draft](NOV18_FINAL_PAPER_V17_PLAIN_ENGLISH_DRAFT.md). It keeps the November 5 proposal's original Kepler transit-search and four-feature machine-learning tests, adds the verified Q8-to-Q13 clock-drift experiment, and preserves the failed approaches and limited TESS follow-up. It is about 3,250 main-text words, with bibliography and completed lecture checklist. [The Word/PDF build with charts](https://github.com/DrewThomas09/ASTR_FInal_Project/actions/runs/44313736252) succeeded; see the downloadable paper artifact in the run. **The manuscript is not yet submitted to Canvas.**
+
 ## Start with the research paper
 
 [**Main research report (Markdown)**](FINAL_REPORT_OPENING_HISTORY_FLUX_EXOMINER_AND_AI_REPLICATION_DRAFT.md) · [**November 20 status update**](NOV_20_STATUS_UPDATE_CONCISE_1_TO_2_PAGE_ORIGINAL_DATA_RESULTS_DRAFT.md) · [**Scientific articles and MEST lecture connections**](PROPOSAL_TO_RESULTS_RESEARCH_AND_CLASS_LINKS.md)
