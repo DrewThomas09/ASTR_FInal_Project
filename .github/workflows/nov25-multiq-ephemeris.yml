@@ -1,0 +1,28 @@
+name: Nov 25 Kepler multi-quarter timing refinement
+on:
+  push:
+    paths:
+      - 'nov25_multiq_ephemeris.py'
+      - 'NOV25_MULTIQ_EPHEMERIS_PROTOCOL.json'
+      - '.github/workflows/nov25-multiq-ephemeris.yml'
+  workflow_dispatch:
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencies
+        run: python -m pip install numpy pandas matplotlib scipy astropy requests
+      - name: Frozen Q8 and Q8-Q10 models on original NASA observations
+        run: python nov25_multiq_ephemeris.py
+      - name: Archive complete results and original file hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nov25-multiq-ephemeris-original-data
+          path: results/nov25_multiq_ephemeris/
+          if-no-files-found: warn
