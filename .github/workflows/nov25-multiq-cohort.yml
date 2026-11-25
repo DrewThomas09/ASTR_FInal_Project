@@ -1,0 +1,28 @@
+name: Nov 25 Kepler 13-target timing replication
+on:
+  push:
+    paths:
+      - 'nov25_multiq_cohort.py'
+      - 'NOV25_MULTIQ_COHORT_PROTOCOL.json'
+      - '.github/workflows/nov25-multiq-cohort.yml'
+  workflow_dispatch:
+jobs:
+  replication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Dependencies
+        run: python -m pip install numpy pandas scipy astropy matplotlib requests
+      - name: Run original Kepler observations across all planned stars
+        run: python nov25_multiq_cohort.py
+      - name: Preserve all fits, outcomes, source hashes, and figure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nov25-multiq-cohort-original-data
+          path: results/nov25_multiq_cohort/
+          if-no-files-found: warn
