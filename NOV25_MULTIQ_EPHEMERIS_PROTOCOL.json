@@ -1,0 +1,50 @@
+{
+  "study": "Kepler-69 b: multi-quarter ephemeris refinement",
+  "date": "2026-11-25",
+  "kic": 8692861,
+  "training": {
+    "baseline": [
+      8
+    ],
+    "refined": [
+      8,
+      9,
+      10
+    ],
+    "preprocessing": "existing per-quarter quality==0 PDCSAP 301-cadence median normalization; concatenate sorted independently normalized flux",
+    "bls_search": {
+      "period_min_days": 1.5,
+      "period_max_days": 20,
+      "duration_grid_days": [
+        0.09,
+        0.15,
+        0.24
+      ],
+      "frequency_factor": 5,
+      "objective": "snr"
+    }
+  },
+  "development_evaluation": [
+    12,
+    13
+  ],
+  "new_later_evaluation": [
+    14,
+    15,
+    16,
+    17
+  ],
+  "comparison": "Each method keeps its own fitted period, epoch and duration. Also use common Q8 duration for both as primary comparison so width cannot explain gain. Q12–13 previously observed; Q14–17 not used for this fit, and not previously reported in this project. No adjusting windows or changing protocol after opening them.",
+  "evaluation": {
+    "sideband_inner_duration": 1.5,
+    "sideband_outer_duration": 3.5,
+    "min_in": 3,
+    "min_out": 6,
+    "min_events": 2,
+    "positive_fraction_min": 0.6,
+    "phase_shifts": 1000,
+    "seed": 2026110817,
+    "phase_fraction_max": 0.01
+  },
+  "report": "All quarters including missing, original FITS SHA-256, per-quarter positive/usable counts, average depth ppm, fixed within-star phase fraction and pass; primary common-duration comparison, secondary native fitted-duration results. Compare period against published NASA 13.7223682 only after both fits are frozen. Do not claim independent planet discovery or mission-wide performance. Single known star, exploratory response to prior failure. The prior NASA reference period is known to investigators but excluded from fits."
+}
