@@ -1,0 +1,233 @@
+{
+  "planet": {
+    "planned_targets": 6,
+    "planned_target_quarters": 24,
+    "paired_analyzed_quarters": 24,
+    "phase_only": {
+      "baseline_pass": 9,
+      "refined_pass": 19,
+      "improved": 12,
+      "worsened": 2,
+      "both": 7,
+      "neither": 3
+    },
+    "named_period_and_phase": {
+      "baseline_pass": 4,
+      "refined_pass": 12,
+      "improved": 8,
+      "worsened": 0,
+      "both": 4,
+      "neither": 12
+    },
+    "host_level_primary": {
+      "paired_hosts": 6,
+      "improved": 2,
+      "worsened": 0,
+      "equal_with_paired_data": 4
+    },
+    "both_exact_period_hosts": 3,
+    "reduced_period_error_among_both_exact": 3,
+    "targets": [
+      {
+        "kic": 2571238,
+        "name": "Kepler-19 b",
+        "paired_quarters": 4,
+        "baseline_relation": "exact",
+        "refined_relation": "exact",
+        "baseline_reference_error_pct": 0.02106508287172959,
+        "refined_reference_error_pct": 0.005312419792158352,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 4,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 4
+      },
+      {
+        "kic": 3544595,
+        "name": "Kepler-93 b",
+        "paired_quarters": 4,
+        "baseline_relation": "exact",
+        "refined_relation": "exact",
+        "baseline_reference_error_pct": 0.004226981530019991,
+        "refined_reference_error_pct": 0.0021273191767479105,
+        "baseline_phase_pass": 4,
+        "refined_phase_pass": 4,
+        "baseline_named_pass": 4,
+        "refined_named_pass": 4
+      },
+      {
+        "kic": 3632418,
+        "name": "Kepler-21 b",
+        "paired_quarters": 4,
+        "baseline_relation": "unmatched",
+        "refined_relation": "unmatched",
+        "baseline_reference_error_pct": 370.7430630800034,
+        "refined_reference_error_pct": 385.76624014038634,
+        "baseline_phase_pass": 1,
+        "refined_phase_pass": 0,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      },
+      {
+        "kic": 6850504,
+        "name": "Kepler-20 b",
+        "paired_quarters": 4,
+        "baseline_relation": "unmatched",
+        "refined_relation": "unmatched",
+        "baseline_reference_error_pct": 193.61573189197833,
+        "refined_reference_error_pct": 193.65703345047137,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 4,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      },
+      {
+        "kic": 8644288,
+        "name": "Kepler-18 b",
+        "paired_quarters": 4,
+        "baseline_relation": "unmatched",
+        "refined_relation": "unmatched",
+        "baseline_reference_error_pct": 118.04277425084035,
+        "refined_reference_error_pct": 323.96477561688675,
+        "baseline_phase_pass": 4,
+        "refined_phase_pass": 3,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      },
+      {
+        "kic": 11295426,
+        "name": "Kepler-68 b",
+        "paired_quarters": 4,
+        "baseline_relation": "exact",
+        "refined_relation": "exact",
+        "baseline_reference_error_pct": 0.033295606292860214,
+        "refined_reference_error_pct": 0.014618330048277173,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 4,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 4
+      }
+    ]
+  },
+  "binary": {
+    "planned_targets": 7,
+    "planned_target_quarters": 28,
+    "paired_analyzed_quarters": 15,
+    "phase_only": {
+      "baseline_pass": 6,
+      "refined_pass": 14,
+      "improved": 9,
+      "worsened": 1,
+      "both": 5,
+      "neither": 0
+    },
+    "named_period_and_phase": {
+      "baseline_pass": 1,
+      "refined_pass": 11,
+      "improved": 10,
+      "worsened": 0,
+      "both": 1,
+      "neither": 4
+    },
+    "host_level_primary": {
+      "paired_hosts": 4,
+      "improved": 3,
+      "worsened": 1,
+      "equal_with_paired_data": 0
+    },
+    "both_exact_period_hosts": 2,
+    "reduced_period_error_among_both_exact": 2,
+    "targets": [
+      {
+        "kic": 1026032,
+        "name": "KIC 1026032",
+        "paired_quarters": 4,
+        "baseline_relation": "exact",
+        "refined_relation": "exact",
+        "baseline_reference_error_pct": 0.038200556068768154,
+        "refined_reference_error_pct": 0.00796013759715164,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 4,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 4
+      },
+      {
+        "kic": 2305543,
+        "name": "KIC 2305543",
+        "paired_quarters": 0,
+        "baseline_relation": "unavailable",
+        "refined_relation": "unavailable",
+        "baseline_reference_error_pct": null,
+        "refined_reference_error_pct": null,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 0,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      },
+      {
+        "kic": 2306740,
+        "name": "KIC 2306740",
+        "paired_quarters": 4,
+        "baseline_relation": "half_period_alias",
+        "refined_relation": "exact",
+        "baseline_reference_error_pct": 50.01692986958821,
+        "refined_reference_error_pct": 0.008364538763094842,
+        "baseline_phase_pass": 4,
+        "refined_phase_pass": 3,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 3
+      },
+      {
+        "kic": 3248019,
+        "name": "KIC 3248019",
+        "paired_quarters": 0,
+        "baseline_relation": "half_period_alias",
+        "refined_relation": "unavailable",
+        "baseline_reference_error_pct": 49.989506250596285,
+        "refined_reference_error_pct": null,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 0,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      },
+      {
+        "kic": 3654950,
+        "name": "KIC 3654950",
+        "paired_quarters": 0,
+        "baseline_relation": "half_period_alias",
+        "refined_relation": "unavailable",
+        "baseline_reference_error_pct": 50.00610865925791,
+        "refined_reference_error_pct": null,
+        "baseline_phase_pass": 0,
+        "refined_phase_pass": 0,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      },
+      {
+        "kic": 4544587,
+        "name": "KIC 4544587",
+        "paired_quarters": 4,
+        "baseline_relation": "exact",
+        "refined_relation": "exact",
+        "baseline_reference_error_pct": 0.010450105050141545,
+        "refined_reference_error_pct": 0.0017199533840051018,
+        "baseline_phase_pass": 1,
+        "refined_phase_pass": 4,
+        "baseline_named_pass": 1,
+        "refined_named_pass": 4
+      },
+      {
+        "kic": 9851944,
+        "name": "KIC 9851944",
+        "paired_quarters": 3,
+        "baseline_relation": "half_period_alias",
+        "refined_relation": "half_period_alias",
+        "baseline_reference_error_pct": 49.989610810392385,
+        "refined_reference_error_pct": 49.998386632449424,
+        "baseline_phase_pass": 1,
+        "refined_phase_pass": 3,
+        "baseline_named_pass": 0,
+        "refined_named_pass": 0
+      }
+    ]
+  }
+}
