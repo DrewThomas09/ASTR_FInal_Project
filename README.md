@@ -2,7 +2,7 @@
 
 Drew Thomas | ASTR/PHSC 12600 | Professor Buzasi
 
-This project uses public NASA data to study how repeated dips in a star's brightness can reveal an orbiting object. It combines a standard transit search, a small machine-learning classifier, and tests of when additional measurements improve a result. The main timing result is that a longer observing baseline improved predictions for selected known systems. The classifier better reproduced historical catalog labels than a simple signal-strength rule, with a tradeoff in missed candidates.
+This project uses public NASA data to study how repeated dips in a star's brightness can reveal an orbiting object. It combines a standard transit search, a small machine-learning classifier, and tests of when additional measurements improve a result. The main timing result is that fitting three earlier quarters instead of one improved predictions for selected known systems. The classifier better reproduced historical catalog labels than a simple signal-strength rule, with a tradeoff in missed candidates.
 
 ## Submission materials
 
